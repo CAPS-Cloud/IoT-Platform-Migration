@@ -1,0 +1,2 @@
+FROM node:7
+EXPOSE 8081
