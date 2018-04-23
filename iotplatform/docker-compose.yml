@@ -1,114 +1,135 @@
 version: '3.6'
 services:
 
-  nodejs_producer:
-    build: ./nodejs_producer
-
   activemq:
     build: ./activemq
     ports:
       - "61616:61616"
-    depends_on:
-      - nodejs_producer
-    logging:
-      driver: json-file
-      options:
-        max-size: "50m"
-        max-file: "1"
+      - "1883:1883"
+      - "8161:8161"
+      - "5672:5672"
+    networks:
+      - general
 
-  nodejs_bridge:
-    build: ./nodejs_bridge
+  nodejs_producer:
+    depends_on:
+      - activemq
+    build: ./nodejs_producer
+    ports:
+      - "54321:54321"
+    networks:
+      - general
 
   zookeeper:
-    container_name: zookeeper
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - general
 
   kafka:
-    build: ./kafka
-      ports:
-        - "2181:2181"
-        - "9092:9092"
-      logging:
-        driver: json-file
-        options:
-          max-size: "50m"
-            max-file: "1"
-
-  jobmanager:
-    container_name: flink_jobmanager
-    image: flink
-    ports:
-      - "6123:6123"
-    ports:
-      - "8081:8081"
     depends_on:
-      - kafka
       - zookeeper
-    command: jobmanager
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-  taskmanager:
-    container_name: flink_taskmanager
-    image: flink
+    image: wurstmeister/kafka
     ports:
-      - "6121:6121"
-      - "6122:6122"
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    links:
-      - "jobmanager:jobmanager"
+      - "9092:9092"
     environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-    container_name: elasticsearch1
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      KAFKA_CREATE_TOPICS: "livedata:1:1:compact"
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
-      - esdata1:/usr/share/elasticsearch/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - general
+
+  nodejs_bridge:
+    depends_on:
+      - activemq
+      - zookeeper
+      - kafka
+    build: ./nodejs_bridge
     ports:
-      - 9200:9200
+      - "12345:12345"
     networks:
-      - esnet
-  elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-    container_name: elasticsearch2
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata2:/usr/share/elasticsearch/data
-    networks:
-      - esnet
+      - general
 
-  kibana:
-    container_name: kibana
-    depends_on:
-      - elasticsearch
-      - elasticsearch2
-    image: docker.elastic.co/kibana/kibana:6.2.4
-
-volumes:
-  esdata1:
-    driver: local
-  esdata2:
-    driver: local
-
+#   jobmanager:
+#     container_name: flink_jobmanager
+#     image: flink
+#     ports:
+#       - "6123:6123"
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       - kafka
+#       - zookeeper
+#     command: jobmanager
+#     environment:
+#       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+#   taskmanager:
+#     container_name: flink_taskmanager
+#     image: flink
+#     ports:
+#       - "6121:6121"
+#       - "6122:6122"
+#     depends_on:
+#       - jobmanager
+#     command: taskmanager
+#     links:
+#       - "jobmanager:jobmanager"
+#     environment:
+#       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+#
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+#     container_name: elasticsearch1
+#     environment:
+#       - cluster.name=docker-cluster
+#       - bootstrap.memory_lock=true
+#       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     volumes:
+#       - esdata1:/usr/share/elasticsearch/data
+#     ports:
+#       - 9200:9200
+#     networks:
+#       - esnet
+#   elasticsearch2:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+#     container_name: elasticsearch2
+#     environment:
+#       - cluster.name=docker-cluster
+#       - bootstrap.memory_lock=true
+#       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#       - "discovery.zen.ping.unicast.hosts=elasticsearch"
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     volumes:
+#       - esdata2:/usr/share/elasticsearch/data
+#     networks:
+#       - esnet
+#
+#   kibana:
+#     container_name: kibana
+#     depends_on:
+#       - elasticsearch
+#       - elasticsearch2
+#     image: docker.elastic.co/kibana/kibana:6.2.4
+#
+# volumes:
+#   esdata1:
+#     driver: local
+#   esdata2:
+#     driver: local
+#
 networks:
-  esnet:
+  general:
+    driver: bridge
+    ipam:
+      driver: default
+#  esnet:

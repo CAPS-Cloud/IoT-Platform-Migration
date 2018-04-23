@@ -1,19 +1,25 @@
-FROM ubuntu:16.04
+FROM openjdk:8-jre
 
-# install java
-RUN apt-get update
-RUN apt-get install -y openjdk-8-jre
+ENV ACTIVEMQ_VERSION 5.14.3
+ENV ACTIVEMQ apache-activemq-$ACTIVEMQ_VERSION
+ENV ACTIVEMQ_TCP=61616 ACTIVEMQ_AMQP=5672 ACTIVEMQ_STOMP=61613 ACTIVEMQ_MQTT=1883 ACTIVEMQ_WS=61614 ACTIVEMQ_UI=8161
+
+ENV ACTIVEMQ_HOME /opt/activemq
+
+RUN set -x && \
+    curl -s -S https://archive.apache.org/dist/activemq/$ACTIVEMQ_VERSION/$ACTIVEMQ-bin.tar.gz | tar xvz -C /opt && \
+    ln -s /opt/$ACTIVEMQ $ACTIVEMQ_HOME && \
+    useradd -r -M -d $ACTIVEMQ_HOME activemq && \
+    chown -R activemq:activemq /opt/$ACTIVEMQ && \
+    chown -h activemq:activemq $ACTIVEMQ_HOME
+
+USER activemq
+
+EXPOSE $ACTIVEMQ_TCP $ACTIVEMQ_AMQP $ACTIVEMQ_STOMP $ACTIVEMQ_MQTT $ACTIVEMQ_WS $ACTIVEMQ_UI
 
 # add entrypoint script
+USER root
 COPY start.sh /
 RUN chmod u+x /start.sh
 
-# install activemq
-ADD http://www.apache.org/dyn/closer.cgi?filename=/activemq/5.14.1/apache-activemq-5.14.1-bin.tar.gz&action=download /activemq.tgz
-RUN tar -xzf /activemq.tgz
-
-# Expose all port
-EXPOSE 61616
-
 ENTRYPOINT /start.sh
-

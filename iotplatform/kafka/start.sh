@@ -9,10 +9,9 @@ sleep 2
 sleep 2
 
 # create topics
-/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic live
+/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic livedata
 /kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181
 
 
 # don't exit
 /usr/bin/tail -f /dev/null
-

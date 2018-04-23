@@ -4,17 +4,13 @@ var app = express()
 
 var client  = mqtt.connect({host: "activemq", port: 1883})
 
-client.on('connect', function () {
-  console.log("Connected to ActiveMQ!!")
+client.on('connect', () => {
+  console.log("Connected to ActiveMQ")
   client.subscribe('livedata')
+})
 
-  let it = 1
-  setInterval(() => {
-    let msg = 'message #' + it
-    console.log("publish: " + msg)
-    client.publish('livedata', msg)
-    it += 1
-  }, 500)
+client.on('message', (topic, message) => {
+  console.log("received: " + message.toString())
 })
 
 client.on('error', (err) => {
@@ -26,6 +22,6 @@ app.get('/', function (req, res) {
   res.send('Hello World!')
 })
 
-app.listen(8082, function () {
-  console.log('app listening on port 8082!')
+app.listen(8081, function () {
+  console.log('app listening on port 8081!')
 })

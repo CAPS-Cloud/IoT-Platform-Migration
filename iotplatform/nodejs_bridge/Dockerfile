@@ -9,6 +9,6 @@ RUN chmod u+x /index.js
 RUN chmod u+x /package.json
 
 # Expose all port
-EXPOSE 8082
+EXPOSE 8081
 
 ENTRYPOINT /start.sh
