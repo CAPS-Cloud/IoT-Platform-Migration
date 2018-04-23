@@ -21,11 +21,3 @@ client.on('error', (err) => {
     console.log(err)
     console.log("error...")
 })
-
-app.get('/', function (req, res) {
-  res.send('Hello World!')
-})
-
-app.listen(8082, function () {
-  console.log('app listening on port 8082!')
-})

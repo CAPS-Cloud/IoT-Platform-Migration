@@ -1,17 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
-echo "advertised.host.name=kafka" >> /kafka/config/server.properties
+ls
 
-# start kafka
-/kafka/bin/zookeeper-server-start.sh /kafka/config/zookeeper.properties &
+cd /opt/Kafka/kafka_2.11-1.1.0/
+
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties &
 sleep 2
-/kafka/bin/kafka-server-start.sh /kafka/config/server.properties &
+
+./bin/kafka-server-start.sh ./config/server.properties &
 sleep 2
 
-# create topics
-/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic livedata
-/kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic livedata
 
+./bin/kafka-topics.sh --list --zookeeper localhost:2181
 
 # don't exit
 /usr/bin/tail -f /dev/null

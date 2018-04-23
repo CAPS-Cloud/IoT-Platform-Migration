@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm install
+npm install --no-optional --save
 
 npm start
 
