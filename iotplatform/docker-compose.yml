@@ -1,16 +1,30 @@
 version: '3.6'
 services:
-  nodejs:
-    build: ./node
+
+  nodejs_producer:
+    build: ./nodejs_producer
+
   activemq:
     build: ./activemq
     ports:
       - "61616:61616"
+    depends_on:
+      - nodejs_producer
     logging:
       driver: json-file
       options:
         max-size: "50m"
         max-file: "1"
+
+  nodejs_bridge:
+    build: ./nodejs_bridge
+
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
   kafka:
     build: ./kafka
       ports:
@@ -21,11 +35,7 @@ services:
         options:
           max-size: "50m"
             max-file: "1"
-  zookeeper:
-    container_name: zookeeper
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
+
   jobmanager:
     container_name: flink_jobmanager
     image: flink
@@ -33,13 +43,16 @@ services:
       - "6123:6123"
     ports:
       - "8081:8081"
+    depends_on:
+      - kafka
+      - zookeeper
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
   taskmanager:
     container_name: flink_taskmanager
     image: flink
-    expose:
+    ports:
       - "6121:6121"
       - "6122:6122"
     depends_on:
@@ -49,6 +62,7 @@ services:
       - "jobmanager:jobmanager"
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
     container_name: elasticsearch1
@@ -82,8 +96,12 @@ services:
       - esdata2:/usr/share/elasticsearch/data
     networks:
       - esnet
+
   kibana:
     container_name: kibana
+    depends_on:
+      - elasticsearch
+      - elasticsearch2
     image: docker.elastic.co/kibana/kibana:6.2.4
 
 volumes:
