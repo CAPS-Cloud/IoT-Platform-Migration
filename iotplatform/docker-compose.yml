@@ -15,8 +15,6 @@ services:
     depends_on:
       - activemq
     build: ./nodejs_producer
-    ports:
-      - "54321:54321"
     networks:
       - general
 
@@ -30,21 +28,31 @@ services:
     networks:
       - general
 
-  nodejs_bridge:
+  iotbridge:
     depends_on:
       - activemq
       - kafka
-    build: ./nodejs_bridge
-    ports:
-      - "12345:12345"
+    build: ./iotbridge
     networks:
       - general
+
+  # flink:
+  #   depends_on:
+  #     - kafka
+  #   build: ./flink
+  #   volumes:
+  #     - /opt/volumes/m2/:/usr/share/maven/ref/repository
+  #     - /opt/volumes/m2r/:/root/.m2
+  #   ports:
+  #     - "8081:8081"
+  #   networks:
+  #     - general
 
 #   flink_jobmanager:
 #     depends_on:
 #       - kafka
 #       - zookeeper
-#       - nodejs_bridge
+#       - iotbridge
 #     image: flink
 #     ports:
 #       - "8081:8081"
