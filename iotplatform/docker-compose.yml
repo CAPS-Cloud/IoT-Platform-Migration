@@ -36,17 +36,15 @@ services:
     networks:
       - general
 
-  # flink:
-  #   depends_on:
-  #     - kafka
-  #   build: ./flink
-  #   volumes:
-  #     - /opt/volumes/m2/:/usr/share/maven/ref/repository
-  #     - /opt/volumes/m2r/:/root/.m2
-  #   ports:
-  #     - "8081:8081"
-  #   networks:
-  #     - general
+  flink:
+    depends_on:
+      - kafka
+      - iotbridge
+    build: ./flink
+    ports:
+      - "8081:8081"
+    networks:
+      - general
 
 #   flink_jobmanager:
 #     depends_on:

@@ -3,16 +3,12 @@ FROM maven:3.5.2-jdk-8
 VOLUME /usr/share/maven/ref/repository
 VOLUME /root/.m2
 
-ADD http://apache.lauf-forum.at/flink/flink-1.3.2/flink-1.3.2-bin-hadoop27-scala_2.10.tgz /flink.tgz
-RUN mkdir /docker/flink
-RUN mkdir /docker/proj
-RUN tar -xzf /flink.tgz -C /docker/flink/
+# install kafka
+RUN mkdir /flink \
+  && wget http://apache.lauf-forum.at/flink/flink-1.4.2/flink-1.4.2-bin-hadoop28-scala_2.11.tgz \
+  && tar -xzf /flink-1.4.2-bin-hadoop28-scala_2.11.tgz -C /flink/
 
-COPY /docker/flink/pom.xml /docker/proj/pom.xml
-COPY /docker/flink/src /docker/proj/src
-
-RUN cd /docker/proj
-RUN mvn package
+RUN mkdir /proj
 
 # add entrypoint script
 USER root
