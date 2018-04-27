@@ -3,48 +3,50 @@ var mqtt = require('mqtt')
 var kafka = require("kafka-node")
 
 var app = express()
+var mqttClient, kafkaProducer, kafkaClient
 
-var mqttClient  = mqtt.connect({host: "activemq", port: 1883})
+async function initKafka() {
+  return new Promise((resolve) => {
+    console.log("attempting to initiate Kafka connection...")
+    kafkaClient = new kafka.Client("kafka:2181")
 
-console.log("attempting to initiate ActiveMQ connection...")
-mqttClient.on('connect', () => {
-  console.log("connected to ActiveMQ")
-  mqttClient.subscribe('livedata')
-})
+    kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
+    kafkaProducer.on("ready", () => {
+        console.log("kafka producer is connected and ready")
+    })
+    kafkaProducer.on("error", (error) => {
+        console.error(error)
+    })
+    kafkaProducer.on('ready', () => {
+      resolve()
+    })
+  })
+}
 
-mqttClient.on('message', (topic, message) => {
-  console.log("received: " + message.toString())
-})
+async function initMqtt() {
+  return new Promise((resolve) => {
+    console.log("attempting to initiate ActiveMQ connection...")
+    mqttClient  = mqtt.connect({host: "activemq", port: 1883})
 
-mqttClient.on('error', (err) => {
-    console.log(err)
-    console.log("error...")
-})
+    mqttClient.on('connect', () => {
+      console.log("connected to ActiveMQ")
+      mqttClient.subscribe('livedata')
+    })
+    mqttClient.on('error', (err) => {
+        console.log(err)
+    })
+    resolve()
+  })
+}
 
-// ####################################################################################################
-
-console.log("attempting to initiate Kafka connection...")
-var kafkaClient = new kafka.Client("kafka:2181")
-
-var kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
-kafkaProducer.on("ready", () => {
-    console.log("kafka producer is connected and ready")
-})
-kafkaProducer.on("error", (error) => {
-    console.error(error)
-})
-kafkaProducer.on('ready', () => {
-  console.log("initializing kafka ingestion")
-  let it = 1
-  setInterval(() => {
+Promise.all([initMqtt(), initKafka()]).then(() => {
+  mqttClient.on('message', (topic, message) => {
+    console.log("received: " + message.toString())
     let payloads = [
-        { topic: 'livedata', messages: 'kafka forwarding: ' + it }
+      { topic: 'livedata', messages: message.toString() }
     ]
     kafkaProducer.send(payloads, function (err, data) {
-        console.log("forwarding to kafka: ")
-        console.log(data)
+      console.log("forwarded to kafka: ", data)
     })
-  },500)
+  })
 })
-
-// ####################################################################################################
