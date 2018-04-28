@@ -6,7 +6,7 @@ cd /flink/flink-1.4.2
 
 sleep 10
 
-curl -XPUT "http://elasticsearch:9200/livedata"
+curl -XPUT "http://elasticsearch:9200/livedata" 
 
 curl -XGET "http://elasticsearch:9200/_cat/indices?v&pretty"
 

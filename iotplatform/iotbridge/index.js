@@ -41,7 +41,7 @@ async function initMqtt() {
 
 Promise.all([initMqtt(), initKafka()]).then(() => {
   mqttClient.on('message', (topic, message) => {
-    console.log("received: " + message.toString())
+    console.log("received: ",  message.toString())
     let payloads = [
       { topic: 'livedata', messages: message.toString() }
     ]

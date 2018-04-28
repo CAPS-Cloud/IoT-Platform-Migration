@@ -10,11 +10,15 @@ client.on('connect', function () {
 
   let it = 1
   setInterval(() => {
-    let msg = 'message #' + it
-    console.log("publish: " + msg)
-    client.publish('livedata', msg)
+    let msg = {
+      "iteration" : it,
+      "lat" : 59.58,
+      "long" : 27.23
+    }
+    console.log("publish: ", msg)
+    client.publish('livedata', JSON.stringify(msg))
     it += 1
-  }, 500)
+  }, 250)
 })
 
 client.on('error', (err) => {

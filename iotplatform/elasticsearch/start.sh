@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /elasticsearch/elasticsearch-1.7.3
+cd /elasticsearch/elasticsearch-5.6.9
 
 ./bin/elasticsearch
 
