@@ -11,8 +11,7 @@ RUN chmod a+x /start.sh
 COPY elasticsearch.yml /
 RUN mv elasticsearch.yml /elasticsearch/elasticsearch-5.6.3/config/elasticsearch.yml
 
-EXPOSE 9200
-EXPOSE 9300
+EXPOSE 9200 9300
 
 RUN groupadd -r elastic && useradd --no-log-init -r -g elastic elastic \
   && chown -R elastic:elastic /elasticsearch/
