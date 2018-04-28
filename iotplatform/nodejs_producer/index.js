@@ -18,7 +18,7 @@ client.on('connect', function () {
     console.log("publish: ", msg)
     client.publish('livedata', JSON.stringify(msg))
     it += 1
-  }, 250)
+  }, 2500)
 })
 
 client.on('error', (err) => {

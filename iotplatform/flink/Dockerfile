@@ -16,7 +16,9 @@ RUN cd /proj \
 # add entrypoint script
 USER root
 COPY start.sh /
+COPY wait-for-it.sh /
 RUN chmod u+x /start.sh
+RUN chmod u+x /wait-for-it.sh
 
 EXPOSE 8081
 

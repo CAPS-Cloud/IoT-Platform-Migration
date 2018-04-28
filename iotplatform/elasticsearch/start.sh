@@ -1,6 +1,8 @@
 #!/bin/sh
 
-cd /elasticsearch/elasticsearch-5.6.9
+cd /elasticsearch/elasticsearch-5.6.3
+
+java -version
 
 ./bin/elasticsearch
 

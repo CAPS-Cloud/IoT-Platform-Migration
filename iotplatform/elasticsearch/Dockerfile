@@ -1,12 +1,15 @@
 FROM openjdk:8-jre
 
 RUN mkdir /elasticsearch \
-  && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.9.tar.gz \
-  && tar -xzf /elasticsearch-5.6.9.tar.gz -C /elasticsearch/
+  && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.tar.gz \
+  && tar -xzf /elasticsearch-5.6.3.tar.gz -C /elasticsearch/
 
 # add entrypoint script
 COPY start.sh /
 RUN chmod a+x /start.sh
+
+COPY elasticsearch.yml /
+RUN mv elasticsearch.yml /elasticsearch/elasticsearch-5.6.3/config/elasticsearch.yml
 
 EXPOSE 9200
 EXPOSE 9300
