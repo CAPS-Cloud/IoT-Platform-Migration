@@ -74,9 +74,15 @@
 			<version>1.4.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.flink</groupId>
-		    <artifactId>flink-connector-elasticsearch5_2.11</artifactId>
-		    <version>1.4.2</version>
+	    <groupId>org.apache.flink</groupId>
+	    <artifactId>flink-connector-elasticsearch5_2.11</artifactId>
+	    <version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 

@@ -1,9 +1,9 @@
 FROM openjdk:8-jre
 
 # install kafka
-RUN mkdir /opt/Kafka \
+RUN mkdir /kafka/ \
   && wget http://mirror.dkd.de/apache/kafka/1.1.0/kafka_2.11-1.1.0.tgz \
-  && tar -xzf /kafka_2.11-1.1.0.tgz -C /opt/Kafka/
+  && tar -xzf /kafka_2.11-1.1.0.tgz -C /kafka/
 
 # add entrypoint script
 USER root
