@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+/wait-for-it.sh elasticsearch:9200 --timeout=90 --strict -- echo "elasticsearch is up"
+
 PERMISSIONS_OK=0
 
 if [ ! -r "$GF_PATHS_CONFIG" ]; then

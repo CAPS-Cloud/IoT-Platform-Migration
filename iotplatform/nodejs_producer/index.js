@@ -8,20 +8,32 @@ client.on('connect', function () {
   console.log("Connected to ActiveMQ!!")
   client.subscribe('livedata')
 
-  let it = 1
   setInterval(() => {
-    let msg = {
-      "iteration" : it,
-      "lat" : 59.58,
-      "long" : 27.23
-    }
-    console.log("publish: ", msg)
-    client.publish('livedata', JSON.stringify(msg))
-    it += 1
-  }, 10)
+    produceMessage()
+  }, 100)
+
+  setInterval(() => {
+    var int = setInterval(() => {
+      produceMessage()
+    },10)
+    setTimeout(() => {
+      clearInterval(int)
+    }, 2000)
+  }, 10000)
 })
 
 client.on('error', (err) => {
     console.log(err)
     console.log("error...")
 })
+
+function produceMessage() {
+  let msg = {
+    "sensorGroup" : "someGroup123",
+    "sensorId" : "someId123",
+    "timestamp" : (new Date()).getTime(),
+    "reading" : "" + Math.random() * 100
+  }
+  console.log("publish: ", JSON.stringify(msg))
+  client.publish('livedata', JSON.stringify(msg))
+}

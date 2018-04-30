@@ -2,7 +2,7 @@
 
 cd /kibana/kibana-4.1.3-linux-x64
 
-/wait-for-it.sh elasticsearch:9200 --timeout=30 --strict -- echo "elasticsearch is up"
+/wait-for-it.sh elasticsearch:9200 --timeout=90 --strict -- echo "elasticsearch is up"
 
 ./bin/kibana
 

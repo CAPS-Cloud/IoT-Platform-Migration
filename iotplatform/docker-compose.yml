@@ -62,15 +62,15 @@ services:
   #     - "5601:5601"
   #   networks:
   #     - general
-  #
-  # grafana:
-  #   depends_on:
-  #     - kafka
-  #   build: ./grafana
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - general
+
+  grafana:
+    depends_on:
+      - elasticsearch
+    build: ./grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - general
 
 networks:
   general:

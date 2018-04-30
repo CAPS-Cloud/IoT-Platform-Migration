@@ -46,7 +46,7 @@ Promise.all([initMqtt(), initKafka()]).then(() => {
       { topic: 'livedata', messages: message.toString() }
     ]
     kafkaProducer.send(payloads, function (err, data) {
-      console.log("forwarded to kafka: ", data)
+      console.log("forwarded to kafka")
     })
   })
 })

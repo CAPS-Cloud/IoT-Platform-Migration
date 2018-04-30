@@ -8,7 +8,26 @@ java -version
 
 /wait-for-it.sh elasticsearch:9200 --timeout=30 --strict -- echo "elasticsearch is up"
 
-curl -XPUT "http://elasticsearch:9200/livedata"
+curl -XPOST "http://elasticsearch:9200/livedata" -d '{
+  "mappings": {
+    "sensorReading": {
+      "properties": {
+        "date": {
+          "type": "date"
+        },
+        "sensorId": {
+          "type": "text"
+        },
+        "sensorGroup": {
+          "type": "text"
+        },
+        "reading": {
+          "type": "float"
+        }
+      }
+    }
+  }
+}'
 
 sleep 2
 

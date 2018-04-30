@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -qq -y tar libfontconfig curl ca-certifica
     chown -R grafana:grafana "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS" && \
     chmod 777 "$GF_PATHS_DATA" "$GF_PATHS_HOME/.aws" "$GF_PATHS_LOGS" "$GF_PATHS_PLUGINS"
 
+COPY wait-for-it.sh /
+RUN chmod a+x /wait-for-it.sh
+
 EXPOSE 3000
 
 # add entrypoint script

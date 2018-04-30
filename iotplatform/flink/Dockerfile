@@ -7,18 +7,20 @@ RUN mkdir /flink \
 RUN mkdir /proj
 RUN mkdir -p /proj/src/main/java
 COPY ReadFromKafka.java /proj/src/main/java/
+COPY SensorReading.java /proj/src/main/java/
 COPY pom.xml /proj/
 
 RUN cd /proj \
   && mvn --version \
   && mvn package
 
+COPY wait-for-it.sh /
+RUN chmod a+x /wait-for-it.sh
+
 # add entrypoint script
 USER root
 COPY start.sh /
-COPY wait-for-it.sh /
-RUN chmod u+x /start.sh
-RUN chmod u+x /wait-for-it.sh
+RUN chmod a+x /start.sh
 
 EXPOSE 8081
 
