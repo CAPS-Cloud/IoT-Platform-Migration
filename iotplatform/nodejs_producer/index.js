@@ -22,11 +22,6 @@ client.on('connect', function () {
   }, 10000)
 })
 
-client.on('error', (err) => {
-    console.log(err)
-    console.log("error...")
-})
-
 function produceMessage() {
   let msg = {
     "sensorGroup" : "someGroup123",

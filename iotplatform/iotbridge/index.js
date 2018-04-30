@@ -14,9 +14,6 @@ async function initKafka() {
     kafkaProducer.on("ready", () => {
         console.log("kafka producer is connected and ready")
     })
-    kafkaProducer.on("error", (error) => {
-        console.error(error)
-    })
     kafkaProducer.on('ready', () => {
       resolve()
     })
@@ -31,9 +28,6 @@ async function initMqtt() {
     mqttClient.on('connect', () => {
       console.log("connected to ActiveMQ")
       mqttClient.subscribe('livedata')
-    })
-    mqttClient.on('error', (err) => {
-        console.log(err)
     })
     resolve()
   })
