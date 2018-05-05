@@ -1,9 +1,14 @@
 var express = require('express')
 var mqtt = require('mqtt')
 var kafka = require("kafka-node")
+var port = 8083
 
 var app = express()
 var mqttClient, kafkaProducer, kafkaClient
+
+async function initRest() {
+
+}
 
 async function initKafka() {
   return new Promise((resolve) => {
@@ -33,13 +38,28 @@ async function initMqtt() {
   })
 }
 
-Promise.all([initMqtt(), initKafka()]).then(() => {
-  mqttClient.on('message', (topic, message) => {
-    let payloads = [
+function forwardMsg(message) {
+  let payloads
+  if(typeof(message) === "object") {
+    payloads = [
       { topic: 'livedata', messages: message.toString() }
     ]
-    kafkaProducer.send(payloads, function (err, data) {
-      console.log("forwarded to kafka")
-    })
+  } else if(typeof(message) === "string") {
+    payloads = [
+      { topic: 'livedata', messages: message }
+    ]
+  } else {
+    console.log("invalid type of data - not forwarded to kafka")
+    return
+  }
+
+  kafkaProducer.send(payloads, function (err, data) {
+    console.log("forwarded to kafka")
+  })
+}
+
+Promise.all([initMqtt(), initKafka()]).then(() => {
+  mqttClient.on('message', (topic, message) => {
+    forwardMsg(message)
   })
 })

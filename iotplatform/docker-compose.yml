@@ -18,6 +18,27 @@ services:
     networks:
       - general
 
+  java_producer:
+    depends_on:
+      - iotbridge
+    build: ./java_producer
+    networks:
+      - general
+
+  python_producer:
+    depends_on:
+      - iotbridge
+    build: ./python_producer
+    networks:
+      - general
+
+  iotcore:
+    build: ./iotcore
+    ports:
+      - "8080:8080"
+    networks:
+      - general
+
   kafka:
     build: ./kafka
     ports:
@@ -33,6 +54,8 @@ services:
       - activemq
       - kafka
     build: ./iotbridge
+    ports:
+      - "8083:8083"
     networks:
       - general
 
