@@ -1,25 +1,29 @@
-version: '3.6'
+version: '3.2'
 services:
-
   activemq:
     build: ./activemq
+    image: activemq
     ports:
       - "61616:61616"
       - "1883:1883"
       - "8161:8161"
       - "5672:5672"
 
-  nodejs_producer:
-    build: ./nodejs_producer
+  nodejs-producer:
+    build: ./nodejs-producer
+    image: nodejs-producer
 
-  java_producer:
-    build: ./java_producer
+  java-producer:
+    build: ./java-producer
+    image: java-producer
 
-  python_producer:
-    build: ./python_producer
+  python-producer:
+    build: ./python-producer
+    image: python-producer
 
   iotcore:
     build: ./iotcore
+    image: iotcore
     ports:
       - "8080:8080"
 
@@ -45,23 +49,27 @@ services:
 
   iotbridge:
     build: ./iotbridge
+    image: iotbridge
     ports:
       - "8083:8083"
       - "8765:8765"
 
   elasticsearch:
     build: ./elasticsearch
+    image: elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
 
   flink:
     build: ./flink
+    image: flink
     ports:
       - "8081:8081"
 
   grafana:
     build: ./grafana
+    image: grafana
     ports:
       - "3000:3000"
 
