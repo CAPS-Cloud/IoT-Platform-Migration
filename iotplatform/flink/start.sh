@@ -6,7 +6,8 @@ java -version
 
 ./bin/start-local.sh
 
-/wait-for-it.sh elasticsearch:9200 --timeout=30 --strict -- echo "elasticsearch is up"
+/wait-for-it.sh elasticsearch:9200 --timeout=0 --strict -- echo "elasticsearch is up"
+/wait-for-it.sh kafka:2181 --timeout=0 --strict -- echo "kafka is up"
 
 curl -XPOST "http://elasticsearch:9200/livedata" -d '{
   "mappings": {

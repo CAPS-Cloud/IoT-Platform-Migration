@@ -15,7 +15,7 @@ client.on('connect', function () {
   setInterval(() => {
     var int = setInterval(() => {
       produceMessage()
-    },999999999)
+    },250)
     setTimeout(() => {
       clearInterval(int)
     }, 2500)

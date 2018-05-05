@@ -8,84 +8,47 @@ services:
       - "1883:1883"
       - "8161:8161"
       - "5672:5672"
-    networks:
-      - general
 
   nodejs_producer:
-    depends_on:
-      - activemq
     build: ./nodejs_producer
-    networks:
-      - general
 
   java_producer:
-    depends_on:
-      - iotbridge
     build: ./java_producer
-    networks:
-      - general
 
   python_producer:
-    depends_on:
-      - iotbridge
     build: ./python_producer
-    networks:
-      - general
 
   iotcore:
     build: ./iotcore
     ports:
       - "8080:8080"
-    networks:
-      - general
 
   kafka:
     build: ./kafka
     ports:
       - "9092:9092"
-      - "2181:2181"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - general
 
   iotbridge:
-    depends_on:
-      - activemq
-      - kafka
     build: ./iotbridge
     ports:
       - "8083:8083"
       - "8765:8765"
-    networks:
-      - general
 
   elasticsearch:
     build: ./elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
-    networks:
-      - general
 
   flink:
-    depends_on:
-      - kafka
-      - elasticsearch
     build: ./flink
     ports:
       - "8081:8081"
-    networks:
-      - general
 
   grafana:
-    depends_on:
-      - elasticsearch
     build: ./grafana
     ports:
       - "3000:3000"
-    networks:
-      - general
 
   # kibana:
   #   depends_on:

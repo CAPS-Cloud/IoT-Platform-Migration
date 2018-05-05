@@ -6,6 +6,7 @@ var WebSocket = require('ws')
 
 var httpPort = 8083
 var wsPort = 8765
+var zookeeperPort = 2181
 
 var wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
 
@@ -41,7 +42,7 @@ async function initRest() {
 async function initKafka() {
   return new Promise((resolve) => {
     console.log("attempting to initiate Kafka connection...")
-    kafkaClient = new kafka.Client("kafka:2181")
+    kafkaClient = new kafka.Client("kafka:" + zookeeperPort)
 
     kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
     kafkaProducer.on("ready", () => {

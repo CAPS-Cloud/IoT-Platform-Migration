@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/wait-for-it.sh iotbridge:8765 --timeout=90 --strict -- echo "iotbridge wsserver is up"
+/wait-for-it.sh iotbridge:8765 --timeout=0 --strict -- echo "iotbridge wsserver is up"
 
 python main.py
 
