@@ -42,7 +42,7 @@ async function initRest() {
 async function initKafka() {
   return new Promise((resolve) => {
     console.log("attempting to initiate Kafka connection...")
-    kafkaClient = new kafka.Client("kafka:" + zookeeperPort)
+    kafkaClient = new kafka.Client("zookeeper:" + zookeeperPort)
 
     kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
     kafkaProducer.on("ready", () => {

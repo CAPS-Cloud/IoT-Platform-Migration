@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-/wait-for-it.sh elasticsearch:9200 --timeout=0 --strict -- echo "elasticsearch is up"
+/wait-for-it.sh elasticsearch:9200 --timeout=0 --strict 
 
 PERMISSIONS_OK=0
 

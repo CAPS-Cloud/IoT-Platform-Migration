@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/wait-for-it.sh iotbridge:8083 --timeout=0 --strict -- echo "iotbridge http server is up"
+/wait-for-it.sh iotbridge:8083 --timeout=0 --strict 
 
 java -version
 

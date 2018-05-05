@@ -2,7 +2,7 @@
 
 npm install --no-optional --save
 
-/wait-for-it.sh activemq:1883 --timeout=0 --strict -- echo "activemq is up"
+/wait-for-it.sh activemq:1883 --timeout=0 --strict 
 
 npm start
 
