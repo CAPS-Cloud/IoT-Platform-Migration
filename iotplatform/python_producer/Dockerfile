@@ -6,4 +6,12 @@ RUN pip install -r requirements.txt
 
 COPY main.py /app
 
-CMD python main.py
+COPY wait-for-it.sh /
+RUN chmod u+x /wait-for-it.sh
+
+# add entrypoint script
+USER root
+COPY start.sh /
+RUN chmod u+x /start.sh
+
+ENTRYPOINT /start.sh

@@ -3,25 +3,27 @@ var mqtt = require('mqtt')
 var kafka = require("kafka-node")
 var WebSocket = require('ws');
 
-var port = 8083
+var httpPort = 8083
 var wsPort = 8765
 
-var app = express()
-var wsserver, ws, mqttClient, kafkaProducer, kafkaClient
+var app, wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
 
 
 async function initWebSocket() {
+  console.log("attempting to initiate ws server...")
   return new Promise((resolve) => {
     wsserver = new WebSocket.Server({ port: wsPort })
-    wsserver.on('connection', function connection(ws) {
-      ws = ws
-      resolve()
-    })
+    resolve()
   })
 }
 
 async function initRest() {
+  console.log("attempting to initiate http server...")
   return new Promise((resolve) => {
+    app = express()
+    httpServer = app.listen(httpPort, () => {
+      console.log("app running on port.", server.address().port)
+    })
     resolve()
   })
 }
@@ -78,9 +80,13 @@ function forwardMsg(message) {
 
 Promise.all([initMqtt(), initKafka(), initWebSocket()]).then(() => {
   mqttClient.on('message', (topic, message) => {
-    forwardMsg(message)
+    console.log("mqtt: ", message.toString())
+    forwardMsg(message.toString())
   })
-  ws.on('message', function incoming(message) {
-    forwardMsg(message)
+  wsserver.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+      console.log("wsserver: ", message)
+      forwardMsg(message)
+    })
   })
 })
