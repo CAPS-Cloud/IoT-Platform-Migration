@@ -1,9 +1,9 @@
-FROM openjdk:8-jre
+FROM maven:3.5.2-jdk-8
 
 WORKDIR /app
 COPY pom.xml /app
 RUN mvn install
-COPY src /app
+COPY app /app
 RUN mvn package
 
 COPY wait-for-it.sh /

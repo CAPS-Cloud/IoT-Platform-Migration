@@ -1,13 +1,13 @@
 var express = require('express')
 var mqtt = require('mqtt')
 var kafka = require("kafka-node")
-var WebSocket = require('ws');
+var bodyParser = require("body-parser")
+var WebSocket = require('ws')
 
 var httpPort = 8083
 var wsPort = 8765
 
-var app, wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
-
+var wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
 
 async function initWebSocket() {
   console.log("attempting to initiate ws server...")
@@ -20,9 +20,19 @@ async function initWebSocket() {
 async function initRest() {
   console.log("attempting to initiate http server...")
   return new Promise((resolve) => {
-    app = express()
+    const app = express()
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+
+    app.post("/", function (req, res) {
+      console.log("http: ", JSON.stringify(req.body))
+      forwardMsg(JSON.stringify(req.body))
+      res.status(200).send('OK')
+      res.end()
+    })
+
     httpServer = app.listen(httpPort, () => {
-      console.log("app running on port.", server.address().port)
+      console.log("app running on port ", httpServer.address().port)
     })
     resolve()
   })
@@ -56,8 +66,6 @@ async function initMqtt() {
   })
 }
 
-
-
 function forwardMsg(message) {
   let payloads
   if(typeof(message) === "object") {
@@ -78,15 +86,24 @@ function forwardMsg(message) {
   })
 }
 
-Promise.all([initMqtt(), initKafka(), initWebSocket()]).then(() => {
-  mqttClient.on('message', (topic, message) => {
-    console.log("mqtt: ", message.toString())
-    forwardMsg(message.toString())
-  })
-  wsserver.on('connection', function connection(ws) {
-    ws.on('message', function incoming(message) {
-      console.log("wsserver: ", message)
-      forwardMsg(message)
+Promise.all([initKafka()]).then(() => {
+  initMqtt().then(() => {
+    mqttClient.on('message', (topic, message) => {
+      console.log("mqtt: ", message.toString())
+      forwardMsg(message.toString())
     })
+  })
+
+  initWebSocket().then(() => {
+    wsserver.on('connection', function connection(ws) {
+      ws.on('message', function incoming(message) {
+        console.log("wsserver: ", message)
+        forwardMsg(message)
+      })
+    })
+  })
+
+  initRest().then(() => {
+
   })
 })

@@ -14,7 +14,7 @@ public class Producer {
                 Content response = Request.Post(args[0])
                         .bodyString(message,ContentType.APPLICATION_JSON)
                         .execute().returnContent();
-                System.out.println(response.asString());
+                //System.out.println(response.asString());
             } catch(Exception e) {
                 System.err.println(e);
             }

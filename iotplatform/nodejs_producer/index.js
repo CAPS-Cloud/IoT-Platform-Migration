@@ -29,6 +29,6 @@ function produceMessage() {
     "timestamp" : (new Date()).getTime(),
     "reading" : "" + Math.random() * 100
   }
-  console.log("publish: ", JSON.stringify(msg))
+  //console.log("publish: ", JSON.stringify(msg))
   client.publish('livedata', JSON.stringify(msg))
 }
