@@ -9,5 +9,6 @@ RUN chmod u+x /index.js
 RUN chmod u+x /package.json
 
 EXPOSE 8083
+EXPOSE 8765
 
 ENTRYPOINT /start.sh

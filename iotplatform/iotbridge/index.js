@@ -1,13 +1,29 @@
 var express = require('express')
 var mqtt = require('mqtt')
 var kafka = require("kafka-node")
+var WebSocket = require('ws');
+
 var port = 8083
+var wsPort = 8765
 
 var app = express()
-var mqttClient, kafkaProducer, kafkaClient
+var wsserver, ws, mqttClient, kafkaProducer, kafkaClient
+
+
+async function initWebSocket() {
+  return new Promise((resolve) => {
+    wsserver = new WebSocket.Server({ port: wsPort })
+    wsserver.on('connection', function connection(ws) {
+      ws = ws
+      resolve()
+    })
+  })
+}
 
 async function initRest() {
-
+  return new Promise((resolve) => {
+    resolve()
+  })
 }
 
 async function initKafka() {
@@ -38,6 +54,8 @@ async function initMqtt() {
   })
 }
 
+
+
 function forwardMsg(message) {
   let payloads
   if(typeof(message) === "object") {
@@ -58,8 +76,11 @@ function forwardMsg(message) {
   })
 }
 
-Promise.all([initMqtt(), initKafka()]).then(() => {
+Promise.all([initMqtt(), initKafka(), initWebSocket()]).then(() => {
   mqttClient.on('message', (topic, message) => {
+    forwardMsg(message)
+  })
+  ws.on('message', function incoming(message) {
     forwardMsg(message)
   })
 })
