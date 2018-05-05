@@ -1,8 +1,9 @@
 FROM python
 
-# add entrypoint script
-USER root
-COPY start.sh /
-RUN chmod u+x /start.sh
+WORKDIR /app
+COPY requirements.txt /app
+RUN pip install -r requirements.txt
 
-ENTRYPOINT /start.sh
+COPY main.py /app
+
+CMD python main.py
