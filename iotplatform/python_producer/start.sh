@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# DO STUFF
+python --version
 
 # don't exit
 /usr/bin/tail -f /dev/null
