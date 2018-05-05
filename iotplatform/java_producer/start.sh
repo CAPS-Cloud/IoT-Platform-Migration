@@ -1,5 +1,7 @@
 #!/bin/sh
 
+/wait-for-it.sh iotbridge:8083 --timeout=90 --strict -- echo "iotbridge http server is up"
+
 java -version
 
 java -jar target/java_producer-1.0.jar http://iotbridge:8083
