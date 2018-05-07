@@ -3,10 +3,13 @@ var mqtt = require('mqtt')
 var kafka = require("kafka-node")
 var bodyParser = require("body-parser")
 var WebSocket = require('ws')
+var grpc = require('grpc');
 
 var httpPort = 8083
 var wsPort = 8765
 var zookeeperPort = 2181
+var PROTO_PATH = __dirname + './protos/helloworld.proto';
+var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
 var wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
 
@@ -14,6 +17,24 @@ async function initWebSocket() {
   console.log("attempting to initiate ws server...")
   return new Promise((resolve) => {
     wsserver = new WebSocket.Server({ port: wsPort })
+    resolve()
+  })
+}
+
+async function initGRPC() {
+  return new Promise((resolve) => {
+    let client = new hello_proto.Greeter('iotcore:50051',
+                                         grpc.credentials.createInsecure())
+    let user
+    if (process.argv.length >= 3) {
+      user = process.argv[2]
+    } else {
+      user = 'world'
+    }
+    client.sayHello({name: user}, function(err, response) {
+      //console.log('Greeting:', response.message)
+      console.log("client.sayHello")
+    })
     resolve()
   })
 }
@@ -87,7 +108,7 @@ function forwardMsg(message) {
   })
 }
 
-Promise.all([initKafka()]).then(() => {
+Promise.all([initKafka(), initGRPC()]).then(() => {
   initMqtt().then(() => {
     mqttClient.on('message', (topic, message) => {
       console.log("mqtt: ", message.toString())

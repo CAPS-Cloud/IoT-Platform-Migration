@@ -8,6 +8,9 @@ RUN chmod u+x /start.sh
 RUN chmod u+x /index.js
 RUN chmod u+x /package.json
 
-EXPOSE 8080
+RUN mkdir /protos
+COPY ./protos/helloworld.proto /protos/
+
+EXPOSE 8080 50051
 
 ENTRYPOINT /start.sh
