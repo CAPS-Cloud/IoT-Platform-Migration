@@ -13,6 +13,7 @@ env:
   global:
     - BUILD_PATH = ./iotplatform/iotcore
     - DOCKERHUB_REPOSITORY = iotplatform
+    - DOCKERHUB_PROJECT = heldic
 
 script:
   - printenv | grep ".*DOCKERHUB.*"
@@ -22,7 +23,6 @@ before_install:
   - chmod +x -R travis
 
 install:
-
   - source travis/check-live-deployment.sh
   - ./travis/check-live-deployment.sh
 
