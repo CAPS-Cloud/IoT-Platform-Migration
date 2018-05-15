@@ -1,5 +1,4 @@
 sudo: false
-#dist: trusty
 servies:
   - docker
 language: python
@@ -11,7 +10,7 @@ git:
   depth: 3
 env:
   global:
-    - BUILD_PATH=./iotplatform/iotcore/Dockerfile
+    - BUILD_PATH=./iotplatform/iotcore/
     - DOCKERHUB_REPOSITORY=iotplatform
     - DOCKERHUB_USER=heldic
     - IMAGE_NAME=iotcore
