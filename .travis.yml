@@ -11,7 +11,7 @@ git:
   depth: 3
 env:
   global:
-    - BUILD_PATH=./iotplatform/iotcore
+    - BUILD_PATH=./iotplatform/iotcore/Dockerfile
     - DOCKERHUB_REPOSITORY=iotplatform
     - DOCKERHUB_USER=heldic
     - IMAGE_NAME=iotcore
