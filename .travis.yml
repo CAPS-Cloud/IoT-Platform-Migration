@@ -13,7 +13,8 @@ env:
   global:
     - BUILD_PATH = ./iotplatform/iotcore
     - DOCKERHUB_REPOSITORY = iotplatform
-    - DOCKERHUB_PROJECT = heldic
+    - DOCKERHUB_USER = heldic
+    - IMAGE_NAME = iotcore
 
 script:
   - printenv | grep ".*DOCKERHUB.*"
