@@ -37,5 +37,5 @@ deploy:
     skip_cleanup: true
     script: travis/push-docker-images-to-dockerhub.sh
     on:
-      tags: false
-      #condition: $LIVE = true
+      tags: true
+      condition: $LIVE = true

@@ -2,7 +2,7 @@
 set -e
 
 contains() {
-    if [[ $TRAVIS_TAG = *"-live"* ]]
+    if [[ $TRAVIS_TAG = *""* ]]
     then
       #"-live" is in $TRAVIS_TAG
       echo "true"
