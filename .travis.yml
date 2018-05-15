@@ -1,0 +1,31 @@
+sudo: false
+language: node_js
+node_js:
+- '9.8.0'
+branches:
+  only:
+  - master
+git:
+  submodules: false
+  depth: 3
+script:
+- printenv | grep ".*DOCKERHUB.*"
+
+before_install:
+- git config --global http.sslverify false
+- chmod +x -R travis
+
+install:
+- source travis/check-live-deployment.sh
+- ./travis/check-live-deployment.sh
+
+before_deploy:
+- export CF_TRACE=false
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: travis/push-docker-images-to-dockerhub.sh
+  on:
+    tags: false
+    #condition: $LIVE = true
