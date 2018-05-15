@@ -12,6 +12,7 @@ git:
 env:
   global:
     - BUILD_PATH = ./iotplatform/iotcore
+    - DOCKERHUB_REPOSITORY = iotplatform
 
 script:
   - printenv | grep ".*DOCKERHUB.*"
