@@ -8,6 +8,8 @@ branches:
 git:
   submodules: false
   depth: 3
+notifications:
+  email: false
 env:
   global:
     - BUILD_PATH=./iotplatform/iotcore/
