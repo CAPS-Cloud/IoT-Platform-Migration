@@ -4,6 +4,7 @@
 ## Architecture
 ### Overview
 <img src="./doc/iotplatform.png" />
+
 ### Components (Plan!)
 #### IoTCore
 - Metadata administration (CRUD-operations for devicemanagement)
@@ -40,4 +41,4 @@
 - Constructed scalable to simulate high loads on cluster
 
 #### GenericConsumer
-- Sample consumer that accesses various APIs 
+- Sample consumer that accesses various APIs
