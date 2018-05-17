@@ -1,6 +1,10 @@
 sudo: false
 servies:
   - docker
+cache:
+  bundler: true
+  directories:
+    - $HOME/docker
 language: python
 branches:
   only:
@@ -12,15 +16,14 @@ notifications:
   email: false
 env:
   global:
-    - BUILD_PATH=./iotplatform/iotcore/
     - DOCKERHUB_REPOSITORY=iotplatform
     - DOCKERHUB_USER=heldic
-    - IMAGE_NAME=iotcore
 
 script:
   - printenv | grep ".*DOCKERHUB.*"
 
 before_install:
+  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
   - git config --global http.sslverify false
   - chmod +x -R travis
 
@@ -35,7 +38,12 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: travis/push-docker-images-to-dockerhub.sh
+    script: env IMAGE_NAME=iotcore BUILD_PATH=./iotplatform/iotcore/ travis/push-docker-images-to-dockerhub.sh
     on:
-      tags: true
-      condition: $LIVE = true
+      tags: false
+      #condition: $LIVE = true
+
+before_cache:
+  - >
+    mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
+    | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
