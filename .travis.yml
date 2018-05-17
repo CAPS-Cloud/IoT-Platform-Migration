@@ -28,6 +28,7 @@ before_install:
   - chmod +x -R travis
 
 install:
+  - bundle install
   - source travis/check-live-deployment.sh
   - ./travis/check-live-deployment.sh
 
@@ -41,7 +42,7 @@ deploy:
     script: env IMAGE_NAME=iotcore BUILD_PATH=./iotplatform/iotcore/ travis/push-docker-images-to-dockerhub.sh
     on:
       tags: false
-      #condition: $LIVE = false
+      #condition: $LIVE = true
 
 before_cache:
   - >
