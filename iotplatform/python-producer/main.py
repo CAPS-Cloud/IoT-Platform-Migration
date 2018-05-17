@@ -12,7 +12,7 @@ def main():
                 await asyncio.sleep(1)
 
     asyncio.get_event_loop().run_until_complete(
-        hello('ws://iotbridge:8765'))
+        hello('ws://ws-gateway:8765'))
 
 def generate_msg():
     msg = {

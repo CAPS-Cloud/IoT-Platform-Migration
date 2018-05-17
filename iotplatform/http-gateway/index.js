@@ -1,25 +1,14 @@
 var express = require('express')
-var mqtt = require('mqtt')
 var kafka = require("kafka-node")
 var bodyParser = require("body-parser")
-var WebSocket = require('ws')
 var grpc = require('grpc');
 
 var httpPort = 8083
-var wsPort = 8765
 var zookeeperPort = 2181
 var PROTO_PATH = __dirname + './protos/helloworld.proto';
 var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
-var wsserver, httpServer, mqttClient, kafkaProducer, kafkaClient
-
-async function initWebSocket() {
-  console.log("attempting to initiate ws server...")
-  return new Promise((resolve) => {
-    wsserver = new WebSocket.Server({ port: wsPort })
-    resolve()
-  })
-}
+var httpServer, kafkaProducer, kafkaClient
 
 async function initGRPC() {
   return new Promise((resolve) => {
@@ -75,19 +64,6 @@ async function initKafka() {
   })
 }
 
-async function initMqtt() {
-  return new Promise((resolve) => {
-    console.log("attempting to initiate ActiveMQ connection...")
-    mqttClient  = mqtt.connect({host: "activemq", port: 1883})
-
-    mqttClient.on('connect', () => {
-      console.log("connected to ActiveMQ")
-      mqttClient.subscribe('livedata')
-    })
-    resolve()
-  })
-}
-
 function forwardMsg(message) {
   let payloads
   if(typeof(message) === "object") {
@@ -109,22 +85,6 @@ function forwardMsg(message) {
 }
 
 Promise.all([initKafka(), initGRPC()]).then(() => {
-  initMqtt().then(() => {
-    mqttClient.on('message', (topic, message) => {
-      console.log("mqtt: ", message.toString())
-      forwardMsg(message.toString())
-    })
-  })
-
-  initWebSocket().then(() => {
-    wsserver.on('connection', function connection(ws) {
-      ws.on('message', function incoming(message) {
-        console.log("wsserver: ", message)
-        forwardMsg(message)
-      })
-    })
-  })
-
   initRest().then(() => {
 
   })

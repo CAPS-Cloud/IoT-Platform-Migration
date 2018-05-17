@@ -48,12 +48,21 @@ services:
       KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
 
-  iotbridge:
-    build: ./iotbridge
-    image: iotbridge
+  mqtt-gateway:
+    build: ./mqtt-gateway
+    image: mqtt-gateway
+
+  ws-gateway:
+    build: ./ws-gateway
+    image: ws-gateway
+    ports:
+      - "8765:8765"
+
+  http-gateway:
+    build: ./http-gateway
+    image: http-gateway
     ports:
       - "8083:8083"
-      - "8765:8765"
 
   elasticsearch:
     build: ./elasticsearch
@@ -68,11 +77,11 @@ services:
     ports:
       - "8081:8081"
 
-  grafana:
-    build: ./grafana
-    image: grafana
-    ports:
-      - "3000:3000"
+  # grafana:
+  #   build: ./grafana
+  #   image: grafana
+  #   ports:
+  #     - "3000:3000"
 
   # kibana:
   #   depends_on:
