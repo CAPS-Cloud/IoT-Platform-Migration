@@ -35,5 +35,5 @@ deploy:
     skip_cleanup: true
     script: env IMAGE_NAME=iotcore BUILD_PATH=./iotplatform/iotcore/ travis/push-docker-images-to-dockerhub.sh
     on:
-      tags: false
-      #condition: $LIVE = true
+      tags: true
+      condition: $LIVE = true
