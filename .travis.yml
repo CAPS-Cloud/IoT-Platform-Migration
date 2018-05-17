@@ -2,7 +2,6 @@ sudo: false
 servies:
   - docker
 cache:
-  bundler: true
   directories:
     - $HOME/docker
 language: python
@@ -28,7 +27,6 @@ before_install:
   - chmod +x -R travis
 
 install:
-  - bundle install
   - source travis/check-live-deployment.sh
   - ./travis/check-live-deployment.sh
 
