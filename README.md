@@ -4,6 +4,13 @@
 ## Drive
 - https://drive.google.com/drive/folders/1ggJi5N6ImurJ_Ztrwx-K3h0L1Do6GFN8?usp=sharing
 
+## Messaging
+### Overview
+<img src="./doc/iotplatform.png" />
+
+### Description
+<tbd>
+
 ## Architecture
 ### Overview
 <img src="./doc/iotplatform.png" />
