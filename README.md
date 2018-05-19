@@ -6,7 +6,7 @@
 
 ## Messaging
 ### Overview
-<img src="./doc/iotplatform.png" />
+<img src="./doc/deviceModel.png" />
 
 ### Description
 <tbd>
