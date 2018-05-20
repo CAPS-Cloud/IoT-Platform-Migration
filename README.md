@@ -53,6 +53,13 @@
 #### GenericConsumer
 - Sample consumer that accesses various APIs
 
+## Virtual Machines
+| Name              | IP            | CPU | VCPU | Ram | Storage |
+| ----------------- | ------------- | --- | ---- | --- | ------- |
+| Kubernetes_Master | 10.155.208.89 | 1   | 2    | 4GB | 50GB    |
+### Accessing
+You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
+
 ## Kubernetes
 ### Accessing
 #### Using kubectl
