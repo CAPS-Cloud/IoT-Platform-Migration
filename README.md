@@ -41,7 +41,7 @@
 - Consume Kafka topics provided by IoTCore and forward data to Elasticsearch
 
 #### Elasticsearch
-- Peristence
+- Persistence
 
 #### Grafana
 - Monitoring opportunity for Elasticsearch (Dev Ops)
@@ -52,6 +52,7 @@
 
 #### GenericConsumer
 - Sample consumer that accesses various APIs
+- Should also be scalable 
 
 ## Virtual Machines
 | Name              | IP            | CPU | VCPU | Ram | Storage |
