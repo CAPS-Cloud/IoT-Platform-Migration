@@ -57,7 +57,7 @@
 ### Accessing
 #### Using kubectl
 1. Follows this guide to install kubectl on your machine. https://kubernetes.io/docs/tasks/tools/install-kubectl/
-2. Copy .kube folder from this repository to your user's home directory.
+2. Copy .kube folder from /infrastructure in this repository to your user's home directory.
 3. You can now use kubectl refering to this reference. https://kubernetes.io/docs/reference/kubectl/overview/
 #### Using dashboard
 1. Go to https://10.155.208.89:30443/
