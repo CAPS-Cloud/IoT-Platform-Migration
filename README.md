@@ -52,3 +52,16 @@
 
 #### GenericConsumer
 - Sample consumer that accesses various APIs
+
+## Kubernetes
+### Accessing
+#### Using kubectl
+1. Follows this guide to install kubectl on your machine. https://kubernetes.io/docs/tasks/tools/install-kubectl/
+2. Copy .kube folder from this repository to your user's home directory.
+3. You can now use kubectl refering to this reference. https://kubernetes.io/docs/reference/kubectl/overview/
+#### Using dashboard
+1. Go to https://10.155.208.89:30443/
+2. Select "Token".
+3. Enter this token into the text field.  `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWttd200Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJhMjI1MjU1Ni01YjQ4LTExZTgtYTFiNi0wMjAwMDBmODAwMjgiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.i7jwRyawC8syGea4LC5B0-g8mjg4RrtoQjwPNRsAAgQ1QYhO2D8KvaIMhMpVQkDcl9yC6sZp4KCu-JM5diZogmdSUattPxC_vnEDKqVkGtsFKbPPtuH6isMNT2yqz4SlH_HJemM_-ocql_vZuj1NjoFsyDVMsMF3LRXsu7TZhs-DwAGS84oD6R6vYdT-3ip6fqLHDRMuuIETBx3P_TxBocqK9q29Dxur4pvGZ5CNVWz18VdDNi9oDGtFLFfo8lLGXM9aibaVfctUtU6KllC0qvSpAs7_b5xiCKimOcelhh4B4GdTCf2mbU95pgqB3nEHaVWsoTiaztxkSQmZ5FBvMQ`
+4. Click "SIGN IN".
+5. You are now in the dashboard. Here is some brief introduction about the dashboard. https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#welcome-view
