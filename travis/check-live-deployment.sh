@@ -13,7 +13,6 @@ contains() {
 }
 
 echo "============== CHECKING IF DEPLOYMENT CONDITION IS MET =============="
-export LIVE=$(contains)
-
 echo $TRAVIS_TAG
+export LIVE=$(contains)
 echo $LIVE
