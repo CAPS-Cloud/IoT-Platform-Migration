@@ -21,12 +21,19 @@ services:
     build: ./python-producer
     image: python-producer
 
-  iotcore:
-    build: ./iotcore
-    image: iotcore
+  iotcore-frontend:
+    build: ./iotcore-frontend
+    image: iotcore-frontend
     ports:
       - "8080:8080"
       - "50051:50051"
+
+  iotcore-backend:
+    build: ./iotcore-backend
+    image: iotcore-backend
+    ports:
+      - "8085:8085"
+      - "50055:50055"
 
   zookeeper:
     image: wurstmeister/zookeeper
