@@ -55,9 +55,11 @@
 - Should also be scalable 
 
 ## Virtual Machines
-| Name              | IP            | CPU | VCPU | Ram | Storage |
-| ----------------- | ------------- | --- | ---- | --- | ------- |
-| Kubernetes_Master | 10.155.208.89 | 1   | 2    | 4GB | 50GB    |
+| Name                | IP            | CPU | VCPU | Ram | Storage |
+| ------------------- | ------------- | --- | ---- | --- | ------- |
+| Kubernetes_Master   | 10.155.208.89 | 1   | 2    | 4GB | 50GB    |
+| Kubernetes_Worker_1 | 10.155.209.60 | 1   | 1    | 8GB | 50GB    |
+| Kubernetes_Worker_2 | 10.155.209.61 | 1   | 1    | 8GB | 50GB    |
 ### Accessing
 You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
 
@@ -73,3 +75,9 @@ You can use any ssh client to access the VM using username of root and certifica
 3. Enter this token into the text field. `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWttd200Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJhMjI1MjU1Ni01YjQ4LTExZTgtYTFiNi0wMjAwMDBmODAwMjgiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.i7jwRyawC8syGea4LC5B0-g8mjg4RrtoQjwPNRsAAgQ1QYhO2D8KvaIMhMpVQkDcl9yC6sZp4KCu-JM5diZogmdSUattPxC_vnEDKqVkGtsFKbPPtuH6isMNT2yqz4SlH_HJemM_-ocql_vZuj1NjoFsyDVMsMF3LRXsu7TZhs-DwAGS84oD6R6vYdT-3ip6fqLHDRMuuIETBx3P_TxBocqK9q29Dxur4pvGZ5CNVWz18VdDNi9oDGtFLFfo8lLGXM9aibaVfctUtU6KllC0qvSpAs7_b5xiCKimOcelhh4B4GdTCf2mbU95pgqB3nEHaVWsoTiaztxkSQmZ5FBvMQ`
 4. Click "SIGN IN".
 5. You are now in the dashboard. Here is some brief introduction about the dashboard. https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#welcome-view
+### Setting up
+#### Preparing the host
+TODO
+#### Adding nodes
+1. Run `kubeadm token create` on the master node (token will be expired after 24 hours).
+2. Run `kubeadm join 10.155.208.89:6443 --token <token from step 1> --discovery-token-ca-cert-hash sha256:d353f1742530bf6012d63c54bece6d741dd58c655915f5ed11fd3cba6bc74ef1` on the node you want to add.
