@@ -1,4 +1,4 @@
-FROM python
+FROM jfloff/alpine-python:3.6-slim
 
 WORKDIR /app
 COPY requirements.txt /app
