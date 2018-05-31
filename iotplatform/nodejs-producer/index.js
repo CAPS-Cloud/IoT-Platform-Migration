@@ -2,7 +2,12 @@ var express = require('express')
 var mqtt = require('mqtt')
 var app = express()
 
-var client  = mqtt.connect({host: "activemq", port: 1883})
+const args = process.argv;
+const ACTIVEMQ_MQTT = args[2];
+const ACTIVEMQ_MQTT_HOST = ACTIVEMQ_MQTT.split(":")[0];
+const ACTIVEMQ_MQTT_PORT = parseInt(ACTIVEMQ_MQTT.split(":")[1]);
+
+var client  = mqtt.connect({host: ACTIVEMQ_MQTT_HOST, port: ACTIVEMQ_MQTT_PORT})
 
 client.on('connect', function () {
   console.log("Connected to ActiveMQ!!")

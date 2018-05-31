@@ -1,8 +1,8 @@
 #!/bin/sh
 
-/wait-for-it.sh ws-gateway:8765 --timeout=0 --strict
+/wait-for-it.sh $WS_GATEWAY --timeout=0 --strict
 
-python main.py
+python main.py $WS_GATEWAY
 
 # don't exit
 /usr/bin/tail -f /dev/null

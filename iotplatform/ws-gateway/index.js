@@ -3,11 +3,14 @@ var WebSocket = require('ws')
 var grpc = require('grpc');
 
 var wsPort = 8765
-var zookeeperPort = 2181
 var PROTO_PATH = __dirname + './protos/helloworld.proto';
 var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
 var wsserver, kafkaProducer, kafkaClient
+
+const args = process.argv;
+const ZOOKEEPER = args[2];
+const IOTCORE_BACKEND = args[3];
 
 async function initWebSocket() {
   console.log("attempting to initiate ws server...")
@@ -19,7 +22,7 @@ async function initWebSocket() {
 
 async function initGRPC() {
   return new Promise((resolve) => {
-    let client = new hello_proto.Greeter('iotcore:50051',
+    let client = new hello_proto.Greeter(IOTCORE_BACKEND,
                                          grpc.credentials.createInsecure())
     let user
     if (process.argv.length >= 3) {
@@ -38,7 +41,7 @@ async function initGRPC() {
 async function initKafka() {
   return new Promise((resolve) => {
     console.log("attempting to initiate Kafka connection...")
-    kafkaClient = new kafka.Client("zookeeper:" + zookeeperPort)
+    kafkaClient = new kafka.Client(ZOOKEEPER)
 
     kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
     kafkaProducer.on("ready", () => {

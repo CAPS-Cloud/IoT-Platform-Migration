@@ -4,15 +4,18 @@ var bodyParser = require("body-parser")
 var grpc = require('grpc');
 
 var httpPort = 8083
-var zookeeperPort = 2181
 var PROTO_PATH = __dirname + './protos/helloworld.proto';
 var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
 var httpServer, kafkaProducer, kafkaClient
 
+const args = process.argv;
+const ZOOKEEPER = args[2];
+const IOTCORE_BACKEND = args[3];
+
 async function initGRPC() {
   return new Promise((resolve) => {
-    let client = new hello_proto.Greeter('iotcore:50051',
+    let client = new hello_proto.Greeter(IOTCORE_BACKEND,
                                          grpc.credentials.createInsecure())
     let user
     if (process.argv.length >= 3) {
@@ -52,7 +55,7 @@ async function initRest() {
 async function initKafka() {
   return new Promise((resolve) => {
     console.log("attempting to initiate Kafka connection...")
-    kafkaClient = new kafka.Client("zookeeper:" + zookeeperPort)
+    kafkaClient = new kafka.Client(ZOOKEEPER)
 
     kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
     kafkaProducer.on("ready", () => {

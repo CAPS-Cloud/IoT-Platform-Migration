@@ -2,87 +2,112 @@ version: '3.2'
 services:
   activemq:
     build: ./activemq
-    image: activemq
+    image: heldic/activemq
     ports:
-      - "61616:61616"
+      - "61616"
       - "1883:1883"
-      - "8161:8161"
-      - "5672:5672"
+      - "8161"
+      - "5672"
 
   nodejs-producer:
     build: ./nodejs-producer
-    image: nodejs-producer
+    image: heldic/nodejs-producer
+    environment:
+      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq${EXPOSED_SUFFIX}:1883
 
   java-producer:
     build: ./java-producer
-    image: java-producer
+    image: heldic/java-producer
+    environment:
+      HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway${EXPOSED_SUFFIX}:8083
 
   python-producer:
     build: ./python-producer
-    image: python-producer
+    image: heldic/python-producer
+    environment:
+      WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway${EXPOSED_SUFFIX}:8765
+  
+  mqtt-gateway:
+    build: ./mqtt-gateway
+    image: heldic/mqtt-gateway
+    environment:
+      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
+      KAFKA: ${SERVICE_PREFIX}kafka:9092
+      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq:1883
 
-  iotcore-frontend:
-    build: ./iotcore-frontend
-    image: iotcore-frontend
+  ws-gateway:
+    build: ./ws-gateway
+    image: heldic/ws-gateway
     ports:
-      - "8080:8080"
-      - "50051:50051"
+      - "8765:8765"
+    environment:
+      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
+      KAFKA: ${SERVICE_PREFIX}kafka:9092
+      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
+  http-gateway:
+    build: ./http-gateway
+    image: heldic/http-gateway
+    ports:
+      - "8083:8083"
+    environment:
+      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
+      KAFKA: ${SERVICE_PREFIX}kafka:9092
+      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+  
   iotcore-backend:
     build: ./iotcore-backend
-    image: iotcore-backend
+    image: heldic/iotcore-backend
     ports:
-      - "8085:8085"
-      - "50055:50055"
+      - "50055"
+    environment:
+      KAFKA: ${SERVICE_PREFIX}kafka:9092
+      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+      ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+  
+  iotcore-frontend:
+    build: ./iotcore-frontend
+    image: heldic/iotcore-frontend
+    ports:
+      - "8080:8080"
+    environment:
+      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
 
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
-      - "2181:2181"
+      - "2181"
 
   kafka:
     image: wurstmeister/kafka:latest
     ports:
-      - target: 9094
-        published: 9094
-        protocol: tcp
-        mode: host
+      - "9092"
+      - "9094:9094"
     environment:
       HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
       KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-
-  mqtt-gateway:
-    build: ./mqtt-gateway
-    image: mqtt-gateway
-
-  ws-gateway:
-    build: ./ws-gateway
-    image: ws-gateway
+  
+  flink:
+    build: ./flink
+    image: heldic/flink
     ports:
-      - "8765:8765"
-
-  http-gateway:
-    build: ./http-gateway
-    image: http-gateway
-    ports:
-      - "8083:8083"
+      - "8081"
+    environment:
+      KAFKA: ${SERVICE_PREFIX}kafka:9092
+      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+      ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
 
   elasticsearch:
     build: ./elasticsearch
-    image: elasticsearch
+    image: heldic/elasticsearch
     ports:
-      - "9200:9200"
-      - "9300:9300"
-
-  flink:
-    build: ./flink
-    image: flink
-    ports:
-      - "8081:8081"
+      - "9200"
+      - "9300"
 
   # grafana:
   #   build: ./grafana
