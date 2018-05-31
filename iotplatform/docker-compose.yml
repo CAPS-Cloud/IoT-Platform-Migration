@@ -34,7 +34,7 @@ services:
       IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
       KAFKA: ${SERVICE_PREFIX}kafka:9092
       ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq:1883
+      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq${EXPOSED_SUFFIX}:1883
 
   ws-gateway:
     build: ./ws-gateway
