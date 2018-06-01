@@ -15,6 +15,13 @@ env:
     - DOCKERHUB_REPOSITORY=iotplatform
     - DOCKERHUB_USER=heldic
 
+before_script:
+  - curl -Lo kubectl curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+      chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  - echo $HOME/.kube
+  - cp -rp ./infrastructure/.kube $HOME/.kube
+  - kubectl get nodes
+
 script:
   - printenv | grep ".*DOCKERHUB.*"
 
