@@ -1,0 +1,91 @@
+{{- range $name, $value := .Values.services }}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "core.fullname" list $ $name }}
+  labels:
+    app: {{ template "core.name" $name }}
+    chart: {{ template "core.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $name | trunc 63 | trimSuffix "-" }}
+      release: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name | trunc 63 | trimSuffix "-" }}
+        release: {{ $.Release.Name }}
+    spec:
+      containers:
+        - name: {{ $name | trunc 63 | trimSuffix "-" }}
+{{- if and (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) (not (contains ":" $value.image)) }}
+          image: {{ $value.image -}}:{{- $.Values.defaults.imageTag }}
+{{- else }}
+          image: {{ $value.image -}}
+{{- end }}
+{{- if hasKey $value "environment" }}
+          env:
+{{- range $envKey, $envValue := $value.environment }}
+{{ toYaml (list (dict "name" $envKey "value" ($envValue | replace "${SERVICE_PREFIX}" (print $.Release.Name "-") | replace "${SERVICE_NAME}" $name | replace "_{HOSTNAME_COMMAND}" "10.155.208.89" | replace "${EXPOSED_SUFFIX}" "-exposed"))) | indent 12 -}}
+{{- end -}}
+{{- end }}
+---
+{{- if hasKey $value "ports" }}
+{{- if regexMatch "[_][0-9]+[:][0-9]+[_]" (print "_" ($value.ports | join "_") "_") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "core.fullname" list $ (print $name "-exposed") }}
+  labels:
+    app: {{ template "core.name" $name }}
+    chart: {{ template "core.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  type: NodePort
+  ports:
+{{- range $value.ports }}
+{{- if regexMatch "^[0-9]+[:][0-9]+$" . }}
+    - nodePort: {{ atoi (split ":" .)._0 }}
+      port: {{ atoi (split ":" .)._0 }}
+      targetPort: {{ atoi (split ":" .)._1 }}
+      protocol: TCP
+      name: "port-{{ (split ":" .)._0 }}-{{ (split ":" .)._1 }}"
+{{- end }}
+{{- end }}
+  selector:
+    app: {{ template "core.name" $name }}
+    release: {{ $.Release.Name }}
+---
+{{- end }}
+{{- if regexMatch "[_][0-9]+[_]" (print "_" ($value.ports | join "_") "_") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "core.fullname" list $ $name }}
+  labels:
+    app: {{ template "core.name" $name }}
+    chart: {{ template "core.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  ports:
+{{- range $value.ports }}
+{{- if regexMatch "^[0-9]+$" . }}
+    - port: {{ atoi . }}
+      targetPort: {{ atoi . }}
+      protocol: TCP
+      name: "port-{{ . }}"
+{{- end }}
+{{- end }}
+  selector:
+    app: {{ template "core.name" $name }}
+    release: {{ $.Release.Name }}
+---
+{{- end }}
+{{- end -}}
+{{- end -}}
