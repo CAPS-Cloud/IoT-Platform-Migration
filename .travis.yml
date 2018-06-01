@@ -115,5 +115,5 @@ deploy:
       #tags: true
       condition: $LIVE = true
 
-after_deploy:
-  - helm upgrade --wait --timeout 300 --install --force --recreate-pods  --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=$TRAVIS_COMMIT iot ./iotplatform/helm-chart/iot
+after_script:
+  - helm upgrade --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=$TRAVIS_COMMIT iot ./iotplatform/helm-chart/iot
