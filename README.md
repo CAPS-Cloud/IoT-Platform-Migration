@@ -6,7 +6,16 @@
 
 ## Messaging
 ### Overview
+#### Device/Sensor Data Model
+1. What should messages look like at the gateway?
+2. What message-format do we use internally (proto)?
 <img src="./doc/deviceModel.png" />
+
+#### Data Model
+<img src="./doc/dataModel.png" />
+
+#### Data Model Example
+<img src="./doc/dataModelExample.png" />
 
 ### Description
 <tbd>
@@ -52,7 +61,7 @@
 
 #### GenericConsumer
 - Sample consumer that accesses various APIs
-- Should also be scalable 
+- Should also be scalable
 
 ## Virtual Machines
 | Name                | IP             | CPU | VCPU | Ram | Storage |
