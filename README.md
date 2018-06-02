@@ -67,7 +67,7 @@
 | Name                | IP             | CPU | VCPU | Ram | Storage |
 | ------------------- | -------------- | --- | ---- | --- | ------- |
 | Kubernetes_Master   | 141.40.254.145 | 1   | 2    | 4GB | 50GB    |
-| Kubernetes_Worker_1 | Temporary closed | 1   | 1    | 8GB | 50GB    |
+| Kubernetes_Worker_1 | 141.40.254.147 | 1   | 1    | 8GB | 50GB    |
 | Kubernetes_Worker_2 | 141.40.254.146 | 1   | 1    | 8GB | 50GB    |
 ### Accessing
 You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
