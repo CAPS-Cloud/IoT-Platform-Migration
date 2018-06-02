@@ -30,7 +30,7 @@ spec:
 {{- if hasKey $value "environment" }}
           env:
 {{- range $envKey, $envValue := $value.environment }}
-{{ toYaml (list (dict "name" $envKey "value" ($envValue | replace "${SERVICE_PREFIX}" (print $.Release.Name "-") | replace "${SERVICE_NAME}" $name | replace "_{HOSTNAME_COMMAND}" "10.155.208.89" | replace "${EXPOSED_SUFFIX}" "-exposed"))) | indent 12 -}}
+{{ toYaml (list (dict "name" $envKey "value" ($envValue | replace "${SERVICE_PREFIX}" (print $.Release.Name "-") | replace "${SERVICE_NAME}" $name | replace "_{HOSTNAME_COMMAND}" "kafka.iot.pcxd.me" | replace "${EXPOSED_SUFFIX}" "-exposed"))) | indent 12 -}}
 {{- end -}}
 {{- end }}
 ---

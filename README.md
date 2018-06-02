@@ -55,11 +55,11 @@
 - Should also be scalable 
 
 ## Virtual Machines
-| Name                | IP            | CPU | VCPU | Ram | Storage |
-| ------------------- | ------------- | --- | ---- | --- | ------- |
-| Kubernetes_Master   | 10.155.208.89 | 1   | 2    | 4GB | 50GB    |
-| Kubernetes_Worker_1 | 10.155.209.60 | 1   | 1    | 8GB | 50GB    |
-| Kubernetes_Worker_2 | 10.155.209.61 | 1   | 1    | 8GB | 50GB    |
+| Name                | IP             | CPU | VCPU | Ram | Storage |
+| ------------------- | -------------- | --- | ---- | --- | ------- |
+| Kubernetes_Master   | 141.40.254.145 | 1   | 2    | 4GB | 50GB    |
+| Kubernetes_Worker_1 | Temporary closed | 1   | 1    | 8GB | 50GB    |
+| Kubernetes_Worker_2 | 141.40.254.146 | 1   | 1    | 8GB | 50GB    |
 ### Accessing
 You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
 
@@ -70,9 +70,9 @@ You can use any ssh client to access the VM using username of root and certifica
 2. Copy .kube folder from /infrastructure in this repository to your user's home directory.
 3. You can now use kubectl refering to this reference. https://kubernetes.io/docs/reference/kubectl/overview/
 #### Using dashboard
-1. Go to https://10.155.208.89:30443/
+1. Go to https://kube-dashboard.iot.pcxd.me:30443
 2. Select "Token".
-3. Enter this token into the text field. `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWttd200Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJhMjI1MjU1Ni01YjQ4LTExZTgtYTFiNi0wMjAwMDBmODAwMjgiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.i7jwRyawC8syGea4LC5B0-g8mjg4RrtoQjwPNRsAAgQ1QYhO2D8KvaIMhMpVQkDcl9yC6sZp4KCu-JM5diZogmdSUattPxC_vnEDKqVkGtsFKbPPtuH6isMNT2yqz4SlH_HJemM_-ocql_vZuj1NjoFsyDVMsMF3LRXsu7TZhs-DwAGS84oD6R6vYdT-3ip6fqLHDRMuuIETBx3P_TxBocqK9q29Dxur4pvGZ5CNVWz18VdDNi9oDGtFLFfo8lLGXM9aibaVfctUtU6KllC0qvSpAs7_b5xiCKimOcelhh4B4GdTCf2mbU95pgqB3nEHaVWsoTiaztxkSQmZ5FBvMQ`
+3. Enter this token into the text field. `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWt6N3M3Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMzViMjRiMS02NWYzLTExZTgtYTJlYi0wMjAxMDBmODAwMjkiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.l9U5z4wcWXBMIYMLH6TJL0FQj4YyfIjQBmFcM7TVWMhiM56PFRrHuxLZ0F-CZ-mSP2O3tAllXsLiy9j6Hsz1Q0DspPbiLv7CZT7l_5RAQ0F3VqVvY3anxX7hx6LgoLiamF9y5Y000wBaZLnpVBZozMp9VVm8UzflhdvQT1L6FI27P9p0SnJ-SZ4D9m_96KOdGGLVc5wNVETjTpugpbC-lqtwD94NTNvyEfkMQfK-_VJaQiGbZN-qSYhh7I1CFkBBaREQgAjubX4aPaox8sMTZtsh5bOzK_HjxwTqua_O25SGfg1q3soB20glGKTuNmA9OnlYMRLmPv50D1IIUHq3Fw`
 4. Click "SIGN IN".
 5. You are now in the dashboard. Here is some brief introduction about the dashboard. https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#welcome-view
 ### Setting up
@@ -80,4 +80,4 @@ You can use any ssh client to access the VM using username of root and certifica
 TODO
 #### Adding nodes
 1. Run `kubeadm token create` on the master node (token will be expired after 24 hours).
-2. Run `kubeadm join 10.155.208.89:6443 --token <token from step 1> --discovery-token-ca-cert-hash sha256:d353f1742530bf6012d63c54bece6d741dd58c655915f5ed11fd3cba6bc74ef1` on the node you want to add.
+2. Run `kubeadm join 141.40.254.145:6443 --token <token from step 1> --discovery-token-ca-cert-hash sha256:1e6253959bd1f6b1b77efee5162083981d889abadb674eb89a62c6a229608178` on the node you want to add.
