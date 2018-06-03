@@ -1,9 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
 
-// this is a comment
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/urfave/cli"
+)
 
 func main() {
-    fmt.Println("Hello World")
+	app := cli.NewApp()
+	app.Action = gen
+	app.Flags = flags
+
+	if err := app.Run(os.Args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

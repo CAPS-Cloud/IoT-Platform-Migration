@@ -1,0 +1,86 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            79:a3:7d:e1:1a:e5:2e:ca:02:84:f6:32:0f:0f:ef:98
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=iotplatform
+        Validity
+            Not Before: Jun  3 13:25:01 2018 GMT
+            Not After : May 31 13:25:01 2028 GMT
+        Subject: CN=server
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:e1:8e:ce:79:8b:f5:e2:0e:83:68:fd:05:43:9f:
+                    d0:70:5b:d8:5a:1b:e3:e2:21:94:1c:ff:b8:88:43:
+                    09:17:58:57:24:a8:8f:21:2c:cf:7c:13:ec:c5:10:
+                    b6:fd:9b:37:62:e0:fc:ba:1a:f7:fb:51:26:55:63:
+                    b2:10:b9:f8:3c:18:21:91:71:2e:9a:80:e0:50:68:
+                    42:f6:cf:38:27:37:24:df:84:c9:60:ef:e8:43:36:
+                    db:49:95:2d:38:7f:0e:61:61:32:8c:76:f5:01:46:
+                    45:16:92:7e:aa:c7:cf:d2:70:07:5f:ef:c0:b1:04:
+                    9e:0a:bb:de:21:db:e3:a1:55:89:7c:5f:0a:99:ea:
+                    a7:ec:d8:5c:32:7b:87:11:23:f8:ec:32:ab:dc:f1:
+                    99:9f:33:ea:42:91:87:78:cf:89:88:9c:a2:30:70:
+                    d3:63:62:6e:d4:33:d0:e5:30:92:b1:02:90:63:7f:
+                    71:d6:f3:91:7d:88:e8:5d:43:a8:a3:9d:af:90:e3:
+                    48:04:76:3c:71:84:69:d0:ad:29:b1:a7:37:9c:ef:
+                    57:82:86:85:86:c6:4e:a0:a6:a9:80:c2:25:75:0d:
+                    d8:4c:28:7c:49:10:53:9a:38:5e:a3:26:a1:c1:a1:
+                    37:e6:99:dc:d8:20:21:c3:35:b5:1e:b3:d6:ab:0e:
+                    f0:3f
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                FA:05:ED:F3:7E:B9:1C:D9:D0:76:A0:BE:78:FA:72:0B:C6:1A:A5:5D
+            X509v3 Authority Key Identifier: 
+                keyid:5D:64:A6:0D:84:CC:C5:EE:CC:D2:8C:0E:6F:B9:58:23:D7:38:3B:20
+                DirName:/CN=iotplatform
+                serial:90:29:C7:AC:40:88:CA:93
+
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Key Usage: 
+                Digital Signature, Key Encipherment
+            X509v3 Subject Alternative Name: 
+                DNS:server
+    Signature Algorithm: sha256WithRSAEncryption
+         81:ae:f2:a6:c1:86:f3:66:2e:d1:7b:06:52:6d:87:75:e6:20:
+         17:73:6d:1c:2b:b9:80:a0:76:16:1a:e6:df:4c:cf:e5:21:c0:
+         69:dc:c6:36:79:7b:00:7b:61:ae:cc:2f:a4:61:b1:ed:e8:95:
+         a6:b2:15:fe:30:92:b3:3b:d0:f5:46:95:e3:73:37:97:04:a6:
+         7d:eb:cb:af:04:8c:f3:62:d3:22:bb:88:54:93:21:0a:92:47:
+         4c:ef:ea:8d:f5:aa:79:23:17:5d:4f:22:1d:a8:df:87:ed:a6:
+         9a:22:b9:78:68:97:94:ba:3e:e3:50:cd:51:61:15:a6:30:83:
+         5a:8f:ca:27:c2:58:5f:41:7f:b2:bf:34:9d:c3:a5:0d:f1:a1:
+         6c:45:0f:4c:af:16:f1:11:44:42:25:e6:f5:4f:a1:82:69:6e:
+         27:23:9b:9e:c9:a3:1d:fc:d7:95:66:1e:d1:0e:d2:38:a2:e2:
+         9c:df:d3:26:2c:9b:2b:5a:15:fc:85:f0:24:4a:58:77:2f:1e:
+         3a:60:c5:f5:ea:cd:25:db:c3:6e:94:15:0b:29:60:26:63:c8:
+         d0:1f:6d:72:83:fc:fb:33:c6:fe:92:a8:4d:69:14:e6:f5:1d:
+         89:2e:ed:2a:f5:0e:a8:26:03:05:39:34:36:97:18:05:e0:76:
+         64:7a:1d:83
+-----BEGIN CERTIFICATE-----
+MIIDXDCCAkSgAwIBAgIQeaN94RrlLsoChPYyDw/vmDANBgkqhkiG9w0BAQsFADAW
+MRQwEgYDVQQDDAtpb3RwbGF0Zm9ybTAeFw0xODA2MDMxMzI1MDFaFw0yODA1MzEx
+MzI1MDFaMBExDzANBgNVBAMMBnNlcnZlcjCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBAOGOznmL9eIOg2j9BUOf0HBb2Fob4+IhlBz/uIhDCRdYVySojyEs
+z3wT7MUQtv2bN2Lg/Loa9/tRJlVjshC5+DwYIZFxLpqA4FBoQvbPOCc3JN+EyWDv
+6EM220mVLTh/DmFhMox29QFGRRaSfqrHz9JwB1/vwLEEngq73iHb46FViXxfCpnq
+p+zYXDJ7hxEj+Owyq9zxmZ8z6kKRh3jPiYicojBw02NibtQz0OUwkrECkGN/cdbz
+kX2I6F1DqKOdr5DjSAR2PHGEadCtKbGnN5zvV4KGhYbGTqCmqYDCJXUN2EwofEkQ
+U5o4XqMmocGhN+aZ3NggIcM1tR6z1qsO8D8CAwEAAaOBqjCBpzAJBgNVHRMEAjAA
+MB0GA1UdDgQWBBT6Be3zfrkc2dB2oL54+nILxhqlXTBGBgNVHSMEPzA9gBRdZKYN
+hMzF7szSjA5vuVgj1zg7IKEapBgwFjEUMBIGA1UEAwwLaW90cGxhdGZvcm2CCQCQ
+KcesQIjKkzATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwEQYDVR0R
+BAowCIIGc2VydmVyMA0GCSqGSIb3DQEBCwUAA4IBAQCBrvKmwYbzZi7RewZSbYd1
+5iAXc20cK7mAoHYWGubfTM/lIcBp3MY2eXsAe2GuzC+kYbHt6JWmshX+MJKzO9D1
+RpXjczeXBKZ968uvBIzzYtMiu4hUkyEKkkdM7+qN9ap5IxddTyIdqN+H7aaaIrl4
+aJeUuj7jUM1RYRWmMINaj8onwlhfQX+yvzSdw6UN8aFsRQ9MrxbxEURCJeb1T6GC
+aW4nI5ueyaMd/NeVZh7RDtI4ouKc39MmLJsrWhX8hfAkSlh3Lx46YMX16s0l28Nu
+lBULKWAmY8jQH21yg/z7M8b+kqhNaRTm9R2JLu0q9Q6oJgMFOTQ2lxgF4HZkeh2D
+-----END CERTIFICATE-----
