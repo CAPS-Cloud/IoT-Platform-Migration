@@ -116,8 +116,8 @@ deploy:
       condition: $LIVE = true
 
 after_script:
-  - helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=$TRAVIS_COMMIT iot ./iotplatform/helm-chart/iot || helm delete --debug --purge iot
-# Better way
+  - (helm delete --debug --purge iot || true) && helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=$TRAVIS_COMMIT iot ./iotplatform/helm-chart/iot
+# Better way?
 # 1. Upgrade/Install
 # 2. If success, break
 # 3. If revision=1 in "helm history iot" then "helm delete --purge iot" else "helm rollback iot <previous_revision>"
