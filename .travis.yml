@@ -114,6 +114,12 @@ deploy:
     on:
       #tags: true
       condition: $LIVE = true
+  - provider: script
+    skip_cleanup: true
+    script: env IMAGE_NAME=redis BUILD_PATH=./iotplatform/redis/ travis/push-docker-images-to-dockerhub.sh
+    on:
+      #tags: true
+      condition: $LIVE = true
 
 after_script:
   - (helm delete --debug --purge iot || true) && helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=$TRAVIS_COMMIT iot ./iotplatform/helm-chart/iot
