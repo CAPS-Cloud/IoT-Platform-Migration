@@ -1,17 +1,24 @@
-var express = require('express')
 var kafka = require("kafka-node")
-var bodyParser = require("body-parser")
+var WebSocket = require('ws')
 var grpc = require('grpc');
 
-var httpPort = 8083
-var PROTO_PATH = __dirname + './protos/helloworld.proto';
+var wsPort = 8765
+var PROTO_PATH = __dirname + '/protos/helloworld.proto';
 var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
-var httpServer, kafkaProducer, kafkaClient
+var wsserver, kafkaProducer, kafkaClient
 
 const args = process.argv;
 const ZOOKEEPER = args[2];
 const IOTCORE_BACKEND = args[3];
+
+async function initWebSocket() {
+  console.log("attempting to initiate ws server...")
+  return new Promise((resolve) => {
+    wsserver = new WebSocket.Server({ port: wsPort })
+    resolve()
+  })
+}
 
 async function initGRPC() {
   return new Promise((resolve) => {
@@ -26,27 +33,6 @@ async function initGRPC() {
     client.sayHello({name: user}, function(err, response) {
       //console.log('Greeting:', response.message)
       console.log("client.sayHello")
-    })
-    resolve()
-  })
-}
-
-async function initRest() {
-  console.log("attempting to initiate http server...")
-  return new Promise((resolve) => {
-    const app = express()
-    app.use(bodyParser.json())
-    app.use(bodyParser.urlencoded({ extended: true }))
-
-    app.post("/", function (req, res) {
-      console.log("http: ", JSON.stringify(req.body))
-      forwardMsg(JSON.stringify(req.body))
-      res.status(200).send('OK')
-      res.end()
-    })
-
-    httpServer = app.listen(httpPort, () => {
-      console.log("app running on port ", httpServer.address().port)
     })
     resolve()
   })
@@ -83,12 +69,17 @@ function forwardMsg(message) {
   }
 
   kafkaProducer.send(payloads, function (err, data) {
-    console.log("forwarded to kafka")
+    console.log("forwarded to kafka:")
+    console.log(payloads)
   })
 }
 
 Promise.all([initKafka(), initGRPC()]).then(() => {
-  initRest().then(() => {
-
+  initWebSocket().then(() => {
+    wsserver.on('connection', function connection(ws) {
+      ws.on('message', function incoming(message) {
+        forwardMsg(message)
+      })
+    })
   })
 })

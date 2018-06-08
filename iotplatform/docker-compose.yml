@@ -1,19 +1,19 @@
 version: '3.2'
 services:
-  activemq:
-    build: ./activemq
-    image: heldic/activemq
-    ports:
-      - "61616"
-      - "1883:1883"
-      - "8161"
-      - "5672"
+  # activemq:
+  #   build: ./activemq
+  #   image: heldic/activemq
+  #   ports:
+  #     - "61616"
+  #     - "1883:1883"
+  #     - "8161"
+  #     - "5672"
 
   nodejs-producer:
     build: ./nodejs-producer
     image: heldic/nodejs-producer
     environment:
-      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq${EXPOSED_SUFFIX}:1883
+      MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway${EXPOSED_SUFFIX}:1883
 
   java-producer:
     build: ./java-producer
@@ -26,7 +26,13 @@ services:
     image: heldic/python-producer
     environment:
       WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway${EXPOSED_SUFFIX}:8765
-  
+
+  redis:
+    build: ./redis
+    image: heldic/redis
+    ports:
+      - "6379:6379"
+
   mqtt-gateway:
     build: ./mqtt-gateway
     image: heldic/mqtt-gateway
@@ -34,7 +40,9 @@ services:
       IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
       KAFKA: ${SERVICE_PREFIX}kafka:9092
       ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      ACTIVEMQ_MQTT: ${SERVICE_PREFIX}activemq${EXPOSED_SUFFIX}:1883
+      REDIS: ${SERVICE_PREFIX}redis${EXPOSED_SUFFIX}:6379
+    ports:
+      - "1883:1883"
 
   ws-gateway:
     build: ./ws-gateway
@@ -55,7 +63,7 @@ services:
       IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
       KAFKA: ${SERVICE_PREFIX}kafka:9092
       ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-  
+
   iotcore-backend:
     build: ./iotcore-backend
     image: heldic/iotcore-backend
@@ -65,7 +73,7 @@ services:
       KAFKA: ${SERVICE_PREFIX}kafka:9092
       ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
       ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
-  
+
   iotcore-frontend:
     build: ./iotcore-frontend
     image: heldic/iotcore-frontend
@@ -91,7 +99,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
       KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-  
+
   flink:
     build: ./flink
     image: heldic/flink
@@ -121,11 +129,3 @@ services:
   #   build: ./kibana
   #   ports:
   #     - "5601:5601"
-  #   networks:
-  #     - general
-
-networks:
-  general:
-    driver: bridge
-    ipam:
-      driver: default

@@ -3,14 +3,14 @@ var mqtt = require('mqtt')
 var app = express()
 
 const args = process.argv;
-const ACTIVEMQ_MQTT = args[2];
-const ACTIVEMQ_MQTT_HOST = ACTIVEMQ_MQTT.split(":")[0];
-const ACTIVEMQ_MQTT_PORT = parseInt(ACTIVEMQ_MQTT.split(":")[1]);
+const MQTT_GATEWAY = args[2];
+const MQTT_GATEWAY_HOST = MQTT_GATEWAY.split(":")[0];
+const MQTT_GATEWAY_PORT = parseInt(MQTT_GATEWAY.split(":")[1]);
 
-var client  = mqtt.connect({host: ACTIVEMQ_MQTT_HOST, port: ACTIVEMQ_MQTT_PORT})
+var client  = mqtt.connect({host: MQTT_GATEWAY_HOST, port: MQTT_GATEWAY_PORT})
 
 client.on('connect', function () {
-  console.log("Connected to ActiveMQ!!")
+  console.log("Connected to Mosca!")
   client.subscribe('livedata')
 
   setInterval(() => {

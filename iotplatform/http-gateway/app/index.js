@@ -1,18 +1,17 @@
-var mqtt = require('mqtt')
+var express = require('express')
 var kafka = require("kafka-node")
+var bodyParser = require("body-parser")
 var grpc = require('grpc');
 
-var PROTO_PATH = __dirname + './protos/helloworld.proto';
+var httpPort = 8083
+var PROTO_PATH = __dirname + '/protos/helloworld.proto';
 var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
-var mqttClient, kafkaProducer, kafkaClient
+var httpServer, kafkaProducer, kafkaClient
 
 const args = process.argv;
 const ZOOKEEPER = args[2];
 const IOTCORE_BACKEND = args[3];
-const ACTIVEMQ_MQTT = args[4];
-const ACTIVEMQ_MQTT_HOST = ACTIVEMQ_MQTT.split(":")[0];
-const ACTIVEMQ_MQTT_PORT = parseInt(ACTIVEMQ_MQTT.split(":")[1]);
 
 async function initGRPC() {
   return new Promise((resolve) => {
@@ -27,6 +26,26 @@ async function initGRPC() {
     client.sayHello({name: user}, function(err, response) {
       //console.log('Greeting:', response.message)
       console.log("client.sayHello")
+    })
+    resolve()
+  })
+}
+
+async function initRest() {
+  console.log("attempting to initiate http server...")
+  return new Promise((resolve) => {
+    const app = express()
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+
+    app.post("/", function (req, res) {
+      forwardMsg(JSON.stringify(req.body))
+      res.status(200).send('OK')
+      res.end()
+    })
+
+    httpServer = app.listen(httpPort, () => {
+      console.log("app running on port ", httpServer.address().port)
     })
     resolve()
   })
@@ -47,19 +66,6 @@ async function initKafka() {
   })
 }
 
-async function initMqtt() {
-  return new Promise((resolve) => {
-    console.log("attempting to initiate ActiveMQ connection...")
-    mqttClient  = mqtt.connect({host: ACTIVEMQ_MQTT_HOST, port: ACTIVEMQ_MQTT_PORT})
-
-    mqttClient.on('connect', () => {
-      console.log("connected to ActiveMQ")
-      mqttClient.subscribe('livedata')
-    })
-    resolve()
-  })
-}
-
 function forwardMsg(message) {
   let payloads
   if(typeof(message) === "object") {
@@ -76,15 +82,13 @@ function forwardMsg(message) {
   }
 
   kafkaProducer.send(payloads, function (err, data) {
-    console.log("forwarded to kafka")
+    console.log("forwarded to kafka:")
+    console.log(payloads)
   })
 }
 
 Promise.all([initKafka(), initGRPC()]).then(() => {
-  initMqtt().then(() => {
-    mqttClient.on('message', (topic, message) => {
-      console.log("mqtt: ", message.toString())
-      forwardMsg(message.toString())
-    })
+  initRest().then(() => {
+
   })
 })

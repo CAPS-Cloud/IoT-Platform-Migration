@@ -1,18 +1,25 @@
 {
-  "name": "iot-bridge",
+  "name": "mqtt-gateway",
   "version": "1.0.0",
-  "description": "IoT Bridge",
+  "description": "IoT Platform MQTT Gateway",
   "author": "heldic",
   "main": "index.js",
   "repository": "https://github.com/heldic/iotplatform",
   "dependencies": {
     "mqtt": "2.17.0",
     "kafka-node": "2.5.0",
+    "redis":"^2.8.0",
+    "eventemitter2": "^5.0.1",
+    "msgpack-lite":"0.1.26",
+    "ioredis":"^3.2.2",
+    "mongodb":"^3.0.10",
+    "mosca":"^2.8.2",
+    "ascoltatori": "4.2.0",
     "grpc":"^1.11.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "license": "ISC"
 }

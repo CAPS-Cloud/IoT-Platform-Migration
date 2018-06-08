@@ -1,10 +1,10 @@
 #!/bin/bash
 
-npm install --no-optional --save
+/wait-for-it.sh $MQTT_GATEWAY --timeout=0 --strict
 
-/wait-for-it.sh $ACTIVEMQ_MQTT --timeout=0 --strict 
+cd app
 
-npm run start -- $ACTIVEMQ_MQTT
+npm run start -- $MQTT_GATEWAY
 
 # don't exit
 /usr/bin/tail -f /dev/null
