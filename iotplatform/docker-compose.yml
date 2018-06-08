@@ -40,7 +40,7 @@ services:
       IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
       KAFKA: ${SERVICE_PREFIX}kafka:9092
       ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      REDIS: ${SERVICE_PREFIX}redis${EXPOSED_SUFFIX}:6379
+      REDIS: ${SERVICE_PREFIX}redis:6379
     ports:
       - "1883:1883"
 
