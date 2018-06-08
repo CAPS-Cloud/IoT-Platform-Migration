@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm install --no-optional --save
+cd app
 
 npm start
 
