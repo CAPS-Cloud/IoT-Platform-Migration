@@ -31,7 +31,7 @@ services:
     build: ./redis
     image: heldic/redis
     ports:
-      - "6379:6379"
+      - "6379"
 
   mqtt-gateway:
     build: ./mqtt-gateway
