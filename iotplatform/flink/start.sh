@@ -33,7 +33,7 @@ curl -XPOST "http://$ELASTICSEARCH:9200/livedata" -d '{
 
 sleep 2
 
-curl -XGET "http://$ELASTICSEARCH/_cat/indices?v&pretty"
+curl -XGET "http://$ELASTICSEARCH:9200/_cat/indices?v&pretty"
 
 ./bin/flink run /proj/target/flink-kafka-1.0.jar --elasticsearch $ELASTICSEARCH --topic livedata --bootstrap.servers $KAFKA --zookeeper.connect $ZOOKEEPER --groud.id mygroup
 
