@@ -79,7 +79,6 @@ services:
 
     http-gateway-go:
         build: ./http-gateway-go
-        image: heldic/http-gateway-go
         ports:
             - "8084:8084"
         environment:

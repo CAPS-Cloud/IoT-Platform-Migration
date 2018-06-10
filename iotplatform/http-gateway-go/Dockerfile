@@ -1,15 +1,15 @@
-FROM golang
+FROM golang:1.10.3-stretch
 
-COPY app /app/
-
-COPY wait-for-it.sh /
-RUN chmod a+x /wait-for-it.sh
-
-# add entrypoint script
 USER root
-COPY start.sh /
-RUN chmod a+x /start.sh
 
-EXPOSE 8083
+COPY . /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
+WORKDIR /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
 
-ENTRYPOINT /start.sh
+RUN go get ./...
+
+RUN chmod a+x ./wait-for-it.sh && \
+    chmod a+x ./start.sh
+
+EXPOSE 8084
+
+ENTRYPOINT ["./start.sh"]
