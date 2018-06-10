@@ -121,7 +121,7 @@ services:
         build: ./flink
         image: heldic/flink
         ports:
-            - "8081"
+            - "8081:8081"
         environment:
             KAFKA: ${SERVICE_PREFIX}kafka:9094
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
@@ -131,6 +131,7 @@ services:
         build: ./elasticsearch
         image: heldic/elasticsearch
         ports:
+            - "9000:9200"
             - "9200"
             - "9300"
 
