@@ -9,7 +9,7 @@ services:
   #     - "8161"
   #     - "5672"
     kafka-manager:
-        image: sheepkiller/kafka-manager
+        image: sheepkiller/kafka-manager:latest
         ports:
             - "9100:9000"
         environment:
