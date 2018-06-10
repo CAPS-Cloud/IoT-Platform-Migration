@@ -125,7 +125,7 @@ services:
         environment:
             KAFKA: ${SERVICE_PREFIX}kafka:9094
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
 
     elasticsearch:
         build: ./elasticsearch

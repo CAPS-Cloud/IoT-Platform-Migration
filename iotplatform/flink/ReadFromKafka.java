@@ -43,8 +43,8 @@ public class ReadFromKafka {
     config.put("bulk.flush.max.actions", "1");
 
     List<InetSocketAddress> transportAddresses = new ArrayList<>();
-    transportAddresses.add(new InetSocketAddress(InetAddress.getByName("elasticsearch"), 9300));
-    System.out.println("Elasticsearch detected at: " + InetAddress.getByName("elasticsearch").toString());
+    transportAddresses.add(new InetSocketAddress(InetAddress.getByName(parameterTool.getRequired("elasticsearch")), 9300));
+    System.out.println("Elasticsearch detected at: " + InetAddress.getByName(parameterTool.getRequired("elasticsearch")).toString());
 
     DataStream<ObjectNode> messageStream = env
       .addSource(
