@@ -74,7 +74,13 @@ deploy:
       condition: $LIVE = true
   - provider: script
     skip_cleanup: true
-    script: env IMAGE_NAME=http-gateway BUILD_PATH=./iotplatform/http-gateway/ travis/push-docker-images-to-dockerhub.sh
+    script: env IMAGE_NAME=http-gateway-nodejs BUILD_PATH=./iotplatform/http-gateway-nodejs/ travis/push-docker-images-to-dockerhub.sh
+    on:
+      #tags: true
+      condition: $LIVE = true
+  - provider: script
+    skip_cleanup: true
+    script: env IMAGE_NAME=http-gateway-go BUILD_PATH=./iotplatform/http-gateway-go/ travis/push-docker-images-to-dockerhub.sh
     on:
       #tags: true
       condition: $LIVE = true
