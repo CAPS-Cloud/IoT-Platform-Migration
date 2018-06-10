@@ -35,7 +35,7 @@ sleep 2
 
 curl -XGET "http://$ELASTICSEARCH:9200/_cat/indices?v&pretty"
 
-./bin/flink run /proj/target/flink-kafka-1.0.jar --elasticsearch $ELASTICSEARCH --topic livedata --bootstrap.servers $KAFKA --zookeeper.connect $ZOOKEEPER --groud.id mygroup
+./bin/flink run /proj/target/flink-kafka-1.0.jar --elasticsearch "$ELASTICSEARCH" --topic livedata --bootstrap.servers "$KAFKA" --zookeeper.connect "$ZOOKEEPER" --groud.id mygroup
 
 # don't exit
 /usr/bin/tail -f /dev/null
