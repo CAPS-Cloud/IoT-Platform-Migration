@@ -51,7 +51,7 @@ services:
         image: heldic/mqtt-gateway
         environment:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             REDIS: ${SERVICE_PREFIX}redis:6379
         ports:
@@ -64,7 +64,7 @@ services:
             - "8765:8765"
         environment:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
     http-gateway-nodejs:
@@ -74,7 +74,7 @@ services:
             - "8083:8083"
         environment:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
     http-gateway-go:
@@ -84,7 +84,7 @@ services:
             - "8084:8084"
         environment:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
     iotcore-backend:
@@ -94,7 +94,7 @@ services:
             - "50055"
             - "50051"
         environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
 
@@ -130,7 +130,7 @@ services:
         ports:
             - "8081:8081"
         environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
 
