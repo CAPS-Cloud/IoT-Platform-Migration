@@ -10,7 +10,7 @@ java -version
 /wait-for-it.sh $ZOOKEEPER --timeout=0 --strict
 /wait-for-it.sh $KAFKA --timeout=0 --strict
 
-curl -XPOST "http://$ELASTICSEARCH/livedata" -d '{
+curl -XPOST "http://$ELASTICSEARCH:9200/livedata" -d '{
   "mappings": {
     "sensorReading": {
       "properties": {
