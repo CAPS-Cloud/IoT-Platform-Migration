@@ -9,113 +9,130 @@ services:
   #     - "8161"
   #     - "5672"
 
-  nodejs-producer:
-    build: ./nodejs-producer
-    image: heldic/nodejs-producer
-    environment:
-      MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway${EXPOSED_SUFFIX}:1883
+    nodejs-producer:
+        build: ./nodejs-producer
+        image: heldic/nodejs-producer
+        environment:
+            MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway${EXPOSED_SUFFIX}:1883
 
-  java-producer:
-    build: ./java-producer
-    image: heldic/java-producer
-    environment:
-      HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway${EXPOSED_SUFFIX}:8083
+    java-producer-go:
+        build: ./java-producer
+        image: heldic/java-producer
+        environment:
+            HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
 
-  python-producer:
-    build: ./python-producer
-    image: heldic/python-producer
-    environment:
-      WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway${EXPOSED_SUFFIX}:8765
+    java-producer-nodejs:
+        build: ./java-producer
+        image: heldic/java-producer
+        environment:
+            HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
 
-  redis:
-    build: ./redis
-    image: heldic/redis
-    ports:
-      - "6379"
+    python-producer:
+        build: ./python-producer
+        image: heldic/python-producer
+        environment:
+            WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway${EXPOSED_SUFFIX}:8765
 
-  mqtt-gateway:
-    build: ./mqtt-gateway
-    image: heldic/mqtt-gateway
-    environment:
-      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
-      KAFKA: ${SERVICE_PREFIX}kafka:9092
-      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      REDIS: ${SERVICE_PREFIX}redis:6379
-    ports:
-      - "1883:1883"
+    redis:
+        build: ./redis
+        image: heldic/redis
+        ports:
+            - "6379"
 
-  ws-gateway:
-    build: ./ws-gateway
-    image: heldic/ws-gateway
-    ports:
-      - "8765:8765"
-    environment:
-      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
-      KAFKA: ${SERVICE_PREFIX}kafka:9092
-      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    mqtt-gateway:
+        build: ./mqtt-gateway
+        image: heldic/mqtt-gateway
+        environment:
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+            REDIS: ${SERVICE_PREFIX}redis:6379
+        ports:
+            - "1883:1883"
 
-  http-gateway:
-    build: ./http-gateway
-    image: heldic/http-gateway
-    ports:
-      - "8083:8083"
-    environment:
-      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
-      KAFKA: ${SERVICE_PREFIX}kafka:9092
-      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    ws-gateway:
+        build: ./ws-gateway
+        image: heldic/ws-gateway
+        ports:
+            - "8765:8765"
+        environment:
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
-  iotcore-backend:
-    build: ./iotcore-backend
-    image: heldic/iotcore-backend
-    ports:
-      - "50055"
-    environment:
-      KAFKA: ${SERVICE_PREFIX}kafka:9092
-      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+    http-gateway-nodejs:
+        build: ./http-gateway-nodejs
+        image: heldic/http-gateway-nodejs
+        ports:
+            - "8083:8083"
+        environment:
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
-  iotcore-frontend:
-    build: ./iotcore-frontend
-    image: heldic/iotcore-frontend
-    ports:
-      - "8080:8080"
-    environment:
-      IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
+    http-gateway-go:
+        build: ./http-gateway-go
+        image: heldic/http-gateway-go
+        ports:
+            - "8084:8084"
+        environment:
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    ports:
-      - "2181"
+    iotcore-backend:
+        build: ./iotcore-backend
+        image: heldic/iotcore-backend
+        ports:
+            - "50055"
+            - "50051"
+        environment:
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
 
-  kafka:
-    image: wurstmeister/kafka:latest
-    ports:
-      - "9092"
-      - "9094:9094"
-    environment:
-      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
-      KAFKA_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
-      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    iotcore-frontend:
+        build: ./iotcore-frontend
+        image: heldic/iotcore-frontend
+        ports:
+            - "8080:8080"
+        environment:
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
 
-  flink:
-    build: ./flink
-    image: heldic/flink
-    ports:
-      - "8081"
-    environment:
-      KAFKA: ${SERVICE_PREFIX}kafka:9092
-      ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-      ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+    zookeeper:
+        image: wurstmeister/zookeeper:latest
+        ports:
+            - "2181:2181"
 
-  elasticsearch:
-    build: ./elasticsearch
-    image: heldic/elasticsearch
-    ports:
-      - "9200"
-      - "9300"
+    kafka:
+        image: wurstmeister/kafka:latest
+        ports:
+            - "9092"
+            - "9094"
+        environment:
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+
+    flink:
+        build: ./flink
+        image: heldic/flink
+        ports:
+            - "8081"
+        environment:
+            KAFKA: ${SERVICE_PREFIX}kafka:9094
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+
+    elasticsearch:
+        build: ./elasticsearch
+        image: heldic/elasticsearch
+        ports:
+            - "9200"
+            - "9300"
 
   # grafana:
   #   build: ./grafana
