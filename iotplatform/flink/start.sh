@@ -10,7 +10,7 @@ java -version
 /wait-for-it.sh $ZOOKEEPER --timeout=0 --strict
 /wait-for-it.sh $KAFKA --timeout=0 --strict
 
-curl -XPOST "http://$ELASTICSEARCH/livedata" -d '{
+curl -XPOST "http://$ELASTICSEARCH:9200/livedata" -d '{
   "mappings": {
     "sensorReading": {
       "properties": {
@@ -33,7 +33,7 @@ curl -XPOST "http://$ELASTICSEARCH/livedata" -d '{
 
 sleep 2
 
-curl -XGET "http://$ELASTICSEARCH/_cat/indices?v&pretty"
+curl -XGET "http://$ELASTICSEARCH:9200/_cat/indices?v&pretty"
 
 ./bin/flink run /proj/target/flink-kafka-1.0.jar --elasticsearch $ELASTICSEARCH --topic livedata --bootstrap.servers $KAFKA --zookeeper.connect $ZOOKEEPER --groud.id mygroup
 
