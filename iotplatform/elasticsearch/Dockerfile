@@ -13,6 +13,8 @@ RUN mv elasticsearch.yml /elasticsearch/elasticsearch-5.6.3/config/elasticsearch
 
 EXPOSE 9200 9300
 
+RUN sudo sysctl -w vm.max_map_count=262144
+
 RUN groupadd -r elastic && useradd --no-log-init -r -g elastic elastic \
   && chown -R elastic:elastic /elasticsearch/
 USER elastic
