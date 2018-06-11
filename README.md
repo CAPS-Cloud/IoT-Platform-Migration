@@ -32,8 +32,8 @@
 - Provide metadata information to gateways upon request, according to predefined schema
 
 #### MQTT/HTTP/WS Gateway
-External MQTT Access: http://iot.pcxd.me:1883/
-External HTTP Access: http://iot.pcxd.me:8084/
+External MQTT Access: http://iot.pcxd.me:1883/  
+External HTTP Access: http://iot.pcxd.me:8084/  
 External WS Access: http://iot.pcxd.me:8765/
 - Cloud gateways enabling data ingestion
 - Different protocols are supported by different gateways (depending on load, respective gateways can be scaled)
