@@ -32,6 +32,9 @@
 - Provide metadata information to gateways upon request, according to predefined schema
 
 #### MQTT/HTTP/WS Gateway
+External MQTT Access: http://iot.pcxd.me:1883/
+External HTTP Access: http://iot.pcxd.me:8084/
+External WS Access: http://iot.pcxd.me:8765/
 - Cloud gateways enabling data ingestion
 - Different protocols are supported by different gateways (depending on load, respective gateways can be scaled)
 - Gateways enrich incoming sensordata with respective device information
@@ -46,10 +49,12 @@
 - Act as single point of information for processing layer
 
 #### Flink
+External Dashboard Access: http://iot.pcxd.me:8081/
 - Offer possibilities to add batch processing or analytical jobs
 - Consume Kafka topics provided by IoTCore and forward data to Elasticsearch
 
 #### Elasticsearch
+External REST Access: http://iot.pcxd.me:9000/
 - Persistence
 
 #### Grafana
