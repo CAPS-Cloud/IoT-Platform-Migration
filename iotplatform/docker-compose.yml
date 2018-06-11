@@ -91,8 +91,7 @@ services:
         build: ./iotcore-backend
         image: heldic/iotcore-backend
         ports:
-            - "50055"
-            - "50051"
+            - "5000:5000"
         environment:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
