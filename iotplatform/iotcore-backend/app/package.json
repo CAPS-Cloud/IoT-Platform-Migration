@@ -1,19 +1,17 @@
 {
-  "name": "iot-bridge",
+  "name": "mohammad",
   "version": "1.0.0",
-  "description": "IoT Bridge",
-  "author": "heldic",
-  "main": "index.js",
-  "repository": "https://github.com/heldic/iotplatform",
-  "dependencies": {
-    "express": "^4.16.3",
-    "mqtt": "2.17.0",
-    "kafka-node": "2.5.0",
-    "grpc" : "^1.11.3"
-  },
+  "description": "JWT example",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "license": "ISC"
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "agentkeepalive": "^3.4.1",
+    "elasticsearch": "^15.0.0",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.1"
+  }
 }
