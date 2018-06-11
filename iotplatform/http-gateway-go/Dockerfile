@@ -5,7 +5,8 @@ USER root
 COPY . /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
 WORKDIR /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
 
-RUN go get ./...
+RUN go get ./... && \
+    go install
 
 RUN chmod a+x ./wait-for-it.sh && \
     chmod a+x ./start.sh
