@@ -17,10 +17,19 @@ func NewHTTPGateway(brokerList []string) *Gateway {
 	config.Producer.RequiredAcks = sarama.WaitForLocal       // Only wait for the leader to ack
 	config.Producer.Flush.Frequency = 500 * time.Millisecond // Flush batches every 500ms
 
-	producer, err := sarama.NewAsyncProducer(brokerList, config)
-	if err != nil {
-		log.Fatalln("Failed to start Sarama producer:", err)
+	ticker := time.NewTicker(5 * time.Second)
+	var producer sarama.AsyncProducer
+	var err error
+	for {
+		producer, err = sarama.NewAsyncProducer(brokerList, config)
+		if err != nil {
+			log.Fatalln("Failed to connect to producer:", err)
+		} else {
+			continue
+		}
+		<-ticker.C
 	}
+
 	return &Gateway{
 		Producer: producer,
 	}
