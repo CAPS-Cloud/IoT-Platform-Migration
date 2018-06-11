@@ -69,7 +69,6 @@ function forwardMsg(message) {
   }
 
   kafkaProducer.send(payloads, function (err, data) {
-    console.log(err, data)
     console.log("forwarded to kafka:")
     console.log(payloads)
   })
