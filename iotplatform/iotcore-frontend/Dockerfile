@@ -1,17 +1,4 @@
-FROM node:9
+FROM nginx:1.15
 
-COPY app /app/
-
-RUN chmod -R a+x /app \
-    && cd /app \
-    && npm install --no-optional --save \
-    && cd ../
-
-# add entrypoint script
-USER root
-COPY start.sh /
-RUN chmod a+x /start.sh
-
-EXPOSE 8080
-
-ENTRYPOINT /start.sh
+COPY web/index.html /usr/share/nginx/html/index.html
+COPY web/dist /usr/share/nginx/html/static

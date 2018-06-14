@@ -1,0 +1,271 @@
+$mdc-theme-primary: #007bff;
+//$mdc-theme-secondary: #545b62;
+
+@import "@material/button/mdc-button";
+@import "@material/card/mdc-card";
+@import "@material/list/mdc-list";
+@import "@material/top-app-bar/mdc-top-app-bar";
+@import "@material/drawer/mdc-drawer";
+@import "@material/typography/mdc-typography";
+@import "@material/theme/mdc-theme";
+@import "@material/elevation/mdc-elevation";
+@import "@material/form-field/mdc-form-field";
+@import "@material/textfield/mdc-text-field";
+@import "@material/textfield/helper-text/mdc-text-field-helper-text";
+@import "@material/line-ripple/mdc-line-ripple";
+@import "@material/floating-label/mdc-floating-label";
+@import "@material/select/mdc-select";
+@import "@material/dialog/mdc-dialog";
+@import "@material/snackbar/mdc-snackbar";
+
+.tree{
+  ul{
+    list-style: none;
+    padding-left: 5px;
+    li{
+      padding-left: 20px;
+      position: relative;
+      box-sizing: content-box;
+      div{
+        padding-top: 7px;
+      }
+      &:before{
+        content: '';
+        height: 2px;
+        width: 15px;
+        background-color: #333;
+        position: absolute;
+        top: 20px;
+        left: 0;
+        margin: auto;
+      }
+      &::after{
+        content:'';
+        width: 2px;
+        height: calc(100% + 20px);
+        background-color: #333;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+      &:last-child{
+        &::after{
+          height: 20px;
+        }
+      }
+    }
+    a{
+      cursor: pointer;
+      &:hover{
+        color:#333;
+        text-decoration: none;
+      }
+    }    
+  }
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button:focus {
+    outline: unset;
+}
+
+.mdc-select__native-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+*, ::after, ::before {
+    box-sizing: content-box;
+}
+
+label {
+    margin-bottom: unset;
+}
+
+.secondary-button {
+    @include mdc-button-ink-color(secondary);
+    @include mdc-states(secondary);
+}
+
+.secondary-button.mdc-button--outlined {
+    @include mdc-button-outline-color(secondary);
+}
+
+.danger-button {
+    @include mdc-button-ink-color(#dc3545);
+    @include mdc-states(#dc3545);
+}
+
+.text-primary.mdc-button::before, .text-primary.mdc-button::after {
+    background-color: var(--primary);
+}
+
+.text-secondary.mdc-button::before, .text-secondary.mdc-button::after {
+    background-color: var(--secondary);
+}
+
+.text-secondary.mdc-button:hover::before {
+    opacity: 0.08
+}
+
+.text-secondary.mdc-button:active::after {
+    opacity: 0.20
+}
+
+.text-success.mdc-button::before, .text-success.mdc-button::after {
+    background-color: var(--success);
+}
+
+.text-info.mdc-button::before, .text-info.mdc-button::after {
+    background-color: var(--info);
+}
+
+.text-warning.mdc-button::before, .text-warning.mdc-button::after {
+    background-color: var(--warning);
+}
+
+.text-danger.mdc-button::before, .text-danger.mdc-button::after {
+    background-color: var(--danger);
+}
+
+/*.mdc-button.disabled {
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.37);
+    cursor: default;
+    pointer-events: none; }*/
+
+.mdc-button.disabled:hover::before, .mdc-button.disabled::before {
+    opacity: 0;
+}
+
+.mdc-button.disabled:hover, .mdc-button.disabled {
+    pointer-events: none;
+    cursor: none;
+    background-color: transparent;
+    color: #6c757d;
+}
+
+.mdc-button.mdc-button--outlined.disabled:hover, .mdc-button.mdc-button--outlined.disabled {
+    border-color: #6c757d;
+}
+
+.plain-link, .plain-link:hover {
+    text-decoration: none !important;
+    color: inherit;
+    cursor: inherit;
+}
+
+.mdc-drawer--permanent {
+    box-sizing: unset;
+}
+
+.name-drawer-header {
+    //background-color: #fcfcfc;
+}
+
+.name-drawer-header > .mdc-drawer__header-content {
+    position: relative;
+}
+
+.name-drawer-header::before {
+    padding-top: 5% !important;
+}
+
+.drawer-list-item {
+    cursor: pointer;
+    user-select: none;
+}
+
+.drawer-list-item.mdc-list-item--selected, .drawer-list-item.mdc-list-item--selected > i {
+    //background-color: #e8f0fe;
+    color: #1967d2;
+    //cursor: default;
+    //pointer-events: none;
+}
+
+.drawer-list-item.mdc-list-item--selected:hover::before {
+    opacity: 0.20;
+}
+
+.drawer-list-item.mdc-list-item--selected::before {
+    opacity: 0.14;
+}
+
+.drawer-header-flex {
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.full-height {
+    height: 100%;
+    box-sizing: border-box;
+}
+  
+.drawer-container-flex {
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    width: 100%;
+    height: 100%;
+}
+
+.top-app-bar {
+    @include mdc-top-app-bar-ink-color(black);//	Sets the ink color of the top app bar.
+    @include mdc-top-app-bar-icon-ink-color(black);//	Sets the ink color of the top app bar icons.
+    @include mdc-top-app-bar-fill-color(white);//	Sets the fill color of the top app bar.
+    border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+}
+
+.delete-button {
+    @include mdc-button-ink-color(red);
+    @include mdc-states(red);
+}
+
+.view-button {
+    @include mdc-button-ink-color(blue);
+    @include mdc-states(blue);
+}
+
+.top-bar-button {
+    height: 70%;
+}
+
+.demo-card {
+    margin: 24px 0;
+}
+  
+.demo-card--hero {
+    margin: 0;
+}
+  
+.demo-card__primary {
+    padding: 1rem;
+}
+  
+.demo-card__title {
+    margin: 0;
+}
+  
+.demo-card__subtitle {
+    color: rgba(0, 0, 0, 0.54);
+    /* @alternate */
+    color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.54));
+    margin: 0;
+}
+  
+.demo-card__secondary {
+    color: rgba(0, 0, 0, 0.54);
+    /* @alternate */
+    color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.54));
+    padding: 0 1rem 8px 1rem;
+}
