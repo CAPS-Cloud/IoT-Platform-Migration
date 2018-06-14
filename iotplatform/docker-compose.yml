@@ -109,9 +109,9 @@ services:
         build: ./iotcore-frontend
         image: heldic/iotcore-frontend
         ports:
-            - "8080:8080"
+            - "8080:80"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50055
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:5000
 
     zookeeper:
         image: wurstmeister/zookeeper:latest
