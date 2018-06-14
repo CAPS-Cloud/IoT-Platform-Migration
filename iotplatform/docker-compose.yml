@@ -93,6 +93,7 @@ services:
             - "3306:3306"
         environment:
             MYSQL_ROOT_PASSWORD: mP6AMBTSSElsq1oQttZ1
+            MYSQL_DATABASE: backend
     
     iotcore-backend:
         build: ./iotcore-backend
