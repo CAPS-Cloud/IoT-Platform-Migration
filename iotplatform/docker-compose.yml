@@ -101,7 +101,7 @@ services:
         build: ./iotcore-backend
         image: heldic/iotcore-backend
         ports:
-            - "5000:5000"
+            - "3000:3000"
         environment:
             MARIA_DB: ${SERVICE_PREFIX}mariadb${EXPOSED_SUFFIX}:3306
             KAFKA: ${SERVICE_PREFIX}kafka:9092
@@ -114,7 +114,7 @@ services:
         ports:
             - "8080:80"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:5000
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
 
     zookeeper:
         image: wurstmeister/zookeeper:latest
