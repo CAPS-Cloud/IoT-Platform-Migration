@@ -94,6 +94,8 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: mP6AMBTSSElsq1oQttZ1
             MYSQL_DATABASE: backend
+            MYSQL_USER: backend
+            MYSQL_PASSWORD: qmJDiqlAr9Fcu5Rav0XJ
     
     iotcore-backend:
         build: ./iotcore-backend
