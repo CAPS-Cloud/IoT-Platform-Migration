@@ -1,5 +1,5 @@
 import { observable, action, autorun } from "mobx";
-import axios from "axios";
+import axios from "../utils/Axios";
 
 export default new class {
     @observable fetching = false;
@@ -9,7 +9,7 @@ export default new class {
     fetch() {
         this.fetching = true;
 
-        axios.get("http://iot.pcxd.me:3000/api/users").then((res) => {
+        axios.get("users").then((res) => {
             action(() => {
                 this.fetching = false;
                 this.fetched = true;

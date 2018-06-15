@@ -1,5 +1,5 @@
 import { observable, action, autorun } from "mobx";
-import axios from "axios";
+import axios from "../utils/Axios";
 import Cookies from "../utils/Cookies";
 
 export default new class {
@@ -15,13 +15,15 @@ export default new class {
             Cookies.set("auth_token", this.authToken);
         })
 
+        autorun(() => {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${this.authToken}`;
+        })
+
         axios.interceptors.response.use(response => response, error => {
             if (error.response.status === 401) {
-                this.checked = true;
-                this.checking = false;
-                this.authenticated = true;
+                this.authenticated = false;
             }
-            return error;
+            return Promise.reject(error);
         });
     }
 
@@ -37,7 +39,7 @@ export default new class {
 
         this.checking = true;
 
-        axios.get("http://iot.pcxd.me:3000/api/users/self").then((res) => {
+        axios.get("users/self").then((res) => {
             console.log(res);
             action(() => {
                 this.checked = true;
@@ -61,18 +63,20 @@ export default new class {
             this.signingIn = true;
         })();
 
-        axios.post("http://iot.pcxd.me:3000/api/users/signin", { username, password }).then((res) => {
+        return axios.post("users/signin", { username, password }).then((response) => {
             action(() => {
                 this.signingIn = false;
                 this.authenticated = true;
-                this.authToken = res.data.token;
+                this.authToken = response.data.token;
             })();
-        }).catch((err) => {
+            return response;
+        }).catch((error) => {
             action(() => {
                 this.signingIn = false;
                 this.authenticated = false;
                 this.authToken = "";
             })();
+            throw error;
         });
     }
 
