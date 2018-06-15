@@ -49,6 +49,7 @@ module.exports = class {
     update(req, res) {
         this.pre_update(req.body, toUpdate => {
             delete toUpdate.id;
+            console.log(toUpdate, { where: { id: { [Op.eq]: req.params.id } } });
             this.model.update(toUpdate, { where: { id: { [Op.eq]: req.params.id } } }).then(data => {
                 return res.status(200).json({ result: data });
             }).catch(err => {
