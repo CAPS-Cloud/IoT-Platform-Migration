@@ -33,7 +33,7 @@ controller = new class extends BaseController {
     }
 
     post_add(data, callback) {
-        data.password = undefined;
+        delete data.password;
         callback(data);
     }
 
@@ -78,7 +78,7 @@ controller = new class extends BaseController {
 
     self(req, res) {
         var result = req.authenticated_as;
-        result.password = undefined;
+        delete result.password;
         res.json({ result });
     }
 }
