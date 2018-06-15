@@ -1,11 +1,11 @@
 
 module.exports = {
-    responseError(res, message) {
-        res.status(400).json({ message });
+    responseError(res, err) {
+        res.status(400).json(err);
     },
 
-    responseSystemError(res, error) {
-        console.error(error);
+    responseSystemError(res, err) {
+        console.error(err);
         res.status(500).json({ message: "Something went wrong" });
     },
 }

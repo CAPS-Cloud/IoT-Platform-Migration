@@ -1,15 +1,39 @@
+const Sequelize = require('sequelize');
+const sequelize = require('../connections/mysql');
 
-module.exports = {
+const Users = sequelize.define('users', {
     name: {
-        validation: /^\S+([ ]\S+)+$/,
-        validation_error_message: 'Name is invalid.',
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+            is: {
+                args: /^\S+([ ]\S+)+$/,
+                msg: 'Name is invalid.',
+            },
+        },
     },
     username: {
-        validation: /^[a-z0-9_]{3,30}$/,
-        validation_error_message: 'Username can contain only lowercase a-z, 0-9 and underscores. The length of username have to be between 3 and 30 characters long.',
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+            is: {
+                args: /^[a-z0-9_]{3,30}$/,
+                msg: 'Username can contain only lowercase a-z, 0-9 and underscores. The length of username have to be between 3 and 30 characters long.',
+            },
+        },
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false,
     },
     role: {
-        validation: /^(ADMIN|READ_ONLY)$/,
-        validation_error_message: 'Role is invalid',
-    }
-}
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+            isIn: [['ADMIN', 'USER']],
+        },
+    },
+});
+
+module.exports = Users;

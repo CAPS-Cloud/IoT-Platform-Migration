@@ -1,67 +1,93 @@
 const connection = require('../connections/mysql');
 const { responseError, responseSystemError } = require('../utils/express_utils');
-const UsersModel = require('../models/UsersModel');
+const Users = require('../models/UsersModel');
 const jwt = require('jsonwebtoken');
-const { AUTHENTICATION_SECRET } = require('../secrets');
+const { AUTHENTICATION_SECRET, ROOT_USERNAME, ROOT_PASSWORD } = require('../secrets');
+const bcrypt = require('bcryptjs');
+const BaseController =  require('./BaseController');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
-function getAll(req, res) {
-    connection.query('SELECT * FROM `users`', function (error, results, fields) {
-        if (error) {
-            return responseSystemError(res, error);
-        };
-        return res.status(200).json({ result: results });
-    });
-}
 
-function getById(req, res) {
+controller = new class extends BaseController {
 
-}
-
-function add(req, res) {
-    var toAdd = {};
-
-    for (fieldName in UsersModel) {
-        if (!req.body[fieldName]) {
-            return responseError(res, `No "${fieldName}" provided`);
-        }
-        if (!UsersModel[fieldName].validation.test(req.body[fieldName])) {
-            return responseError(res, UsersModel[fieldName].validation_error_message);
-        }
-        toAdd[fieldName] = req.body[fieldName];
+    constructor() {
+        super(Users);
+        this.findAllOptions = { attributes: { exclude: ['password'] } }
     }
 
-    connection.query('SELECT 1 FROM `users` WHERE `username` = ?', [toAdd.username], function (error, results, fields) {
-        if (error) {
-            return responseSystemError(res, error);
-        };
-        if (results.length > 0) {
-            return responseError(res, 'Username already existed');
+    pre_add(req, res, callback) {
+        var toAdd = req.body;
+
+        if (toAdd.username == ROOT_USERNAME) {
+            return res.status(400).json({ name: 'RestrictedUsername', errors: [{ message: '"root" is restricted username' }] });
         }
 
-        connection.query('INSERT INTO `users` SET ?', toAdd, function (error, results, fields) {
-            if (error) {
-                return responseSystemError(res, error);
-            };
+        if (toAdd.password) {
+            var salt = bcrypt.genSaltSync(10);
+            var hash = bcrypt.hashSync(toAdd.password, salt);
+            toAdd.password = hash;
+        }
 
-            toAdd["id"] = results.insertId;
+        callback(toAdd);
+    }
 
-            return res.status(200).json({ result: toAdd });
-        });
-    });
+    post_add(data, callback) {
+        data.password = undefined;
+        callback(data);
+    }
+
+    pre_update(data, callback) {
+        if (toAdd.username) {
+            return res.status(400).json({ name: 'NotAllowUpdate', errors: [{ message: 'You are not allowed to change username' }] });
+        }
+
+        if (data.password) {
+            var salt = bcrypt.genSaltSync(10);
+            var hash = bcrypt.hashSync(data.password, salt);
+            data.password = hash;
+        }
+        callback(data);
+    }
+
+    signin(req, res) {
+        if (req.body.username &&
+            req.body.password &&
+            req.body.username == ROOT_USERNAME &&
+            req.body.password == ROOT_PASSWORD
+        ) {
+            jwt.sign({ id: -1 }, AUTHENTICATION_SECRET, (err, token) => {
+                return res.json({ token });
+            });
+        } else if (!req.body.username) {
+            return res.status(400).json({ name: 'NoUsernameProvided', errors: [{ message: 'No username provided' }] });
+        } else if (!req.body.password) {
+            return res.status(400).json({ name: 'NoPasswordProvided', errors: [{ message: 'No password provided' }] });
+        } else {
+            this.findOne({ where: { username: { [Op.eq]: req.body.username } } }).then(data => {
+                if (data && bcrypt.compareSync(req.body.password, data.password)) {
+                    jwt.sign({ id: data.id }, AUTHENTICATION_SECRET, (err, token) => {
+                        return res.json({ token });
+                    });
+                } else {
+                    return res.status(400).json({ name: 'InvalidCredential', errors: [{ message: 'Invalid credential' }] });
+                }
+            });
+        }
+    }
+
+    self(req, res) {
+        var result = req.authenticated_as;
+        result.password = undefined;
+        res.json({ result });
+    }
 }
-
-function login(req, res) {
-    jwt.sign({ id: 1 }, AUTHENTICATION_SECRET, (err, token) => {
-        res.json({
-            token
-        });
-    });
-}
-
 
 module.exports = {
-    getAll,
-    getById,
-    add,
-    login,
-};
+    getAll: controller.getAll.bind(controller),
+    add: controller.add.bind(controller),
+    update: controller.update.bind(controller),
+    delete: controller.delete.bind(controller),
+    signin: controller.signin.bind(controller),
+    self: controller.self.bind(controller),
+}

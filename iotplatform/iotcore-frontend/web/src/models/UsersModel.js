@@ -9,19 +9,17 @@ export default new class {
     fetch() {
         this.fetching = true;
 
-        setTimeout(() => {
+        axios.get("http://iot.pcxd.me:3000/api/users").then((res) => {
             action(() => {
                 this.fetching = false;
                 this.fetched = true;
-                this.data = [
-                    {
-                        id: "adfsdif9djf9",
-                        name: "Peeranut Chindanonda",
-                        username: "pcxd",
-                        role: "Admin"
-                    }
-                ];
+                this.data = res.data.result;
             })();
-        }, 1000);
+        }).catch((err) => {
+            action(() => {
+                this.fetching = false;
+                this.fetched = false;
+            })();
+        })
     }
 }

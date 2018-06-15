@@ -1,14 +1,16 @@
+const AuthenticationRequireRole = require('../handlers/AuthenticationRequireRole');
 const express = require('express');
 const router = express.Router();
-
-const AuthenticatedHandler = require('../handlers/AuthenticatedHandler');
 
 const UsersController = require('../controllers/UsersController');
 
 // Users
-router.get('/api/users', UsersController.getAll);
-router.post('/api/users', AuthenticatedHandler, UsersController.add);
-router.post('/api/users/login', UsersController.login);
+router.get('/api/users', AuthenticationRequireRole.USER, UsersController.getAll);
+router.post('/api/users', AuthenticationRequireRole.ADMIN, UsersController.add);
+router.put('/api/users/:id', AuthenticationRequireRole.ADMIN, UsersController.update);
+router.delete('/api/users/:id', AuthenticationRequireRole.ADMIN, UsersController.delete);
+router.post('/api/users/signin', UsersController.signin);
+router.get('/api/users/self', AuthenticationRequireRole.USER, UsersController.self);
 
 // Devices
 

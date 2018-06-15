@@ -14,6 +14,15 @@ export default new class {
         autorun(() => {
             Cookies.set("auth_token", this.authToken);
         })
+
+        axios.interceptors.response.use(response => response, error => {
+            if (error.response.status === 401) {
+                this.checked = true;
+                this.checking = false;
+                this.authenticated = true;
+            }
+            return error;
+        });
     }
 
     checkAuth() {
@@ -28,27 +37,20 @@ export default new class {
 
         this.checking = true;
 
-        axios.get("http://some.url").then((res) => {
+        axios.get("http://iot.pcxd.me:3000/api/users/self").then((res) => {
             console.log(res);
             action(() => {
                 this.checked = true;
                 this.checking = false;
                 this.authenticated = true;
-                this.authToken = "abc";
             })();
         }).catch((err) => {
             console.log(err);
             action(() => {
-                if(this.authToken) {
-                    this.checked = true;
-                    this.checking = false;
-                    this.authenticated = true;
-                } else {
-                    this.checked = true;
-                    this.checking = false;
-                    this.authenticated = false;
-                    this.authToken = "";
-                }
+                this.checked = true;
+                this.checking = false;
+                this.authenticated = false;
+                this.authToken = "";
             })();
         });
     }
@@ -59,11 +61,19 @@ export default new class {
             this.signingIn = true;
         })();
 
-        action(() => {
-            this.signingIn = false;
-            this.authenticated = true;
-            this.authToken = "abc";
-        })();
+        axios.post("http://iot.pcxd.me:3000/api/users/signin", { username, password }).then((res) => {
+            action(() => {
+                this.signingIn = false;
+                this.authenticated = true;
+                this.authToken = res.data.token;
+            })();
+        }).catch((err) => {
+            action(() => {
+                this.signingIn = false;
+                this.authenticated = false;
+                this.authToken = "";
+            })();
+        });
     }
 
     signOut() {
