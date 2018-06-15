@@ -23,8 +23,6 @@ export default class extends React.Component {
         document.querySelectorAll('.mdc-text-field-helper-text').forEach((node) => {
             MDCTextFieldHelperText.attachTo(node);
         });
-
-        //Snackbar.show("Username already existed");
     }
 
     render() {

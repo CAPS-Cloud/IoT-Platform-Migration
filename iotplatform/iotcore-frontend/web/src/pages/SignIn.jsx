@@ -9,6 +9,7 @@ import AuthModel from "../models/AuthModel";
 import FormModel from "../models/FormModel";
 import qs from "query-string";
 import Snackbar from "../utils/Snackbar";
+import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
@@ -32,7 +33,7 @@ export default class extends React.Component {
         AuthModel.signIn(this.form.values.username, this.form.values.password).then((response) => {
             
         }).catch((error) => {
-            Snackbar.show(error.response.data.errors ? error.response.data.errors[0].message : error.response.data.name);
+            Snackbar.show(new RestError(error).getMessage());
         });
     }
 

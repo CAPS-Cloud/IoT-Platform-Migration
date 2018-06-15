@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom
 import { MDCDialog } from '@material/dialog';
 import UsersModel from "../models/UsersModel";
 import Snackbar from '../utils/Snackbar';
+import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
@@ -25,9 +26,10 @@ export default class extends React.Component {
         this.dialog.listen('MDCDialog:accept', function () {
             const { id, name } = user;
             UsersModel.delete(id).then((response) => {
-                Snackbar.show("Deleted user " + name);
-            }).then((error) => {
-                Snackbar.show(error.response.data.errors ? error.response.data.errors[0].message : error.response.data.name);
+                Snackbar.show("Deleted user " + name, "success");
+                UsersModel.fetch();
+            }).catch((error) => {
+                Snackbar.show(new RestError(error).getMessage());
             });
             this.delete_user = null;
         })

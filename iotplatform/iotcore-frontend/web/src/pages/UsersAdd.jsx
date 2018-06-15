@@ -9,6 +9,7 @@ import { Container, Row, Col } from 'reactstrap';
 import UsersModel from '../models/UsersModel';
 import FormModel from '../models/FormModel';
 import Snackbar from '../utils/Snackbar';
+import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
@@ -40,7 +41,7 @@ export default class extends React.Component {
             this.form.clearForm();
             this.setState({ back: true })
         }).catch((error) => {
-            Snackbar.show(error.response.data.errors ? error.response.data.errors[0].message : error.response.data.name);
+            Snackbar.show(new RestError(error).getMessage());
         });
     }
 
