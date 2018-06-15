@@ -7,7 +7,7 @@ const Users = sequelize.define('users', {
         allowNull: false,
         validate: {
             is: {
-                args: /^\S+([ ]\S+)+$/,
+                args: /^\S+([ ]\S+)*$/,
                 msg: 'Name is invalid.',
             },
         },

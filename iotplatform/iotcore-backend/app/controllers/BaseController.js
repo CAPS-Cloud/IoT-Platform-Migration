@@ -49,13 +49,19 @@ module.exports = class {
     update(req, res) {
         this.pre_update(req.body, toUpdate => {
             toUpdate.id = undefined;
-            const result = this.model.update(toUpdate, { where: { id: { [Op.eq]: req.params.id } } });
-            return res.status(200).json({ result });
+            this.model.update(toUpdate, { where: { id: { [Op.eq]: req.params.id } } }).then(data => {
+                return res.status(200).json({ result: data });
+            }).catch(err => {
+                return responseError(res, err);
+            });
         });
     }
 
     delete(req, res) {
-        const result = this.model.destroy({ where: { id: { [Op.eq]: req.params.id } } });
-        return res.status(200).json({ result });
+        this.model.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
+            return res.status(200).json({ result: data });
+        }).catch(err => {
+            return responseError(res, err);
+        });
     }
 }

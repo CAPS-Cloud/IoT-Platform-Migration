@@ -41,7 +41,6 @@ export default class extends React.Component {
                 }
             }
             this.userNotFound = userNotFound;
-            console.log("What", user);
             this.user = user;
             if(user && this.form.ref) {
                 this.form.ref.elements["name"].value = user.name;
