@@ -12,11 +12,14 @@ RUN chmod -R a+x /app \
     && npm install --no-optional --save \
     && cd ../
 
+COPY wait-for-it.sh /
+RUN chmod a+x /wait-for-it.sh
+
 # add entrypoint script
 USER root
 COPY start.sh /
 RUN chmod a+x /start.sh
 
-EXPOSE 50055 50051
+EXPOSE 3000
 
 ENTRYPOINT /start.sh

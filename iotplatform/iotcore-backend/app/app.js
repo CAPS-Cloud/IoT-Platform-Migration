@@ -1,3 +1,7 @@
+const args = process.argv;
+const MARIADB = args[2];
+process.env.MARIADB = MARIADB;
+
 require('./initializations')
 const express = require('express');
 const cors = require('cors');

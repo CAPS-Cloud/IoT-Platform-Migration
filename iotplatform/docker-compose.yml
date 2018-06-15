@@ -103,7 +103,7 @@ services:
         ports:
             - "3000:3000"
         environment:
-            MARIA_DB: ${SERVICE_PREFIX}mariadb${EXPOSED_SUFFIX}:3306
+            MARIADB: ${SERVICE_PREFIX}mariadb${EXPOSED_SUFFIX}:3306
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
