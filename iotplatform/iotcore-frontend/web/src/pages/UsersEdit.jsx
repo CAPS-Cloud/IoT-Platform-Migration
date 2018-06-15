@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { observable, action } from "mobx";
+import { observable, action, computed, autorun } from "mobx";
 import { observer } from "mobx-react";
 import Ripple from "../utils/Ripple";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
@@ -9,9 +9,75 @@ import { MDCTextFieldHelperText } from '@material/textfield/helper-text';
 import { MDCSnackbar } from '@material/snackbar';
 import { Container, Row, Col } from 'reactstrap';
 import Snackbar from "../utils/Snackbar";
+import UsersModel from '../models/UsersModel';
+import FormModel from '../models/FormModel';
+import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
+    @observable failedFetching = false;
+    @observable userNotFound = false;
+    @observable user;
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            back: false,
+        }
+
+        this.form = new FormModel();
+
+        autorun(() => {
+            this.failedFetching = !UsersModel.fetching && !UsersModel.fetched;
+            var userNotFound = false;
+            var user;
+            if (UsersModel.fetched) {
+                const users = UsersModel.data.filter((user) => (user.id == this.props.match.params.id));
+                if (users.length >= 1) {
+                    user = users[0];
+                } else {
+                    userNotFound = true;
+                }
+            }
+            this.userNotFound = userNotFound;
+            console.log("What", user);
+            this.user = user;
+            if(user && this.form.ref) {
+                this.form.ref.elements["name"].value = user.name;
+                this.form.ref.elements["username"].value = user.username;
+                this.form.ref.elements["role"].value = user.role;
+                document.querySelectorAll('.mdc-text-field').forEach((node) => {
+                    MDCTextField.attachTo(node);
+                });
+            }
+        });
+    }
+
+    updateUser(e) {
+        if (e) {
+            e.preventDefault();
+        }
+        var toUpdate = {
+            name: this.form.values.name,
+            role: this.form.values.role,
+        }
+        if (this.form.values.password) {
+            toUpdate.password = this.form.values.password;
+        }
+        UsersModel.update(this.props.match.params.id, toUpdate).then((response) => {
+            this.form.clearForm();
+            this.setState({ back: true })
+        }).catch((error) => {
+            Snackbar.show(new RestError(error).getMessage());
+        });
+    }
+
+    componentWillMount() {
+        if (!UsersModel.fetched) {
+            UsersModel.fetch();
+        }
+    }
 
     componentDidMount() {
         document.querySelectorAll('.mdc-text-field').forEach((node) => {
@@ -26,59 +92,78 @@ export default class extends React.Component {
     }
 
     render() {
+        if (this.state.back === true) {
+            return <Redirect to='/users' />
+        }
+        
         return (
             <div>
                 <h3 className="mdc-typography--headline3">Edit User</h3>
                 <br />
 
-                <Row className="mb-1">
-                    <Col md="6">
-                        <div className="mdc-text-field" style={{width: "100%"}}>
-                            <input type="text" id="user-add-name" className="mdc-text-field__input" defaultValue="Peeranut Chindaonda" />
-                            <label htmlFor="user-add-name" className="mdc-floating-label">Name</label>
-                            <div className="mdc-line-ripple"></div>
+                {
+                    (this.failedFetching || !UsersModel.fetched || this.userNotFound) && (
+                        <div>
+                            <h5 className="mdc-typography--headline5">{this.failedFetching ? 'Failed getting user info' : (!UsersModel.fetched ? 'Fetching user info' : 'User not found')}</h5>
                         </div>
-                    </Col>
-                </Row>
-                <Row className="mb-1">
-                    <Col md="6">
-                        <div className="mdc-text-field" style={{ width: "100%" }}>
-                            <input type="text" id="user-add-username" className="mdc-text-field__input" defaultValue="pcxd" />
-                            <label htmlFor="user-add-username" className="mdc-floating-label">Username</label>
-                            <div className="mdc-line-ripple"></div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row className="mb-1">
-                    <Col md="6">
-                        <div className="mdc-text-field" style={{ width: "100%" }}>
-                            <input type="password" id="user-add-password" className="mdc-text-field__input" defaultValue="password" />
-                            <label htmlFor="user-add-password" className="mdc-floating-label">Password</label>
-                            <div className="mdc-line-ripple"></div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row className="mb-1">
-                    <Col md="3">
-                        <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
-                            <select className="mdc-select__native-control" defaultValue="admin">
-                                <option value="" disabled></option>
-                                <option value="admin">
-                                    Admin
-                                </option>
-                                <option value="read-only">
-                                    Read-Only
-                                </option>
-                            </select>
-                            <label className="mdc-floating-label">Pick a Role</label>
-                            <div className="mdc-line-ripple"></div>
-                        </div>
-                    </Col>
-                </Row>
-                <div className="mt-5">
-                    <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
-                    <Ripple className="ml-4 mdc-button mdc-button--unelevated" style={{ textTransform: "none" }}>Edit</Ripple>
-                </div>
+                    )
+                }
+                <form onSubmit={this.updateUser.bind(this)} ref={this.form.setRef}>
+                    <div style={{ display: (this.failedFetching || !UsersModel.fetched || this.userNotFound) ? 'none' : undefined }}>
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="user-update-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="user-update-name" className="mdc-floating-label">Name</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input disabled type="text" id="user-update-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input mdc-text-field--disabled" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="user-update-username" className="mdc-floating-label">Username</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="password" id="user-update-password" name="password" onChange={this.form.handleChange}className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="user-update-password" className="mdc-floating-label">Password</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row className="mb-1">
+                            <Col md="3">
+                                <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
+                                    <select id="user-role" name="role" onChange={this.form.handleChange} className="mdc-select__native-control" name="role" onChange={this.form.handleChange} autoComplete="off" data-lpignore="true">
+                                        <option value="" disabled></option>
+                                        <option value="ADMIN">
+                                            Admin
+                                                    </option>
+                                        <option value="USER">
+                                            User
+                                                    </option>
+                                    </select>
+                                    <label className="mdc-floating-label">Pick a Role</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col>
+                        </Row>
+                    </div>
+                    <div className="mt-5">
+                        <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        {
+                            !(this.failedFetching || !UsersModel.fetched || this.userNotFound) && (
+                                <Ripple onClick={this.updateUser.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                            )
+                        }
+                    </div>
+                </form>
             </div>
         )
     }

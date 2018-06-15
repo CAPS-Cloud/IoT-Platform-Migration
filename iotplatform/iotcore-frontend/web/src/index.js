@@ -110,10 +110,10 @@ class Dashboard extends React.Component {
                   }
                 />
                 <Route exact path="/devices" component={Devices} />
-                <Route exact path="/devices/view/:device_id" component={DevicesView} />
+                <Route exact path="/devices/view/:id" component={DevicesView} />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
-                <Route exact path="/users/edit/:user_id" component={UsersEdit} />
+                <Route exact path="/users/edit/:id" component={UsersEdit} />
               </Switch>
             </div>
           </div>

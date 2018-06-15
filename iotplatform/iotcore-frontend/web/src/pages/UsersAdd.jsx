@@ -59,7 +59,7 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="6">
                             <div className="mdc-text-field" style={{width: "100%"}}>
-                                <input type="text" id="user-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" />
+                                <input type="text" id="user-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                 <label htmlFor="user-add-name" className="mdc-floating-label">Name</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
@@ -68,7 +68,7 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="6">
                             <div className="mdc-text-field" style={{ width: "100%" }}>
-                                <input type="text" id="user-add-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input" />
+                                <input type="text" id="user-add-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                 <label htmlFor="user-add-username" className="mdc-floating-label">Username</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
@@ -77,7 +77,7 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="6">
                             <div className="mdc-text-field" style={{ width: "100%" }}>
-                                <input type="password" id="user-add-password" name="password" onChange={this.form.handleChange} className="mdc-text-field__input" />
+                                <input type="password" id="user-add-password" name="password" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                 <label htmlFor="user-add-password" className="mdc-floating-label">Password</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
@@ -86,7 +86,7 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="3">
                             <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
-                                <select className="mdc-select__native-control" name="role" onChange={this.form.handleChange} defaultValue="">
+                                <select id="user-role" name="role" onChange={this.form.handleChange} className="mdc-select__native-control" defaultValue="" autoComplete="off" data-lpignore="true">
                                     <option value="" disabled></option>
                                     <option value="ADMIN">
                                         Admin

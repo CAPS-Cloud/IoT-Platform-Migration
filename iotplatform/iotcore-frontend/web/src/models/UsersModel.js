@@ -6,6 +6,7 @@ export default new class {
     @observable fetched = false;
     @observable adding = false;
     @observable deleting = false;
+    @observable updating = false;
     @observable data = [];
 
     fetch() {
@@ -45,6 +46,18 @@ export default new class {
             return response;
         }).catch((error) => {
             this.deleting = false;
+            throw error;
+        });
+    }
+
+    update(id, toUpdate) {
+        this.updating = true;
+
+        return axios.patch("users/" + id, toUpdate).then((response) => {
+            this.updating = false;
+            return response;
+        }).catch((error) => {
+            this.updating = false;
             throw error;
         });
     }

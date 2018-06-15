@@ -38,7 +38,7 @@ controller = new class extends BaseController {
     }
 
     pre_update(data, callback) {
-        if (toAdd.username) {
+        if (data.username) {
             return res.status(400).json({ name: 'NotAllowUpdate', errors: [{ message: 'You are not allowed to change username' }] });
         }
 

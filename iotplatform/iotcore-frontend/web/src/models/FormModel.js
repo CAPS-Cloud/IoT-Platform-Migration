@@ -3,6 +3,7 @@ import axios from "../utils/Axios";
 
 export default class {
     @observable values = {};
+    @observable ref;
 
     constructor() {
         this.handleChange = this.handleChange.bind(this);
