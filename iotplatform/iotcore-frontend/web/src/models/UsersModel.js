@@ -4,6 +4,7 @@ import axios from "../utils/Axios";
 export default new class {
     @observable fetching = false;
     @observable fetched = false;
+    @observable adding = false;
     @observable data = [];
 
     fetch() {
@@ -21,5 +22,17 @@ export default new class {
                 this.fetched = false;
             })();
         })
+    }
+
+    add(data) {
+        this.adding = true;
+
+        return axios.post("users", data).then((response) => {
+            this.adding = false;
+            return response;
+        }).catch((error) => {
+            this.adding = false;
+            throw error;
+        });
     }
 }

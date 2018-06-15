@@ -20,7 +20,7 @@ export default new class {
         })
 
         axios.interceptors.response.use(response => response, error => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
                 this.authenticated = false;
             }
             return Promise.reject(error);
@@ -40,14 +40,12 @@ export default new class {
         this.checking = true;
 
         axios.get("users/self").then((res) => {
-            console.log(res);
             action(() => {
                 this.checked = true;
                 this.checking = false;
                 this.authenticated = true;
             })();
         }).catch((err) => {
-            console.log(err);
             action(() => {
                 this.checked = true;
                 this.checking = false;

@@ -12,13 +12,13 @@ import Snackbar from "../utils/Snackbar";
 
 @observer
 export default class extends React.Component {
-    @observable signingIn = false;
 
     constructor(props) {
         super(props);
 
         this.form = new FormModel();
     }
+
     componentDidMount() {
         document.querySelectorAll('.mdc-text-field').forEach((node) => {
             MDCTextField.attachTo(node);
@@ -30,14 +30,10 @@ export default class extends React.Component {
             e.preventDefault();
         }
         AuthModel.signIn(this.form.values.username, this.form.values.password).then((response) => {
-            this.form.clearForm();
+            
         }).catch((error) => {
-            Snackbar.show(error.response.data.errors[0].message);
+            Snackbar.show(error.response.data.errors ? error.response.data.errors[0].message : error.response.data.name);
         });
-    }
-
-    handleChange(e) {
-        this.setState
     }
 
     render() {
@@ -65,7 +61,7 @@ export default class extends React.Component {
                                     <label htmlFor="user-add-password" className="mdc-floating-label">Password</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
-                                <Ripple onClick={this.signIn.bind(this)} className="mt-5 mdc-button mdc-button--raised">Sign In</Ripple>
+                                <Ripple onClick={this.signIn.bind(this)} className={"mt-5 mdc-button mdc-button--raised" + (AuthModel.signingIn ? " disabled" : "")}>Sign In</Ripple>
                             </form>
                         </div>
                     </div>
