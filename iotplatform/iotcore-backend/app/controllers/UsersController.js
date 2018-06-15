@@ -64,7 +64,7 @@ controller = new class extends BaseController {
         } else if (!req.body.password) {
             return res.status(400).json({ name: 'NoPasswordProvided', errors: [{ message: 'No password provided' }] });
         } else {
-            this.findOne({ where: { username: { [Op.eq]: req.body.username } } }).then(data => {
+            this.model.findOne({ where: { username: { [Op.eq]: req.body.username } } }).then(data => {
                 if (data && bcrypt.compareSync(req.body.password, data.password)) {
                     jwt.sign({ id: data.id }, AUTHENTICATION_SECRET, (err, token) => {
                         return res.json({ token });
