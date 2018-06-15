@@ -9,6 +9,7 @@ export default new class {
     @observable authenticated = false;
     @observable authToken = typeof Cookies.get("auth_token") == "undefined" ? "" : Cookies.get("auth_token");
     @observable justSignedOut = false;
+    @observable userInfo = observable.map({});
 
     constructor() {
         autorun(() => {
@@ -44,6 +45,7 @@ export default new class {
                 this.checked = true;
                 this.checking = false;
                 this.authenticated = true;
+                this.userInfo.replace(res.data.result);
             })();
         }).catch((err) => {
             action(() => {
@@ -67,6 +69,7 @@ export default new class {
                 this.authenticated = true;
                 this.authToken = response.data.token;
             })();
+            this.checkAuth();
             return response;
         }).catch((error) => {
             action(() => {
@@ -83,6 +86,7 @@ export default new class {
             this.authenticated = false;
             this.authToken = "";
             this.justSignedOut = true;
+            this.userInfo.clear();
         })();
     }
 }

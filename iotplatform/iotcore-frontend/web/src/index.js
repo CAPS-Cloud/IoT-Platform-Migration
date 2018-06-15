@@ -22,6 +22,7 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import Snackbar from './utils/Snackbar';
 
+@observer
 class Dashboard extends React.Component {
 
   signOut() {
@@ -50,7 +51,7 @@ class Dashboard extends React.Component {
                     <div className="d-flex justify-content-left mb-3">
                       <i className="material-icons" style={{ fontSize: "70px", color: "#666" }}>account_circle</i>
                     </div>
-                    <h5 className="mdc-typography--headline5">Peeranut Chindanonda</h5>
+                    <h5 className="mdc-typography--headline5">{AuthModel.userInfo.has("name") && AuthModel.userInfo.get("name")}</h5>
                   </div>
                 </header>
                 <nav className="mdc-drawer__content mdc-list-group">

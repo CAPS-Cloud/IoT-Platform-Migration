@@ -1,6 +1,7 @@
 const connection = require('../connections/mysql');
 const { responseError, responseSystemError } = require('../utils/express_utils');
-
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = class {
 

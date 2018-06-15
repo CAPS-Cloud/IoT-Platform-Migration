@@ -5,6 +5,7 @@ export default new class {
     @observable fetching = false;
     @observable fetched = false;
     @observable adding = false;
+    @observable deleting = false;
     @observable data = [];
 
     fetch() {
@@ -32,6 +33,18 @@ export default new class {
             return response;
         }).catch((error) => {
             this.adding = false;
+            throw error;
+        });
+    }
+
+    delete(id) {
+        this.deleting = true;
+
+        return axios.delete("users/" + id).then((response) => {
+            this.deleting = false;
+            return response;
+        }).catch((error) => {
+            this.deleting = false;
             throw error;
         });
     }

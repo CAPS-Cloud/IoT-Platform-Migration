@@ -5,9 +5,11 @@ import Ripple from "../utils/Ripple";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import { MDCDialog } from '@material/dialog';
 import UsersModel from "../models/UsersModel";
+import Snackbar from '../utils/Snackbar';
 
 @observer
 export default class extends React.Component {
+    @observable delete_user;
 
     componentWillMount() {
         UsersModel.fetch();
@@ -17,14 +19,21 @@ export default class extends React.Component {
         this.dialog = new MDCDialog(document.querySelector('#my-mdc-dialog'));
     }
 
-    deleteClick(id) {
+    deleteClick(user) {
+        this.delete_user = user;
         this.dialog.show();
         this.dialog.listen('MDCDialog:accept', function () {
-            console.log('accepted');
+            const { id, name } = user;
+            UsersModel.delete(id).then((response) => {
+                Snackbar.show("Deleted user " + name);
+            }).then((error) => {
+                Snackbar.show(error.response.data.errors ? error.response.data.errors[0].message : error.response.data.name);
+            });
+            this.delete_user = null;
         })
 
         this.dialog.listen('MDCDialog:cancel', function () {
-            console.log('canceled');
+            this.delete_user = null;
         })
     }
 
@@ -46,7 +55,7 @@ export default class extends React.Component {
                     <div className="mdc-dialog__surface" style={{ width: "unset" }}>
                         <header className="mdc-dialog__header">
                             <h2 id="my-mdc-dialog-label" className="mdc-dialog__header__title">
-                                Delete User "Peeranut Chindanonda"
+                                Delete User "{this.delete_user && this.delete_user.name}"
                             </h2>
                         </header>
                         <section id="my-mdc-dialog-description" className="mdc-dialog__body">
@@ -85,7 +94,7 @@ export default class extends React.Component {
                                                 <td className="mdl-data-table__cell--non-numeric">{user.role}</td>
                                                 <td className="mdl-data-table__cell--non-numeric" style={{ width: "200px" }}>
                                                     <Link to={"/users/edit/" + user.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">Edit</Ripple></Link>
-                                                    <Ripple onClick={this.deleteClick.bind(this, user.id)} className="text-danger mdc-button mdc-card__action mdc-card__action--button">Delete</Ripple>
+                                                    <Ripple onClick={this.deleteClick.bind(this, user)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (UsersModel.deleting ? " disabled" : "") }>Delete</Ripple>
                                                 </td>
                                             </tr>
                                         ))
