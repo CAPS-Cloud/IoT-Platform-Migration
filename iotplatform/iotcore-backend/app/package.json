@@ -11,6 +11,7 @@
   "dependencies": {
     "agentkeepalive": "^3.4.1",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.4",
     "elasticsearch": "^15.0.0",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
