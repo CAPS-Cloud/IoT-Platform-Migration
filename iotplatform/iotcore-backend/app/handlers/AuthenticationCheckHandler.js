@@ -17,7 +17,7 @@ module.exports = function (req, res, next) {
         jwt.verify(bearerToken, AUTHENTICATION_SECRET, (err, authData) => {
             if (!err) {
                 if (authData.id == -1) {
-                    req.authenticated_as = { id: -1, name: 'root', username: ROOT_USERNAME, role: 'SUPER_USER' };
+                    req.authenticated_as = { id: -1, name: '<root>', username: ROOT_USERNAME, role: 'SUPER_USER' };
                     return next();
                 } else {
                     Users.findOne({ where: { id: { [Op.eq]: authData.id } } }).then(data => {

@@ -16,8 +16,8 @@ import RestError from '../utils/RestError';
 @observer
 export default class extends React.Component {
     @observable failedFetching = false;
-    @observable userNotFound = false;
-    @observable user;
+    @observable notFound = false;
+    @observable object;
 
     constructor(props) {
         super(props);
@@ -30,22 +30,22 @@ export default class extends React.Component {
 
         autorun(() => {
             this.failedFetching = !UsersModel.fetching && !UsersModel.fetched;
-            var userNotFound = false;
-            var user;
+            var notFound = false;
+            var object;
             if (UsersModel.fetched) {
-                const users = UsersModel.data.filter((user) => (user.id == this.props.match.params.id));
-                if (users.length >= 1) {
-                    user = users[0];
+                const objects = UsersModel.data.filter((object) => (object.id == this.props.match.params.id));
+                if (objects.length >= 1) {
+                    object = objects[0];
                 } else {
-                    userNotFound = true;
+                    notFound = true;
                 }
             }
-            this.userNotFound = userNotFound;
-            this.user = user;
-            if(user && this.form.ref) {
-                this.form.ref.elements["name"].value = user.name;
-                this.form.ref.elements["username"].value = user.username;
-                this.form.ref.elements["role"].value = user.role;
+            this.notFound = notFound;
+            this.object = object;
+            if (object && this.form.ref) {
+                this.form.ref.elements["name"].value = object.name;
+                this.form.ref.elements["username"].value = object.username;
+                this.form.ref.elements["role"].value = object.role;
                 document.querySelectorAll('.mdc-text-field').forEach((node) => {
                     MDCTextField.attachTo(node);
                 });
@@ -53,7 +53,7 @@ export default class extends React.Component {
         });
     }
 
-    updateUser(e) {
+    update(e) {
         if (e) {
             e.preventDefault();
         }
@@ -66,7 +66,8 @@ export default class extends React.Component {
         }
         UsersModel.update(this.props.match.params.id, toUpdate).then((response) => {
             this.form.clearForm();
-            this.setState({ back: true })
+            this.setState({ back: true });
+            Snackbar.show("Update user", "success");
         }).catch((error) => {
             Snackbar.show(new RestError(error).getMessage());
         });
@@ -101,14 +102,14 @@ export default class extends React.Component {
                 <br />
 
                 {
-                    (this.failedFetching || !UsersModel.fetched || this.userNotFound) && (
+                    (this.failedFetching || !UsersModel.fetched || this.notFound) && (
                         <div>
                             <h5 className="mdc-typography--headline5">{this.failedFetching ? 'Failed getting user info' : (!UsersModel.fetched ? 'Fetching user info' : 'User not found')}</h5>
                         </div>
                     )
                 }
-                <form onSubmit={this.updateUser.bind(this)} ref={this.form.setRef}>
-                    <div style={{ display: (this.failedFetching || !UsersModel.fetched || this.userNotFound) ? 'none' : undefined }}>
+                <form onSubmit={this.update.bind(this)} ref={this.form.setRef}>
+                    <div style={{ display: (this.failedFetching || !UsersModel.fetched || this.notFound) ? 'none' : undefined }}>
                         <Row className="mb-1">
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
@@ -122,7 +123,7 @@ export default class extends React.Component {
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input disabled type="text" id="user-update-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input mdc-text-field--disabled" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="user-update-username" className="mdc-floating-label">Username</label>
+                                    <label htmlFor="user-update-username" className="mdc-floating-label">Username (not editable)</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
@@ -131,7 +132,7 @@ export default class extends React.Component {
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input type="password" id="user-update-password" name="password" onChange={this.form.handleChange}className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="user-update-password" className="mdc-floating-label">Password</label>
+                                    <label htmlFor="user-update-password" className="mdc-floating-label">New Password</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
@@ -157,8 +158,8 @@ export default class extends React.Component {
                     <div className="mt-5">
                         <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
-                            !(this.failedFetching || !UsersModel.fetched || this.userNotFound) && (
-                                <Ripple onClick={this.updateUser.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                            !(this.failedFetching || !UsersModel.fetched || this.notFound) && (
+                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
                             )
                         }
                     </div>

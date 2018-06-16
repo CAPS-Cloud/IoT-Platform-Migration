@@ -7,7 +7,7 @@ export default new class {
     @observable checking = false;
     @observable signingIn = false;
     @observable authenticated = false;
-    @observable authToken = typeof Cookies.get("auth_token") == "undefined" ? "" : Cookies.get("auth_token");
+    @observable authToken = typeof Cookies.get()["auth_token"] == "undefined" ? "" : Cookies.get()["auth_token"];
     @observable justSignedOut = false;
     @observable userInfo = observable.map({});
 

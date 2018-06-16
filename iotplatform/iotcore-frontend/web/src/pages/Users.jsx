@@ -10,7 +10,7 @@ import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
-    @observable delete_user;
+    @observable to_delete;
 
     componentWillMount() {
         UsersModel.fetch();
@@ -20,22 +20,22 @@ export default class extends React.Component {
         this.dialog = new MDCDialog(document.querySelector('#my-mdc-dialog'));
     }
 
-    deleteClick(user) {
-        this.delete_user = user;
+    deleteClick(object) {
+        this.to_delete = object;
         this.dialog.show();
         this.dialog.listen('MDCDialog:accept', function () {
-            const { id, name } = user;
+            const { id, name } = object;
             UsersModel.delete(id).then((response) => {
                 Snackbar.show("Deleted user " + name, "success");
                 UsersModel.fetch();
             }).catch((error) => {
                 Snackbar.show(new RestError(error).getMessage());
             });
-            this.delete_user = null;
+            this.to_delete = null;
         })
 
         this.dialog.listen('MDCDialog:cancel', function () {
-            this.delete_user = null;
+            this.to_delete = null;
         })
     }
 
@@ -57,7 +57,7 @@ export default class extends React.Component {
                     <div className="mdc-dialog__surface" style={{ width: "unset" }}>
                         <header className="mdc-dialog__header">
                             <h2 id="my-mdc-dialog-label" className="mdc-dialog__header__title">
-                                Delete User "{this.delete_user && this.delete_user.name}"
+                                Delete User "{this.to_delete && this.to_delete.name}"
                             </h2>
                         </header>
                         <section id="my-mdc-dialog-description" className="mdc-dialog__body">
@@ -89,14 +89,14 @@ export default class extends React.Component {
                             ): (
                                 UsersModel.fetched ? (
                                     UsersModel.data.length > 0 ? (
-                                        UsersModel.data.map((user) => (
-                                            <tr key={user.id}>
+                                        UsersModel.data.map((object) => (
+                                            <tr key={object.id}>
                                                 <td className="mdl-data-table__cell--non-numeric font-weight-bold">{user.name}</td>
-                                                <td className="mdl-data-table__cell--non-numeric">{user.username}</td>
-                                                <td className="mdl-data-table__cell--non-numeric">{user.role}</td>
+                                                <td className="mdl-data-table__cell--non-numeric">{object.username}</td>
+                                                <td className="mdl-data-table__cell--non-numeric">{object.role}</td>
                                                 <td className="mdl-data-table__cell--non-numeric" style={{ width: "200px" }}>
-                                                    <Link to={"/users/edit/" + user.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">Edit</Ripple></Link>
-                                                    <Ripple onClick={this.deleteClick.bind(this, user)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (UsersModel.deleting ? " disabled" : "") }>Delete</Ripple>
+                                                    <Link to={"/users/edit/" + object.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">Edit</Ripple></Link>
+                                                    <Ripple onClick={this.deleteClick.bind(this, object)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (UsersModel.deleting ? " disabled" : "") }>Delete</Ripple>
                                                 </td>
                                             </tr>
                                         ))

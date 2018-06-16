@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../connections/mysql');
 
-const Users = sequelize.define('users', {
+module.exports = sequelize.define('users', {
     name: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -19,7 +19,7 @@ const Users = sequelize.define('users', {
         validate: {
             is: {
                 args: /^[a-z0-9_]{3,30}$/,
-                msg: 'Username can contain only lowercase a-z, 0-9 and underscores. The length of username have to be between 3 and 30 characters long.',
+                msg: 'Username can contain only 3-30 lowercase a-z, 0-9 and _.',
             },
         },
     },
@@ -35,5 +35,3 @@ const Users = sequelize.define('users', {
         },
     },
 });
-
-module.exports = Users;

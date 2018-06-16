@@ -33,7 +33,7 @@ export default class extends React.Component {
         });
     }
 
-    addUser(e) {
+    add(e) {
         if (e) {
             e.preventDefault();
         }
@@ -55,7 +55,7 @@ export default class extends React.Component {
                 <h3 className="mdc-typography--headline3">Add User</h3>
                 <br />
 
-                <form onSubmit={this.addUser.bind(this)} ref={this.form.setRef}>
+                <form onSubmit={this.add.bind(this)} ref={this.form.setRef}>
                     <Row className="mb-1">
                         <Col md="6">
                             <div className="mdc-text-field" style={{width: "100%"}}>
@@ -102,7 +102,7 @@ export default class extends React.Component {
                     </Row>
                     <div className="mt-5">
                         <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
-                        <Ripple onClick={this.addUser.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
+                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
                     </div>
                 </form>
             </div>

@@ -9,9 +9,12 @@ import DevTools from "mobx-react-devtools";
 import { BrowserRouter as Router, Route, Link, Redirect, Switch } from "react-router-dom";
 
 import Devices from "./pages/Devices";
+import DevicesAdd from "./pages/DevicesAdd";
+import DevicesView from "./pages/DevicesView";
+import DevicesEdit from "./pages/DevicesEdit";
+
 import Users from "./pages/Users";
 import UsersAdd from "./pages/UsersAdd";
-import DevicesView from "./pages/DevicesView";
 import UsersEdit from "./pages/UsersEdit";
 import SignIn from "./pages/SignIn";
 
@@ -110,7 +113,9 @@ class Dashboard extends React.Component {
                   }
                 />
                 <Route exact path="/devices" component={Devices} />
+                <Route exact path="/devices/add" component={DevicesAdd} />
                 <Route exact path="/devices/view/:id" component={DevicesView} />
+                <Route exact path="/devices/edit/:id" component={DevicesEdit} />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
                 <Route exact path="/users/edit/:id" component={UsersEdit} />
