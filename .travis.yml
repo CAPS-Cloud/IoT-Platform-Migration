@@ -92,6 +92,12 @@ deploy:
       condition: $LIVE = true
   - provider: script
     skip_cleanup: true
+    script: env IMAGE_NAME=ws-gateway-go BUILD_PATH=./iotplatform/ws-gateway-go/ travis/push-docker-images-to-dockerhub.sh
+    on:
+      #tags: true
+      condition: $LIVE = true
+  - provider: script
+    skip_cleanup: true
     script: env IMAGE_NAME=java-producer BUILD_PATH=./iotplatform/java-producer/ travis/push-docker-images-to-dockerhub.sh
     on:
       #tags: true
