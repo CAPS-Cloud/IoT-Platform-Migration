@@ -2,7 +2,7 @@ const connection = require('../connections/mysql');
 const { responseError, responseSystemError } = require('../utils/express_utils');
 const Devices = require('../models/DevicesModel');
 const jwt = require('jsonwebtoken');
-const { AUTHENTICATION_SECRET, ROOT_USERNAME, ROOT_PASSWORD } = require('../secrets');
+const { DEVICE_SECRET } = require('../secrets');
 const bcrypt = require('bcryptjs');
 const BaseController =  require('./BaseController');
 const Sequelize = require('sequelize');
@@ -13,6 +13,20 @@ controller = new class extends BaseController {
     constructor() {
         super(Devices);
     }
+
+    key(req, res) {
+        this.model.findOne({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
+            if (data) {
+                jwt.sign({ id: data.id }, DEVICE_SECRET, (err, token) => {
+                    return res.json({ token });
+                });
+            } else {
+                return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
+            }
+        }).catch(err => {
+            return responseError(res, err);
+        });
+    }
 }
 
 module.exports = {
@@ -20,4 +34,5 @@ module.exports = {
     add: controller.add.bind(controller),
     update: controller.update.bind(controller),
     delete: controller.delete.bind(controller),
+    key: controller.key.bind(controller),
 }

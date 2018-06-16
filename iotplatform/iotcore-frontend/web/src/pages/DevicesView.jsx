@@ -5,6 +5,9 @@ import Ripple from "../utils/Ripple";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import { Container, Row, Col } from 'reactstrap';
 import DevicesModel from '../models/DevicesModel';
+import axios from "axios";
+import Download from "../utils/Download";
+import Snackbar from "../utils/Snackbar";
 
 @observer
 export default class extends React.Component {
@@ -36,6 +39,14 @@ export default class extends React.Component {
         });
     }
 
+    downloadKey() {
+        axios.get(`/devices/${this.props.match.params.id}/key`).then(response => {
+            Download(JSON.stringify(response.data), `device_${this.props.match.params.id}_key.json`, 'application/json');
+        }).catch(error => {
+            Snackbar.show(new RestError(error).getMessage());
+        });
+    }
+
     componentWillMount() {
         if (!DevicesModel.fetched) {
             DevicesModel.fetch();
@@ -64,7 +75,11 @@ export default class extends React.Component {
                         </div>
                     ) : (
                         <div>
-                            <h3 className="mt-3 mdc-typography--headline3">{this.object.name} <Link to={"/devices/edit/" + this.props.match.params.id} className="plain-link"><Ripple className="ml-2 mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Edit Device</Ripple></Link><Ripple className="ml-3 secondary-button mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Download Credential</Ripple></h3>
+                            <h3 className="mt-3 mdc-typography--headline3">
+                                {this.object.name}
+                                <Link to={"/devices/edit/" + this.props.match.params.id} className="plain-link"><Ripple className="ml-3 mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Edit Device</Ripple></Link>
+                                <Ripple onClick={this.downloadKey.bind(this)} className="ml-3 secondary-button mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Download Device Key</Ripple>
+                            </h3>
                             <br />
 
                             <div className="mb-4">

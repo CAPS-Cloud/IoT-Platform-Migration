@@ -18,6 +18,7 @@ router.get('/api/devices', AuthenticationRequireRole.USER, DevicesController.get
 router.post('/api/devices', AuthenticationRequireRole.ADMIN, DevicesController.add);
 router.patch('/api/devices/:id', AuthenticationRequireRole.ADMIN, DevicesController.update);
 router.delete('/api/devices/:id', AuthenticationRequireRole.ADMIN, DevicesController.delete);
+router.get('/api/devices/:id/key', AuthenticationRequireRole.ADMIN, DevicesController.key);
 
 // Consumptions
 

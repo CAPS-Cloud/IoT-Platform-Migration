@@ -62,6 +62,7 @@ export default class extends React.Component {
                                     <label htmlFor="user-add-password" className="mdc-floating-label">Password</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
+                                <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                                 <Ripple onClick={this.signIn.bind(this)} className={"mt-5 mdc-button mdc-button--raised" + (AuthModel.signingIn ? " disabled" : "")}>Sign In</Ripple>
                             </form>
                         </div>
