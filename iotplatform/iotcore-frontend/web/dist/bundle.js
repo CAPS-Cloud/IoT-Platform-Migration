@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "acaef354ca3e45e4f6a6"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a9c8e89d9b32ee3c44b2"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -875,7 +875,7 @@ eval("/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, 
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n\nvar _axios = __webpack_require__(63);\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n//axios.defaults.baseURL = 'http://iot.pcxd.me:3000/api';\n_axios2.default.defaults.baseURL = 'http://localhost:3000/api';\n\nexports.default = _axios2.default;\n\n//////////////////\n// WEBPACK FOOTER\n// ./src/utils/Axios.jsx\n// module id = 21\n// module chunks = 0\n\n//# sourceURL=webpack:///./src/utils/Axios.jsx?");
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n\nvar _axios = __webpack_require__(63);\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n_axios2.default.defaults.baseURL = 'http://iot.pcxd.me:3000/api';\n//axios.defaults.baseURL = 'http://localhost:3000/api';\n\nexports.default = _axios2.default;\n\n//////////////////\n// WEBPACK FOOTER\n// ./src/utils/Axios.jsx\n// module id = 21\n// module chunks = 0\n\n//# sourceURL=webpack:///./src/utils/Axios.jsx?");
 
 /***/ }),
 /* 22 */
