@@ -1,0 +1,18 @@
+{
+  "name": "iot-bridge",
+  "version": "1.0.0",
+  "description": "IoT Bridge",
+  "author": "heldic",
+  "main": "index.js",
+  "repository": "https://github.com/heldic/iotplatform",
+  "dependencies": {
+    "kafka-node": "2.5.0",
+    "ws":"5.1.1",
+    "grpc":"^1.11.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "license": "ISC"
+}
