@@ -19,7 +19,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&ENV_HTTP_PORT, "port", "8089", "http port to listen to")
+	flag.StringVar(&ENV_HTTP_PORT, "port", "8766", "http port to listen to")
 	flag.StringVar(&ENV_IOTCORE_BACKEND, "backend", "localhost:50051", "backend address incl. port")
 	flag.StringVar(&ENV_ZOOKEEPER, "zookeeper", "localhost:2181", "zookeeper address incl. port")
 	flag.Parse()
@@ -56,8 +56,7 @@ func main() {
 	}
 
 	gateway := &Gateway{
-		PublicKey: LoadPublicKey(),
-		Producer:  producer,
+		Producer: producer,
 	}
 
 	// listen for http requests

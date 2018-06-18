@@ -9,9 +9,12 @@ import DevTools from "mobx-react-devtools";
 import { BrowserRouter as Router, Route, Link, Redirect, Switch } from "react-router-dom";
 
 import Devices from "./pages/Devices";
+import DevicesAdd from "./pages/DevicesAdd";
+import DevicesView from "./pages/DevicesView";
+import DevicesEdit from "./pages/DevicesEdit";
+
 import Users from "./pages/Users";
 import UsersAdd from "./pages/UsersAdd";
-import DevicesView from "./pages/DevicesView";
 import UsersEdit from "./pages/UsersEdit";
 import SignIn from "./pages/SignIn";
 
@@ -22,6 +25,7 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import Snackbar from './utils/Snackbar';
 
+@observer
 class Dashboard extends React.Component {
 
   signOut() {
@@ -50,7 +54,7 @@ class Dashboard extends React.Component {
                     <div className="d-flex justify-content-left mb-3">
                       <i className="material-icons" style={{ fontSize: "70px", color: "#666" }}>account_circle</i>
                     </div>
-                    <h5 className="mdc-typography--headline5">Peeranut Chindanonda</h5>
+                    <h5 className="mdc-typography--headline5">{AuthModel.userInfo.has("name") && AuthModel.userInfo.get("name")}</h5>
                   </div>
                 </header>
                 <nav className="mdc-drawer__content mdc-list-group">
@@ -109,10 +113,12 @@ class Dashboard extends React.Component {
                   }
                 />
                 <Route exact path="/devices" component={Devices} />
-                <Route exact path="/devices/view/:device_id" component={DevicesView} />
+                <Route exact path="/devices/add" component={DevicesAdd} />
+                <Route exact path="/devices/view/:id" component={DevicesView} />
+                <Route exact path="/devices/edit/:id" component={DevicesEdit} />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
-                <Route exact path="/users/edit/:user_id" component={UsersEdit} />
+                <Route exact path="/users/edit/:id" component={UsersEdit} />
               </Switch>
             </div>
           </div>

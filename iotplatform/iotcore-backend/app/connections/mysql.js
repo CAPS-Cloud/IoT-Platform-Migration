@@ -1,13 +1,13 @@
-const mysql = require('mysql');
+const Sequelize = require('sequelize');
 
-var connection = mysql.createConnection({
-  //host: process.env.MARIA_DB,
-  host: "iot.pcxd.me",
-  user: 'root',
-  password: 'mP6AMBTSSElsq1oQttZ1',
-  database: 'backend'
-});
 
-connection.connect();
+const sequelize = new Sequelize('backend', 'root', 'mP6AMBTSSElsq1oQttZ1', {
+  dialect: 'mysql',
+  host: process.env.MARIADB.split(':')[0],
+  //host: "iot.pcxd.me",
+  port: 3306,
+  operatorsAliases: Sequelize.Op,
+})
 
-module.exports = connection;
+
+module.exports = sequelize;

@@ -1,3 +1,3 @@
-import UC from 'universal-cookie';
+import cookie from 'js-cookie';
 
-export default new UC();
+export default cookie;

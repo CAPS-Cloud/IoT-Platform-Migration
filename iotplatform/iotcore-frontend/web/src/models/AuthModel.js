@@ -1,5 +1,5 @@
 import { observable, action, autorun } from "mobx";
-import axios from "axios";
+import axios from "../utils/Axios";
 import Cookies from "../utils/Cookies";
 
 export default new class {
@@ -7,13 +7,25 @@ export default new class {
     @observable checking = false;
     @observable signingIn = false;
     @observable authenticated = false;
-    @observable authToken = typeof Cookies.get("auth_token") == "undefined" ? "" : Cookies.get("auth_token");
+    @observable authToken = typeof Cookies.get()["auth_token"] == "undefined" ? "" : Cookies.get()["auth_token"];
     @observable justSignedOut = false;
+    @observable userInfo = observable.map({});
 
     constructor() {
         autorun(() => {
             Cookies.set("auth_token", this.authToken);
         })
+
+        autorun(() => {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${this.authToken}`;
+        })
+
+        axios.interceptors.response.use(response => response, error => {
+            if (error.response && error.response.status === 401) {
+                this.authenticated = false;
+            }
+            return Promise.reject(error);
+        });
     }
 
     checkAuth() {
@@ -28,27 +40,19 @@ export default new class {
 
         this.checking = true;
 
-        axios.get("http://some.url").then((res) => {
-            console.log(res);
+        axios.get("users/self").then((res) => {
             action(() => {
                 this.checked = true;
                 this.checking = false;
                 this.authenticated = true;
-                this.authToken = "abc";
+                this.userInfo.replace(res.data.result);
             })();
         }).catch((err) => {
-            console.log(err);
             action(() => {
-                if(this.authToken) {
-                    this.checked = true;
-                    this.checking = false;
-                    this.authenticated = true;
-                } else {
-                    this.checked = true;
-                    this.checking = false;
-                    this.authenticated = false;
-                    this.authToken = "";
-                }
+                this.checked = true;
+                this.checking = false;
+                this.authenticated = false;
+                this.authToken = "";
             })();
         });
     }
@@ -59,11 +63,22 @@ export default new class {
             this.signingIn = true;
         })();
 
-        action(() => {
-            this.signingIn = false;
-            this.authenticated = true;
-            this.authToken = "abc";
-        })();
+        return axios.post("users/signin", { username, password }).then((response) => {
+            action(() => {
+                this.signingIn = false;
+                this.authenticated = true;
+                this.authToken = response.data.token;
+            })();
+            this.checkAuth();
+            return response;
+        }).catch((error) => {
+            action(() => {
+                this.signingIn = false;
+                this.authenticated = false;
+                this.authToken = "";
+            })();
+            throw error;
+        });
     }
 
     signOut() {
@@ -71,6 +86,7 @@ export default new class {
             this.authenticated = false;
             this.authToken = "";
             this.justSignedOut = true;
+            this.userInfo.clear();
         })();
     }
 }
