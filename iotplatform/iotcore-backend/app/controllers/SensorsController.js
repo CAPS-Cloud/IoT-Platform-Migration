@@ -10,6 +10,13 @@ const Op = Sequelize.Op;
 const kafka = require('kafka-node');
 
 module.exports = {
+    delete(req, res) {
+        Sensors.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
+            return res.status(200).json({ result: data });
+        }).catch(err => {
+            return responseError(res, err);
+        });
+    },
     add(req, res) {
         var Producer = kafka.Producer,
         client = new kafka.Client('localhost:2181/'),

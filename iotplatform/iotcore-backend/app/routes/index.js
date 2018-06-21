@@ -25,6 +25,7 @@ router.get('/api/devices/:id/key', AuthenticationRequireRole.ADMIN, DevicesContr
 
 // Sensors
 router.post('/api/sensors/devices/:id', AuthenticationRequireRole.ADMIN, SensorsController.add);
+router.delete('/api/sensors/devices/:id', AuthenticationRequireRole.ADMIN, SensorsController.delete);
 
 
 module.exports = router;
