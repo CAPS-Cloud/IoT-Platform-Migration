@@ -4,6 +4,7 @@ const router = express.Router();
 
 const UsersController = require('../controllers/UsersController');
 const DevicesController = require('../controllers/DevicesController');
+const SensorsController = require('../controllers/SensorsController');
 
 // Users
 router.get('/api/users', AuthenticationRequireRole.USER, UsersController.getAll);
@@ -21,6 +22,9 @@ router.delete('/api/devices/:id', AuthenticationRequireRole.ADMIN, DevicesContro
 router.get('/api/devices/:id/key', AuthenticationRequireRole.ADMIN, DevicesController.key);
 
 // Consumptions
+
+// Sensors
+router.post('/api/sensors/devices/:id', AuthenticationRequireRole.ADMIN, SensorsController.add);
 
 
 module.exports = router;
