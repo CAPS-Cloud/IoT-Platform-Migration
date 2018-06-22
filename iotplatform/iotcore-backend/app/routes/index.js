@@ -27,6 +27,8 @@ router.get('/api/devices/:id/key', AuthenticationRequireRole.ADMIN, DevicesContr
 router.post('/api/devices/:id/sensors', AuthenticationRequireRole.ADMIN, SensorsController.add);
 router.patch('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.update);
 router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.delete);
-router.get('/api/devices/:id/sensors/', AuthenticationRequireRole.ADMIN, SensorsController.getAll);
+router.get('/api/devices/:id/sensors/', AuthenticationRequireRole.USER, SensorsController.getAll);
+router.get('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.USER, SensorsController.get);
+
 
 module.exports = router;
