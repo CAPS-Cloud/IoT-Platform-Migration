@@ -12,10 +12,11 @@ const kafka = require('kafka-node');
 module.exports = {
 
     getAll(req, res) {
-        Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.id } } }).then(datas => {
-            console.log("sensors are",data);
+        console.log("sensors are");
+
+        Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.id } } }).then(data => {
             if(data){
-            return res.status(200).json({ result: datas });
+            return res.status(200).json({ result: data });
             }
             else {
                 return res.status(400).json({ name: 'NoSensorsExist', errors: [{ message: 'No Sensors Exist' }] });
