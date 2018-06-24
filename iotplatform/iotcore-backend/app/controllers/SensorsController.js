@@ -71,22 +71,50 @@ module.exports = {
             }
         });
     },
+
     add(req, res) {
         var Producer = kafka.Producer,
         client = new kafka.Client('localhost:2181/'),
-        producer = new Producer(client);
-
+        producer = new Producer(client),
+        elasticsearch = require('elasticsearch'),
+        elasticClient = new elasticsearch.Client({
+          host: 'localhost:9000',
+          log: 'trace'
+        });
         Devices.findById(req.params.id).then(device => {
             console.log("device id",device.id);
             
             device.getSensors().then(res => {
                 console.log("Sensors =", res.map(e => e.dataValues));
                 Sensors.create({ name: "temperature sensor", description: "test", unit: "unit", path: "path", deviceId: device.id }).then(res2 => {
-                    console.log("Added a sensor");
-    
-                    device.getSensors().then(res3 => {
-                        console.log("Sensors =", res3.map(e => e.dataValues));
-                    });
+
+                var device_id_sensor_id = device.id + '_' + res2.id;
+                elasticClient.indices.create({  
+                    index: device_id_sensor_id
+                    },function(err,resp,status) {
+                    if(err) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log("create",resp); 
+                        var body = {
+                            device_id_sensor_id:{
+                                properties:{
+                                reading         : {"type" : "string", "index" : "not_analyzed"},
+                                sensorId        : {"type" : "string", "index" : "not_analyzed"},
+                                sensorGroup   : {"type" : "string", "index" : "not_analyzed"},
+                                date         : {"type" : "long", "index" : "not_analyzed"}
+                                    }
+                                }
+                        }
+                        
+                        elasticClient.indices.putMapping({index:device_id_sensor_id, type:"device_id_sensor_id", body:body});
+                        device.getSensors().then(res3 => {
+                            console.log("Sensors =", res3.map(e => e.dataValues));
+                            });
+                    }
+                    })
+                    
                 });              
             }).catch(err => {
                 console.log("err", err);
