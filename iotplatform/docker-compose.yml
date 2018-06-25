@@ -34,11 +34,17 @@ services:
         environment:
             HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
 
-    python-producer:
+    python-producer-nodejs:
         build: ./python-producer
         image: heldic/python-producer
         environment:
-            WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway${EXPOSED_SUFFIX}:8765
+            WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
+
+    python-producer-go:
+        build: ./python-producer
+        image: heldic/python-producer
+        environment:
+            WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
 
     redis:
         build: ./redis
@@ -57,9 +63,9 @@ services:
         ports:
             - "1883:1883"
 
-    ws-gateway:
-        build: ./ws-gateway
-        image: heldic/ws-gateway
+    ws-gateway-nodejs:
+        build: ./ws-gateway-nodejs
+        image: heldic/ws-gateway-nodejs
         ports:
             - "8765:8765"
         environment:

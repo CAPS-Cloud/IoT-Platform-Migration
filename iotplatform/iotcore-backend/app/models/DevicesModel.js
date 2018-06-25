@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../connections/mysql');
+const Sensors = require('../models/SensorsModel');
 
-module.exports = sequelize.define('devices', {
+const Devices = sequelize.define('devices', {
     name: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -11,3 +12,8 @@ module.exports = sequelize.define('devices', {
         allowNull: false,
     },
 });
+Devices.hasMany(Sensors);
+Sensors.belongsTo(Devices);
+// sequelize.sync();
+
+module.exports = Devices;
