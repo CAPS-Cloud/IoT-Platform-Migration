@@ -91,7 +91,51 @@ You can use any ssh client to access the VM using username of root and certifica
 5. You are now in the dashboard. Here is some brief introduction about the dashboard. https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#welcome-view
 ### Setting up
 #### Preparing the host
-TODO
+```bash
+# Resize FS
+df -Th /
+
+fdisk /dev/vda
+d
+n
+p
+1
+2048
+enter
+
+t
+L
+83
+
+a
+p
+w
+
+df -Th /
+partprobe /dev/vda
+df -Th /
+resize2fs /dev/vda1
+df -Th /
+
+# Docker
+apt-get update
+apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb https://download.docker.com/linux/ubuntu xenial stable"
+apt-get update && apt-get install -y docker-ce=17.03.2~ce-0~ubuntu-xenial
+
+# kubeadm
+apt-get update && apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+apt-get update
+apt-get install -y kubelet kubeadm kubectl
+
+# swapoff
+swapoff -a 
+```
 #### Adding nodes
 1. Run `kubeadm token create` on the master node (token will be expired after 24 hours).
 2. Run `kubeadm join 141.40.254.145:6443 --token <token from step 1> --discovery-token-ca-cert-hash sha256:1e6253959bd1f6b1b77efee5162083981d889abadb674eb89a62c6a229608178` on the node you want to add.
