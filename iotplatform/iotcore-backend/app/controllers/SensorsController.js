@@ -46,13 +46,11 @@ module.exports = {
     update(req, res) {
         Devices.findOne({ where: { id: { [Op.eq]: req.params.device_id } } }).then(data => {
             if(data){
-                Sensors.pre_update(req.body, toUpdate => {
-                    delete toUpdate.id;
-                    Sensors.update(toUpdate, { where: { id: { [Op.eq]: req.params.id } } }).then(data2 => {
-                        return res.status(200).json({ result: data2 });
-                    }).catch(err => {
-                        return responseError(res, err);
-                    });
+                delete req.body.id;
+                Sensors.update(req.body, { where: { id: { [Op.eq]: req.params.id } } }).then(data2 => {
+                    return res.status(200).json({ result: data2 });
+                }).catch(err => {
+                    return responseError(res, err);
                 });
             }
         });

@@ -2,13 +2,17 @@ package main
 
 import (
 	"crypto/rsa"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Shopify/sarama"
 	jwt "github.com/dgrijalva/jwt-go"
 )
+
+const pathDelimiter = "/"
 
 type Gateway struct {
 	PublicKey *rsa.PublicKey
@@ -16,39 +20,67 @@ type Gateway struct {
 }
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	/*
-		deviceID := string(ctx.Request.Header.Peek("X-IOT-DEVICE-ID"))
-		sensorFamily := string(ctx.Request.Header.Peek("X-IOT-SENSOR-FAMILY"))
-		sensorID := string(ctx.Request.Header.Peek("X-IOT-SENSOR-ID"))
-		fmt.Printf("%s %s %s", deviceID, sensorFamily, sensorID)
-		token := strings.Replace(string(ctx.Request.Header.Peek("Authorization")), "Bearer ", "", -1)
-		fmt.Println(token)
-	*/
+	// do authentication only if header field was set for performance testing
+	if r.Header.Get("Authorization") != "" {
+		// validate the token
+		token, err := jwt.Parse(strings.Replace(r.Header.Get("Authorization"), "Bearer ", "", 1), func(token *jwt.Token) (interface{}, error) {
+			// since we only use the one private key to sign the tokens,
+			// we also only use its public counter part to verify
+			return g.PublicKey, nil
+		})
 
-	// validate the token
-	token, err := jwt.Parse("ey", func(token *jwt.Token) (interface{}, error) {
-		// since we only use the one private key to sign the tokens,
-		// we also only use its public counter part to verify
-		return g.PublicKey, nil
-	})
+		if err != nil {
+			log.Printf("Verify error: malformed token: %s", err)
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("403 - JWT token malformed!"))
+			return
+		}
 
-	if token.Valid {
-		log.Println("valid token")
-	} else {
-		log.Println("invalid token")
+		if !token.Valid {
+			log.Printf("Verify error: invalid token")
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("403 - JWT token invalid!"))
+			return
+		}
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
-	}
-	log.Printf("%s", string(body))
-	g.Producer.Input() <- &sarama.ProducerMessage{
-		Topic: "livedata",
-		Value: sarama.StringEncoder(body),
+		log.Printf("malformed body: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
-	// then update status code
-	//ctx.SetStatusCode(fasthttp.StatusOK)
+	var message Message
+	err = json.Unmarshal(body, &message)
+	if err != nil {
+		log.Printf("malformed message: deserialize: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	b, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("malformed message: serialize: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// forward message to kafka
+	log.Printf("%v", message)
+	g.Producer.Input() <- &sarama.ProducerMessage{
+		Topic: "livedata", // TODO: path(message.Topic, messsage.SensorGroup, message.SensorID),
+		Value: sarama.ByteEncoder(b),
+	}
+
 	return
+}
+
+func path(fragments ...string) string {
+	path := ""
+	for _, fragment := range fragments {
+		path += fragment + pathDelimiter
+	}
+	path = strings.TrimSuffix(path, pathDelimiter)
+	return path
 }

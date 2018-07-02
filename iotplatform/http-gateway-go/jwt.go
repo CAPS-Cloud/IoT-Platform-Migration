@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	pubKeyPath = "keys/app.rsa.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
+	pubKeyPath = "/etc/.keys/jwtRS256.key.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
 )
 
 func LoadPublicKey() *rsa.PublicKey {
