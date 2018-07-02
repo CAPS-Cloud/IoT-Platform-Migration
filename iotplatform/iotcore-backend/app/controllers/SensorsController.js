@@ -8,6 +8,8 @@ const bcrypt = require('bcryptjs');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const kafka = require('kafka-node');
+const elasticsearch = require('elasticsearch');
+const elasticClient = require('../connections/elasticsearch');
 
 module.exports = {
 
@@ -72,22 +74,14 @@ module.exports = {
 
     add(req, res) {
         var Producer = kafka.Producer,
-        client = new kafka.Client('localhost:2181/'),
-        producer = new Producer(client),
-        elasticsearch = require('elasticsearch'),
-        elasticClient = new elasticsearch.Client({
-          host: 'localhost:9000',
-          log: 'trace'
-        });
+        client = new kafka.Client('iot.pcxd.me:2181/'),
+        producer = new Producer(client)
         Devices.findById(req.params.id).then(device => {
             console.log("device id",device.id);
             
-            device.getSensors().then(res => {
-                console.log("Sensors =", res.map(e => e.dataValues));
-                Sensors.create({ name: "temperature sensor", description: "test", unit: "unit", path: "path", deviceId: device.id }).then(res2 => {
-
+            Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, path: req.body.path, deviceId: device.id }).then(res2 => {
                 var device_id_sensor_id = device.id + '_' + res2.id;
-                elasticClient.indices.create({  
+                elasticClient.indices.create({
                     index: device_id_sensor_id
                     },function(err,resp,status) {
                     if(err) {
@@ -107,39 +101,38 @@ module.exports = {
                         }
                         
                         elasticClient.indices.putMapping({index:device_id_sensor_id, type:"device_id_sensor_id", body:body});
-                        device.getSensors().then(res3 => {
-                            console.log("Sensors =", res3.map(e => e.dataValues));
-                            });
-                    }
-                    })
-                    
-                });              
-            }).catch(err => {
-                console.log("err", err);
-                return responseError(res, err);
-            });
-            client.on("error", (err) => {
-                console.log(err);
-            });
-    
-            producer.on('ready', () => {
-                producer.on("error", (err) => {
-                    console.log(err);
-                })
-    
-                producer.createTopics([req.body.topic], true, (err, data) => {
-                    if (err) {
-                        console.log("err", err);
-                        res.status(500).json({ err });
-                    }
-                    else {
-                        console.log("data", data);
-                        res.json({ data });
                     }
                 });
-            });
-            return res.json(device.getSensors());    
 
+                client.on("error", (err) => {
+                    console.log(err);
+                
+                });
+
+                producer.on("error", (err) => {
+                    console.log(err);
+                
+                });
+        
+                producer.on('ready', () => {
+                    producer.on("error", (err) => {
+                        console.log(err);
+                    })
+        
+                    producer.createTopics([req.body.topic], true, (err, data) => {
+                        if (err) {
+                            console.log("err", err);
+                        }
+                        else {
+                            console.log("data", data);
+                        } 
+                    });
+                });
+
+                
+
+                return res.json(res2);
+            });
         }).catch(err => {
             console.log("err", err);
             return responseError(res, err);        
