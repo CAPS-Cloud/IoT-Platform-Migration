@@ -9,7 +9,7 @@ import { MDCTextFieldHelperText } from '@material/textfield/helper-text';
 import { MDCSnackbar } from '@material/snackbar';
 import { Container, Row, Col } from 'reactstrap';
 import Snackbar from "../utils/Snackbar";
-import UsersModel from '../models/UsersModel';
+import SensorsModel from '../models/SensorsModel';
 import FormModel from '../models/FormModel';
 import RestError from '../utils/RestError';
 
@@ -29,11 +29,11 @@ export default class extends React.Component {
         this.form = new FormModel();
 
         autorun(() => {
-            this.failedFetching = !UsersModel.fetching && !UsersModel.fetched;
+            this.failedFetching = !SensorsModel.fetching && !SensorsModel.fetched;
             var notFound = false;
             var object;
-            if (UsersModel.fetched) {
-                const objects = UsersModel.data.filter((object) => (object.id == this.props.match.params.id));
+            if (SensorsModel.fetched) {
+                const objects = SensorsModel.data.filter((object) => (object.id == this.props.match.params.id));
                 if (objects.length >= 1) {
                     object = objects[0];
                 } else {
@@ -44,8 +44,9 @@ export default class extends React.Component {
             this.object = object;
             if (object && this.form.ref) {
                 this.form.ref.elements["name"].value = object.name;
-                this.form.ref.elements["username"].value = object.username;
-                this.form.ref.elements["role"].value = object.role;
+                this.form.ref.elements["description"].value = object.description;
+                this.form.ref.elements["unit"].value = object.unit;
+                this.form.ref.elements["path"].value = object.path;
                 document.querySelectorAll('.mdc-text-field').forEach((node) => {
                     MDCTextField.attachTo(node);
                 });
@@ -59,22 +60,22 @@ export default class extends React.Component {
         }
         var toUpdate = {
             name: this.form.values.name,
-            role: this.form.values.role,
+            description: this.form.values.description,
+            unit: this.form.values.unit,
+            path: this.form.values.path,
         }
-        if (this.form.values.password) {
-            toUpdate.password = this.form.values.password;
-        }
-        UsersModel.update(this.props.match.params.id, toUpdate).then((response) => {
+        SensorsModel.update(this.props.match.params.device_id, this.props.match.params.id, toUpdate).then((response) => {
             this.form.clearForm();
             this.setState({ back: true });
-            Snackbar.show("Update user", "success");
+            SensorsModel.fetch(this.props.match.params.device_id);
+            Snackbar.show("Updated sensor", "success");
         }).catch((error) => {
             Snackbar.show(new RestError(error).getMessage());
         });
     }
 
     componentWillMount() {
-        UsersModel.fetch();
+        SensorsModel.fetch(this.props.match.params.device_id);
     }
 
     componentDidMount() {
@@ -91,28 +92,28 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to='/users' />
+            return <Redirect to={'/devices/' + this.props.match.params.device_id} />
         }
-        
+
         return (
             <div>
-                <h3 className="mdc-typography--headline3">Edit User</h3>
+                <h3 className="mdc-typography--headline3">Edit Sensor</h3>
                 <br />
 
                 {
-                    (this.failedFetching || !UsersModel.fetched || this.notFound) && (
+                    (this.failedFetching || !SensorsModel.fetched || this.notFound) && (
                         <div>
-                            <h5 className="mdc-typography--headline5">{this.failedFetching ? 'Failed getting user info' : (!UsersModel.fetched ? 'Fetching user info' : 'User not found')}</h5>
+                            <h5 className="mdc-typography--headline5">{this.failedFetching ? 'Failed getting sensor info' : (!SensorsModel.fetched ? 'Fetching sensor info' : 'Sensor not found')}</h5>
                         </div>
                     )
                 }
                 <form onSubmit={this.update.bind(this)} ref={this.form.setRef}>
-                    <div style={{ display: (this.failedFetching || !UsersModel.fetched || this.notFound) ? 'none' : undefined }}>
+                    <div style={{ display: (this.failedFetching || !SensorsModel.fetched || this.notFound) ? 'none' : undefined }}>
                         <Row className="mb-1">
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
-                                    <input type="text" id="user-update-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="user-update-name" className="mdc-floating-label">Name</label>
+                                    <input type="text" id="sensor-update-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="sensor-update-name" className="mdc-floating-label">Name</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col >
@@ -120,8 +121,8 @@ export default class extends React.Component {
                         <Row className="mb-1">
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
-                                    <input disabled type="text" id="user-update-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input mdc-text-field--disabled" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="user-update-username" className="mdc-floating-label">Username (not editable)</label>
+                                    <input type="text" id="sensor-update-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="sensor-update-description" className="mdc-floating-label">Description</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
@@ -129,25 +130,17 @@ export default class extends React.Component {
                         <Row className="mb-1">
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
-                                    <input type="password" id="user-update-password" name="password" onChange={this.form.handleChange}className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="user-update-password" className="mdc-floating-label">New Password</label>
+                                    <input type="text" id="sensor-update-unit" name="unit" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="sensor-update-unit" className="mdc-floating-label">Unit</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
                         </Row>
                         <Row className="mb-1">
-                            <Col md="3">
-                                <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
-                                    <select id="user-role" name="role" onChange={this.form.handleChange} className="mdc-select__native-control" name="role" onChange={this.form.handleChange} autoComplete="off" data-lpignore="true">
-                                        <option value="" disabled></option>
-                                        <option value="ADMIN">
-                                            Admin
-                                                    </option>
-                                        <option value="USER">
-                                            User
-                                                    </option>
-                                    </select>
-                                    <label className="mdc-floating-label">Pick a Role</label>
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="sensor-update-path" name="path" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="sensor-update-path" className="mdc-floating-label">Path</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
@@ -155,10 +148,10 @@ export default class extends React.Component {
                     </div>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Link to={'/devices/' + this.props.match.params.device_id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
-                            !(this.failedFetching || !UsersModel.fetched || this.notFound) && (
-                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                            !(this.failedFetching || !SensorsModel.fetched || this.notFound) && (
+                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
                             )
                         }
                     </div>

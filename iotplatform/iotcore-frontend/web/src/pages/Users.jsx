@@ -57,7 +57,7 @@ export default class extends React.Component {
                     <div className="mdc-dialog__surface" style={{ width: "unset" }}>
                         <header className="mdc-dialog__header">
                             <h2 id="my-mdc-dialog-label" className="mdc-dialog__header__title">
-                                Delete User "{this.to_delete && this.to_delete.name}"
+                                Delete user "{this.to_delete && this.to_delete.name}"
                             </h2>
                         </header>
                         <section id="my-mdc-dialog-description" className="mdc-dialog__body">
@@ -91,11 +91,11 @@ export default class extends React.Component {
                                     UsersModel.data.length > 0 ? (
                                         UsersModel.data.map((object) => (
                                             <tr key={object.id}>
-                                                <td className="mdl-data-table__cell--non-numeric font-weight-bold">{user.name}</td>
+                                                <td className="mdl-data-table__cell--non-numeric font-weight-bold">{object.name}</td>
                                                 <td className="mdl-data-table__cell--non-numeric">{object.username}</td>
                                                 <td className="mdl-data-table__cell--non-numeric">{object.role}</td>
                                                 <td className="mdl-data-table__cell--non-numeric" style={{ width: "200px" }}>
-                                                    <Link to={"/users/edit/" + object.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">Edit</Ripple></Link>
+                                                    <Link to={"/users/" + object.id + "/edit"} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">Edit</Ripple></Link>
                                                     <Ripple onClick={this.deleteClick.bind(this, object)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (UsersModel.deleting ? " disabled" : "") }>Delete</Ripple>
                                                 </td>
                                             </tr>

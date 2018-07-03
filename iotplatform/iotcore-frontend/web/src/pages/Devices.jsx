@@ -57,7 +57,7 @@ export default class extends React.Component {
                     <div className="mdc-dialog__surface" style={{ width: "unset" }}>
                         <header className="mdc-dialog__header">
                             <h2 id="my-mdc-dialog-label" className="mdc-dialog__header__title">
-                                Delete Devices "{this.to_delete && this.to_delete.name}"
+                                Delete device "{this.to_delete && this.to_delete.name}"
                             </h2>
                         </header>
                         <section id="my-mdc-dialog-description" className="mdc-dialog__body">
@@ -93,7 +93,7 @@ export default class extends React.Component {
                                                 <td className="mdl-data-table__cell--non-numeric font-weight-bold">{object.name}</td>
                                                 <td className="mdl-data-table__cell--non-numeric">{object.description}</td>
                                                 <td className="mdl-data-table__cell--non-numeric" style={{ width: "200px" }}>
-                                                    <Link to={"/devices/view/" + object.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">View</Ripple></Link>
+                                                    <Link to={"/devices/" + object.id} className="plain-link"><Ripple className="secondary-button mdc-button mdc-card__action mdc-card__action--button">View</Ripple></Link>
                                                     <Ripple onClick={this.deleteClick.bind(this, object)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (DevicesModel.deleting ? " disabled" : "") }>Delete</Ripple>
                                                 </td>
                                             </tr>

@@ -71,9 +71,7 @@ export default class extends React.Component {
     }
 
     componentWillMount() {
-        if (!DevicesModel.fetched) {
-            DevicesModel.fetch();
-        }
+        DevicesModel.fetch();
     }
 
     componentDidMount() {
@@ -90,7 +88,7 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to={'/devices/view/' + this.props.match.params.id} />
+            return <Redirect to={'/devices/' + this.props.match.params.id} />
         }
 
         return (
@@ -128,7 +126,7 @@ export default class extends React.Component {
                     </div>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to={'/devices/view/' + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Link to={'/devices/' + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
                             !(this.failedFetching || !DevicesModel.fetched || this.notFound) && (
                                 <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (DevicesModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
