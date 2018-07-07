@@ -8,8 +8,8 @@ const bcrypt = require('bcryptjs');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const kafka = require('kafka-node');
-const elasticsearch = require('elasticsearch');
 const elasticClient = require('../connections/elasticsearch');
+const axios = require('axios');
 
 module.exports = {
 
@@ -129,7 +129,40 @@ module.exports = {
                     });
                 });
 
+                // get all jars - done
+                // GET http://iot.pcxd.me:8081/jars/
+                axios({
+                    method: 'get',
+                    url: 'http://iot.pcxd.me:8081/jars',
+                    responseType:'json',
+                  });
+                axios.get('http://iot.pcxd.me:8081/jars').then(response => {
+                    if(response.data.files.length>0){
+                        var jarId = response.data.files[0].id,
+                            fixedPart1 = '/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D',
+                            fixedPart2 = '&savepointPath=',
+                            homepage = 'http://iot.pcxd.me:8081/jars/',
+                            finalURL = homepage+jarId+fixedPart1+device_id_sensor_id+fixedPart2;
+                        axios.post(finalURL).then(response => {
+                            console.log('******RESPONSE',response);
+                          })
+                          .catch(function (error) {
+                            console.log(error);
+                          });
+                    }
+                })                      
+                .catch(error => console.log(error));
+
+                // upload jar if not exist - not done
+                // POST http://iot.pcxd.me:8081/jars/upload
+
+                // get jar id
+                // GET http://iot.pcxd.me:8081/jars/
+
+                // run job service
+                // POST http://iot.pcxd.me:8081/jars/e8e9cc45-f6da-481c-a9da-5ec886894211_refinement-1.0-SNAPSHOT-x86.jar/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D1_2&savepointPath=
                 
+                // "test"+varial+"test"
 
                 return res.json(res2);
             });
