@@ -10,6 +10,9 @@ const Op = Sequelize.Op;
 const kafka = require('kafka-node');
 const elasticClient = require('../connections/elasticsearch');
 const axios = require('axios');
+const express = require('express');
+const fileUpload = require('express-fileupload');
+const app = express();
 
 module.exports = {
 
@@ -131,11 +134,6 @@ module.exports = {
 
                 // get all jars - done
                 // GET http://iot.pcxd.me:8081/jars/
-                axios({
-                    method: 'get',
-                    url: 'http://iot.pcxd.me:8081/jars',
-                    responseType:'json',
-                  });
                 axios.get('http://iot.pcxd.me:8081/jars').then(response => {
                     if(response.data.files.length>0){
                         var jarId = response.data.files[0].id,
@@ -149,6 +147,20 @@ module.exports = {
                           .catch(function (error) {
                             console.log(error);
                           });
+                    }
+                    else{
+                        var fs = require('fs');
+                        var request = require('request');
+                        request.post({
+                            url: 'http://iot.pcxd.me:8081/jars/upload',
+                            formData: {
+                                file: fs.createReadStream('/home/mohammad/Documents/iotplatform/iotplatform/flink/target/flink-kafka-1.0.jar'),
+                                filetype: 'jar',
+                                filename: 'flink-kafka-1.0',
+                            },
+                        }, function(error, response, body) {
+                            console.log(body);
+                        });
                     }
                 })                      
                 .catch(error => console.log(error));
