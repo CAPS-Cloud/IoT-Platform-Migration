@@ -28,18 +28,16 @@ public class Producer {
     }
 
     private static class SensorEvent {
-        public String sensorGroup;
-        public String sensorId;
+        public long sensor_id;
         public long timestamp;
-        public String reading;
+        public Double value;
     }
 
     private static SensorEvent generateEvent() {
         SensorEvent evt = new SensorEvent();
-        evt.sensorGroup = "javaGroup";
-        evt.sensorId = "fakeWeather";
+        evt.sensor_id = 192837465;
         evt.timestamp = System.currentTimeMillis();
-        evt.reading = Double.toString(Math.random() * 100);
+        evt.value = Math.random() * 100;
         return evt;
     }
 }

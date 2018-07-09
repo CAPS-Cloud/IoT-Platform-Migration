@@ -24,6 +24,8 @@ import AuthModel from "./models/AuthModel";
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import Snackbar from './utils/Snackbar';
+import SensorsAdd from './pages/SensorsAdd';
+import SensorsEdit from './pages/SensorsEdit';
 
 @observer
 class Dashboard extends React.Component {
@@ -114,11 +116,13 @@ class Dashboard extends React.Component {
                 />
                 <Route exact path="/devices" component={Devices} />
                 <Route exact path="/devices/add" component={DevicesAdd} />
-                <Route exact path="/devices/view/:id" component={DevicesView} />
-                <Route exact path="/devices/edit/:id" component={DevicesEdit} />
+                <Route exact path="/devices/:id" component={DevicesView} />
+                <Route exact path="/devices/:id/edit" component={DevicesEdit} />
+                <Route exact path="/devices/:id/sensors/add" component={SensorsAdd} />
+                <Route exact path="/devices/:device_id/sensors/:id/edit" component={SensorsEdit} />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
-                <Route exact path="/users/edit/:id" component={UsersEdit} />
+                <Route exact path="/users/:id/edit" component={UsersEdit} />
               </Switch>
             </div>
           </div>
