@@ -7,8 +7,7 @@ ADD .keys /etc/.keys
 COPY . /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
 WORKDIR /go/src/github.com/heldic/iotplatform/iotplatform/http-gateway-go
 
-RUN go get ./... && \
-    go install
+RUN go install
 
 RUN chmod a+x ./wait-for-it.sh && \
     chmod a+x ./start.sh
