@@ -1,16 +1,16 @@
 
 const Users = require('../models/UsersModel');
 const Devices = require('../models/DevicesModel');
-const Sensors = require('../models/SensorsModel')
+const Sensors = require('../models/SensorsModel');
+const Consumers = require('../models/ConsumersModel');
+const ConsumerSensors = require('../models/ConsumerSensorsModel');
+const sequelize = require('../connections/mysql');
 
 
 async function syncDataModels() {
-    await Users.drop();
-    await Sensors.drop();
-    await Devices.drop();
-    await Users.sync({ force: true });
-    await Devices.sync({ force: true });
-    await Sensors.sync({force:true});
+
+   await sequelize.drop();
+   await sequelize.sync({ force: true });
 }
 
 syncDataModels();

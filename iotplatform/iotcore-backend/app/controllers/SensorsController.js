@@ -182,18 +182,6 @@ module.exports = {
                     }
                 })                      
                 .catch(error => console.log(error));
-
-                // upload jar if not exist - not done
-                // POST http://iot.pcxd.me:8081/jars/upload
-
-                // get jar id
-                // GET http://iot.pcxd.me:8081/jars/
-
-                // run job service
-                // POST http://iot.pcxd.me:8081/jars/e8e9cc45-f6da-481c-a9da-5ec886894211_refinement-1.0-SNAPSHOT-x86.jar/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D1_2&savepointPath=
-                
-                // "test"+varial+"test"
-
                 return res.json(res2);
             });
         }).catch(err => {

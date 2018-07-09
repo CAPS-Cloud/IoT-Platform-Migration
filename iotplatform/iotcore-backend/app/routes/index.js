@@ -4,7 +4,9 @@ const router = express.Router();
 
 const UsersController = require('../controllers/UsersController');
 const DevicesController = require('../controllers/DevicesController');
+const ConsumersController = require('../controllers/ConsumersController');
 const SensorsController = require('../controllers/SensorsController');
+const ConsumersSensorsController = require('../controllers/ConsumersSensorsController')
 
 // Users
 router.get('/api/users', AuthenticationRequireRole.USER, UsersController.getAll);
@@ -21,7 +23,12 @@ router.patch('/api/devices/:id', AuthenticationRequireRole.ADMIN, DevicesControl
 router.delete('/api/devices/:id', AuthenticationRequireRole.ADMIN, DevicesController.delete);
 router.get('/api/devices/:id/key', AuthenticationRequireRole.ADMIN, DevicesController.key);
 
-// Consumptions
+// Consumer
+router.get('/api/consumers', AuthenticationRequireRole.USER, ConsumersController.getAll);
+router.post('/api/consumers', AuthenticationRequireRole.ADMIN, ConsumersController.add);
+router.patch('/api/consumers/:id', AuthenticationRequireRole.ADMIN, ConsumersController.update);
+router.delete('/api/consumers/:id', AuthenticationRequireRole.ADMIN, ConsumersController.delete);
+router.get('/api/consumers/:id/key', AuthenticationRequireRole.ADMIN, ConsumersController.key);
 
 // Sensors
 router.post('/api/devices/:id/sensors', AuthenticationRequireRole.ADMIN, SensorsController.add);
@@ -30,5 +37,7 @@ router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.A
 router.get('/api/devices/:id/sensors/', AuthenticationRequireRole.USER, SensorsController.getAll);
 router.get('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.USER, SensorsController.get);
 
+//ConsumersSensors
+router.post('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumersSensorsController.setPermission);
 
 module.exports = router;

@@ -11,8 +11,5 @@ const Consumers = sequelize.define('consumers', {
         allowNull: false,
     },
 });
-Consumers.hasMany(Sensors);
-Sensors.belongsTo(Consumers);
-// sequelize.sync();
 
 module.exports = Consumers;
