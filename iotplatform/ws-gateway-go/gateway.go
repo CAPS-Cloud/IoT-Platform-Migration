@@ -74,7 +74,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// forward message to kafka
-			log.Printf("%v", message)
+			// log.Printf("%v", message)
 			g.Producer.Input() <- &sarama.ProducerMessage{
 				Topic: message.DeviceID + pathDelimiter + string(message.SensorID),
 				Value: sarama.ByteEncoder(b),
