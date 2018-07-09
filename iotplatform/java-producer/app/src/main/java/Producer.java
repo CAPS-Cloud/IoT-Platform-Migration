@@ -1,15 +1,57 @@
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
 public class Producer {
 
-    private static String TEST_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpb3RwbGF0Zm9ybSIsInN1YiI6IjEyMzQ1IiwibmJmIjoxNTMxMTMyODA4LCJleHAiOjE1NjI2Njg4MDgsImlhdCI6MTUzMTEzMjgwOCwianRpIjoiaWQxMjM0NTYiLCJ0eXAiOiJodHRwczovL2lvdHBsYXRmb3JtLmNvbSJ9.dZoOJcfI2bd32FJtQoTtMt7AxlklFFbzmPdJQ3Q08JSvn82y4eje1MGFOQDa76HfyOUuvhxiw6kzxpH2i5bSP-KrJ-TsXfrlgY0YxX2SqNFVm7ArzYtH3auHpht8q3ZfNch3RbnDHDv2VyUNFeoYOWjBtveGQgk5I9Ox_bbYZ5EuBakTlahuv_PG3OSkq59626Usvzqo77XyWYPuHcsxTa-m3DBSBHufF95sbtDemjxQP5NhYkE_OM6ZZmRItxHEJqBVDEG9JI64ECnwi6XNcq3nk_CzJNXbEnivN42vIPzdodzDECsJr2say9hOJhvpAQMCdh3SYwN063rPMjf9aMIXYmilxh0y0uCo8w2E8RxoRw51gbDlDZiq3D1LXlAL2h6-3Zm21_ip1kKSzaT6DdYsjssns1ofl6xRY5bVZbEi9oNO7WxgWVCnSHQ2Xim8TsXCPvAczsiLehHCW-ZC6xHvU7yZ0n6QLC3Oo4VTA7gAR9R1B4tIpwKcuc6fo0hqZ24lUwtpcnahmC6CBv-WPQ07pED677PguqEk_NVXL6LAZHFcI9fFeQX7ubWAXwjGyv7xKnA88453k6ylczb6KuHGvc9FY351CRiBXDxu0wnl9j9lAJaTs7Mb-52A5UuANUhbaXgAD1uMhIA3xtJJ3wL_yq8LTurSHVOEAS9xFl8";
+    private static final String PUBLIC_KEY = ".keys/jwtRS256.key.pub";
+    private static final String PRIVATE_KEY_PKCS8 = ".keys/pkcs8_key";
+    private static final int DEVICE_ID = 1;
+    private static final int SENSOR_ID = 1;
 
+    public static RSAPublicKey readPublicKey(InputStream inputStream) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        String content = new String(ByteStreams.toByteArray(inputStream));
 
+        byte[] keyBytes = Base64.getDecoder().decode(content.replaceAll("\\n", "").replaceAll("\\r", "").replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", ""));
 
-    public static void main(String args[]) {
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        return (RSAPublicKey) kf.generatePublic(spec);
+    }
+
+    public static RSAPrivateKey readPrivateKey(InputStream inputStream) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+        byte[] keyBytes = ByteStreams.toByteArray(inputStream);
+
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        return (RSAPrivateKey) kf.generatePrivate(spec);
+    }
+
+    public static void main(String args[]) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+        RSAPublicKey publicKey = readPublicKey(Producer.class.getClassLoader().getResourceAsStream(PUBLIC_KEY));
+        RSAPrivateKey privateKey = readPrivateKey(Producer.class.getClassLoader().getResourceAsStream(PRIVATE_KEY_PKCS8));
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        String token = JWT.create()
+            .withClaim("iis", "iotplatform")
+            .withClaim("sub", DEVICE_ID)
+            .sign(algorithm);
+
         Gson gson = new Gson();
 
         while(true) {
@@ -17,12 +59,12 @@ public class Producer {
                 String message = gson.toJson(generateEvent());
 
                 Content response = Request.Post(args[0])
-                        .addHeader("Authorization", "Bearer " + TEST_TOKEN)
-                        .bodyString(message,ContentType.APPLICATION_JSON)
-                        .execute().returnContent();
+                    .addHeader("Authorization", "Bearer " + token)
+                    .bodyString(message,ContentType.APPLICATION_JSON)
+                    .execute().returnContent();
                 //System.out.println(response.asString());
             } catch(Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
             try {
                 Thread.sleep(1000);
@@ -41,7 +83,7 @@ public class Producer {
 
     private static SensorEvent generateEvent() {
         SensorEvent evt = new SensorEvent();
-        evt.sensor_id = 192837465;
+        evt.sensor_id = SENSOR_ID;
         evt.timestamp = System.currentTimeMillis();
         evt.value = String.valueOf(Math.random() * 100);
         return evt;
