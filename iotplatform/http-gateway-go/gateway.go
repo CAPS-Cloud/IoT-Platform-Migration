@@ -42,6 +42,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("403 - JWT token invalid!"))
 			return
 		}
+		log.Println("authorized")
 	}
 
 	body, err := ioutil.ReadAll(r.Body)

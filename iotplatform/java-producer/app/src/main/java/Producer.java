@@ -34,14 +34,14 @@ public class Producer {
     private static class SensorEvent {
         public long sensor_id;
         public long timestamp;
-        public Double value;
+        public String value;
     }
 
     private static SensorEvent generateEvent() {
         SensorEvent evt = new SensorEvent();
         evt.sensor_id = 192837465;
         evt.timestamp = System.currentTimeMillis();
-        evt.value = Math.random() * 100;
+        evt.value = String.valueOf(Math.random() * 100);
         return evt;
     }
 }

@@ -18,10 +18,9 @@ def main():
 
 def generate_msg():
     msg = {
-        "sensorGroup" : "pythonGroup",
-        "sensorId" : "fakeWeather",
-        "timestamp" : time.time(),
-        "reading" : str(random.randint(0,100))
+        "sensor_id" : 192837466,
+        "timestamp" : int(round(time.time() * 1000)),
+        "value" : str(random.randint(0,100))
     }
     return msg
 
