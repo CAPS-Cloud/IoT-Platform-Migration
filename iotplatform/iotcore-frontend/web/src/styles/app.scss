@@ -18,6 +18,36 @@ $mdc-theme-primary: #007bff;
 @import "@material/dialog/mdc-dialog";
 @import "@material/snackbar/mdc-snackbar";
 
+/* Tooltip container */
+.etooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Tooltip text */
+.etooltip .etooltiptext {
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    padding: 7px;
+    border-radius: 6px;
+ 
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+
+    bottom: 100%;
+    left: 50%;
+    margin-left: -100px;
+    width: 200px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.etooltip:hover .etooltiptext:not(:hover) {
+    visibility: visible;
+}
+
 .tree{
   ul{
     list-style: none;

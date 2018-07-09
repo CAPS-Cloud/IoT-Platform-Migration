@@ -74,9 +74,7 @@ export default class extends React.Component {
     }
 
     componentWillMount() {
-        if (!UsersModel.fetched) {
-            UsersModel.fetch();
-        }
+        UsersModel.fetch();
     }
 
     componentDidMount() {

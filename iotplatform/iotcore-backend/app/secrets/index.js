@@ -6,4 +6,5 @@ module.exports = {
 
     // Device Secrets
     DEVICE_SECRET: '//TODO Generate high entropy secret',
+    CONSUMER_SECRET: '//TODO Generate high entropy secret',
 }
