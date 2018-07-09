@@ -1,16 +1,23 @@
 package main
 
 import (
+	"crypto/rsa"
+	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Shopify/sarama"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 )
 
+const pathDelimiter = "_"
+
 type Gateway struct {
-	Producer sarama.AsyncProducer
+	PublicKey *rsa.PublicKey
+	Producer  sarama.AsyncProducer
 }
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -19,27 +26,57 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// handle error
 	}
 
+	// do authentication only if header field was set for performance testing
+	if r.Header.Get("Authorization") != "" {
+		// validate the token
+		token, err := jwt.Parse(strings.Replace(r.Header.Get("Authorization"), "Bearer ", "", 1), func(token *jwt.Token) (interface{}, error) {
+			// since we only use the one private key to sign the tokens,
+			// we also only use its public counter part to verify
+			return g.PublicKey, nil
+		})
+
+		if err != nil {
+			log.Printf("Verify error: malformed token: %s", err)
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("403 - JWT token malformed!"))
+			return
+		}
+
+		if !token.Valid {
+			log.Printf("Verify error: invalid token")
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("403 - JWT token invalid!"))
+			return
+		}
+	}
+
 	go func() {
 		defer conn.Close()
 
 		for {
-			/*
-				deviceID := string(ctx.Request.Header.Peek("X-IOT-DEVICE-ID"))
-				sensorFamily := string(ctx.Request.Header.Peek("X-IOT-SENSOR-FAMILY"))
-				sensorID := string(ctx.Request.Header.Peek("X-IOT-SENSOR-ID"))
-				fmt.Printf("%s %s %s", deviceID, sensorFamily, sensorID)
-				token := strings.Replace(string(ctx.Request.Header.Peek("Authorization")), "Bearer ", "", -1)
-				fmt.Println(token)
-			*/
-
-			msg, op, err := wsutil.ReadClientData(conn)
+			msg, _, err := wsutil.ReadClientData(conn)
 			if err != nil {
-				// handle error
+				log.Print("failed reading message %v", msg)
+				break
 			}
-			log.Printf("%s %v", string(msg), op)
+			var message Message
+			err = json.Unmarshal(msg, &message)
+			if err != nil {
+				log.Printf("malformed message: deserialize: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+			}
+
+			b, err := json.Marshal(message)
+			if err != nil {
+				log.Printf("malformed message: serialize: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+			}
+
+			// forward message to kafka
+			log.Printf("%v", message)
 			g.Producer.Input() <- &sarama.ProducerMessage{
-				Topic: "livedata",
-				Value: sarama.StringEncoder(msg),
+				Topic: message.DeviceID + pathDelimiter + message.SensorID,
+				Value: sarama.ByteEncoder(b),
 			}
 		}
 	}()

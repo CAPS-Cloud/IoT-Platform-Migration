@@ -56,7 +56,8 @@ func main() {
 	}
 
 	gateway := &Gateway{
-		Producer: producer,
+		PublicKey: LoadPublicKey(),
+		Producer:  producer,
 	}
 
 	// listen for http requests

@@ -12,7 +12,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-const pathDelimiter = "/"
+const pathDelimiter = "_"
 
 type Gateway struct {
 	PublicKey *rsa.PublicKey
@@ -69,7 +69,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// forward message to kafka
 	log.Printf("%v", message)
 	g.Producer.Input() <- &sarama.ProducerMessage{
-		Topic: "livedata", // TODO: path(message.Topic, messsage.SensorGroup, message.SensorID),
+		Topic: message.DeviceID + pathDelimiter + message.SensorID,
 		Value: sarama.ByteEncoder(b),
 	}
 

@@ -1,9 +1,8 @@
 package main
 
 type Message struct {
-	Topic       string `json: "topic"`
-	SensorID    string `json:"sensorId"`
-	SensorGroup string `json:"sensorGroup"`
-	Timestamp   int64  `json:"timestamp"`
-	Value       string `json:"reading"`
+	DeviceID  string `json: "device_id"`
+	SensorID  string `json:"sensor_id"`
+	Timestamp int64  `json:"timestamp"`
+	Value     string `json:"value"`
 }
