@@ -151,15 +151,33 @@ module.exports = {
                     else{
                         var fs = require('fs');
                         var request = require('request');
-                        request.post({
-                            url: 'http://iot.pcxd.me:8081/jars/upload',
-                            formData: {
-                                file: fs.createReadStream('/home/mohammad/Documents/iotplatform/iotplatform/flink/target/flink-kafka-1.0.jar'),
-                                filetype: 'jar',
-                                filename: 'flink-kafka-1.0',
-                            },
-                        }, function(error, response, body) {
-                            console.log(body);
+                        var upfile = 'flink-kafka-1.0.jar';
+                        var filePath = './flink_jars/';
+                        fs.readFile(filePath+upfile, function(err, content){
+                            if(err){
+                                console.error(err);
+                            }
+                            var url = "http://iot.pcxd.me:8081/jars/upload";
+                            var boundary = "xxxxxxxxxx";
+                            var data = "";
+
+                            data += "--" + boundary + "\r\n";
+                            data += "Content-Disposition: form-data; name=\"jarfile\"; filename=\"" + upfile + "\"\r\n";
+                            data += "Content-Type:application/octet-stream\r\n\r\n";
+                            var payload = Buffer.concat([
+                                    Buffer.from(data, "utf8"),
+                                    new Buffer(content, 'binary'),
+                                    Buffer.from("\r\n--" + boundary + "\r\n", "utf8"),
+                            ]);
+                            var options = {
+                                method: 'post',
+                                url: url,
+                                headers: {"Content-Type": "multipart/form-data; boundary=" + boundary},
+                                body: payload,
+                            };
+                            request(options, function(error, response, body) {
+                                console.log(body);
+                            });
                         });
                     }
                 })                      
