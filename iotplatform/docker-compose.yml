@@ -178,7 +178,7 @@ services:
     kibana:
       depends_on:
         - elasticsearch
-      image: docker.elastic.co/kibana/kibana-oss:5.6.10
+      image: kibana:5
       environment:
         ELASTICSEARCH_URL: http://${SERVICE_PREFIX}elasticsearch:9200
       ports:
