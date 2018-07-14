@@ -7,7 +7,7 @@ const { SENSOR_SECRET } = require('../secrets');
 const bcrypt = require('bcryptjs');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-const { producer } = require('../connections/kafka');
+const { addTopic, deleteTopic } = require('../connections/kafka');
 const flink = require('../connections/flink');
 const elasticClient = require('../connections/elasticsearch');
 const axios = require('axios');
@@ -58,19 +58,6 @@ function deleteElasticsearchIndex(topic) {
             }
             else {
                 resolve(resp);
-            }
-        });
-    });
-}
-
-function addKafkaTopic(topic) {
-    return new Promise(function (resolve, reject) {
-        producer.createTopics([req.body.topic], true, (err, data) => {
-            if (err) {
-                reject(err);
-            }
-            else {
-                resolve(data);
             }
         });
     });
@@ -158,9 +145,9 @@ const controller = new class {
 
                     // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
                     addElasticsearchIndex(topic).then(() => {
-                        //addKafkaTopic(topic).then(() => {
+                        addTopic(topic).then(() => {
                             addFlinkJob(topic).catch(err => console.error(err));
-                        //}).catch(err => console.error(err));
+                        }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
                     }).catch(err => console.error(err));
 
                     return res.json(sensor);
@@ -189,10 +176,11 @@ const controller = new class {
             if (data){
                 Sensors.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
 
-                    // Delete Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
-                    deleteElasticsearchIndex(topic).then(() => {
-                        // TODO Delete Kafka Topic
-                        deleteFlinkJob(topic).catch(err => console.error(err));
+                    // Delete Flink Job, then Kafka Topic, then Elasticsearch Index asynchronously.
+                    deleteFlinkJob(topic).then(() => {
+                        deleteTopic(topic).then(() => {
+                            deleteElasticsearchIndex(topic).catch(err => console.error(err));
+                        }).catch(err => console.error(`Kafka topic deletion error with exit code: ${err}`));
                     }).catch(err => console.error(err));
 
                     return res.status(200).json({ result: sensor });

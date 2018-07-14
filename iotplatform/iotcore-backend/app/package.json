@@ -16,7 +16,6 @@
     "elasticsearch": "^15.0.0",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
-    "kafka-node": "^2.6.1",
     "mysql2": "^1.5.3",
     "request": "^2.87.0",
     "sequelize": "^4.37.10"
