@@ -6,24 +6,70 @@ const BaseController =  require('./BaseController');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-module.exports = {
-    setPermission(req, res){
-        Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(data => {
-            if(data){
-                Sensors.findOne({ where: { id: { [Op.eq]: req.body.sensor_id } } }).then(data3 => {
-                    if(data3){
-                        data.addSensors(data3).then(data4 => {
-                            return res.status(200).json({ result: data4 });
-                        }).catch(err => {
-                            return responseError(res, err);
-                        })
+const controller = new class {
+    getAll(req, res) {
+        Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(consumer => {
+            if (consumer) {
+                consumer.getSensors().then(sensors => {
+                    return res.status(200).json({ result: sensors });
+                }).catch(err => responseError(res, err));
+            } else {
+                return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Consumer not found' }] });
+            }
+        }).catch(err => responseError(res, err));
+    }
+
+    enablePermission(req, res) {
+        Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(consumer => {
+            if (consumer) {
+                Sensors.findOne({ where: { id: { [Op.eq]: req.body.sensor_id } } }).then(sensor => {
+                    if (sensor) {
+                        consumer.getSensors({ where: { sensorId: { [Op.eq]: req.body.sensor_id } } }).then(exist => {
+                            if (exist) {
+                                return res.status(400).json({ name: 'PermissionExist', errors: [{ message: 'Permission exist' }] });
+                            } else {
+                                consumer.addSensors(sensor).then(consumer_sensor => {
+                                    return res.status(200).json({ result: consumer_sensor });
+                                }).catch(err => responseError(res, err));
+                            }
+                        }).catch(err => responseError(res, err));
                     } else {
-                        return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Device not found' }] });
+                        return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
                     }
                 });
             } else {
-                return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Device not found' }] });
+                return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Consumer not found' }] });
             }
-        });
+        }).catch(err => responseError(res, err));
     }
+
+    disablePermission(req, res) {
+        Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(consumer => {
+            if (consumer) {
+                Sensors.findOne({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(sensor => {
+                    if (sensor) {
+                        consumer.getSensors({ where: { sensorId: { [Op.eq]: req.params.sensor_id } } }).then(exist => {
+                            if (exist) {
+                                consumer.removeSensors({ where: { sensorId: { [Op.eq]: req.params.sensor_id } } }).then(result => {
+                                    return res.status(200).json({ result });
+                                }).catch(err => responseError(res, err));
+                            } else {
+                                return res.status(400).json({ name: 'PermissionNotExist', errors: [{ message: 'Permission not exist' }] });
+                            }
+                        }).catch(err => responseError(res, err));
+                    } else {
+                        return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
+                    }
+                });
+            } else {
+                return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Consumer not found' }] });
+            }
+        }).catch(err => responseError(res, err));
+    }
+}
+
+module.exports = {
+    getAll: controller.getAll.bind(controller),
+    enablePermission: controller.enablePermission.bind(controller),
+    disablePermission: controller.disablePermission.bind(controller),
 }
