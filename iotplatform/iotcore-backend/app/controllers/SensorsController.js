@@ -147,9 +147,7 @@ const controller = new class {
     getAll(req, res) {
         Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.id } } }).then(datas => {
             return res.status(200).json({ result: datas });
-        }).catch(err => {
-            return responseError(res, err);
-        });
+        }).catch(err => responseError(res, err));
     }
 
     add(req, res) {
@@ -166,16 +164,11 @@ const controller = new class {
                     }).catch(err => console.error(err));
 
                     return res.json(sensor);
-                }).catch(err => {
-                    return responseError(res, err);
-                });
+                }).catch(err => responseError(res, err));
             } else {
                 return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
             }
-        }).catch(err => {
-            return responseError(res, err);
-        });
-
+        }).catch(err => responseError(res, err));
     }
 
     update(req, res) {
@@ -184,9 +177,7 @@ const controller = new class {
                 delete req.body.id;
                 Sensors.update(req.body, { where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
                     return res.status(200).json({ result: sensor });
-                }).catch(err => {
-                    return responseError(res, err);
-                });
+                }).catch(err => responseError(res, err));
             } else {
                 return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
             }
@@ -205,9 +196,7 @@ const controller = new class {
                     }).catch(err => console.error(err));
 
                     return res.status(200).json({ result: sensor });
-                }).catch(err => {
-                    return responseError(res, err);
-                });
+                }).catch(err => responseError(res, err));
             } else {
                 return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
             }

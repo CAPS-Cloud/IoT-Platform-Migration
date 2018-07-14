@@ -13,9 +13,7 @@ module.exports = class {
     getAll(req, res) {
         this.model.findAll(this.findAllOptions).then(datas => {
             return res.status(200).json({ result: datas });
-        }).catch(err => {
-            return responseError(res, err);
-        });
+        }).catch(err => responseError(res, err));
     }
 
     getById(req, res) {
@@ -36,9 +34,7 @@ module.exports = class {
                 this.post_add(data, result_data => {
                     return res.status(200).json({ result: result_data });
                 });
-            }).catch(err => {
-                return responseError(res, err);
-            });
+            }).catch(err => responseError(res, err));
         });
     }
 
@@ -51,17 +47,13 @@ module.exports = class {
             delete toUpdate.id;
             this.model.update(toUpdate, { where: { id: { [Op.eq]: req.params.id } } }).then(data => {
                 return res.status(200).json({ result: data });
-            }).catch(err => {
-                return responseError(res, err);
-            });
+            }).catch(err => responseError(res, err));
         });
     }
 
     delete(req, res) {
         this.model.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
             return res.status(200).json({ result: data });
-        }).catch(err => {
-            return responseError(res, err);
-        });
+        }).catch(err => responseError(res, err));
     }
 }

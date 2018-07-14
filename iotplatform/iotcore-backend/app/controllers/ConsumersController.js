@@ -23,9 +23,7 @@ const controller = new class extends BaseController {
             } else {
                 return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Consumer not found' }] });
             }
-        }).catch(err => {
-            return responseError(res, err);
-        });
+        }).catch(err => responseError(res, err));
     }
 }
 
