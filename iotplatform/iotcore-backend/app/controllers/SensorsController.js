@@ -7,187 +7,217 @@ const { SENSOR_SECRET } = require('../secrets');
 const bcrypt = require('bcryptjs');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-const kafka = require('kafka-node');
+const { producer } = require('../connections/kafka');
+const flink = require('../connections/flink');
 const elasticClient = require('../connections/elasticsearch');
 const axios = require('axios');
-const express = require('express');
-const fileUpload = require('express-fileupload');
-const app = express();
+const fs = require('fs');
+const request = require('request');
 
-module.exports = {
-
-    getAll(req, res) {
-        Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.id } } }).then(data => {
-            if(data){
-            return res.status(200).json({ result: data });
+function addElasticsearchIndex(topic) {
+    return new Promise(function (resolve, reject) {
+        elasticClient.indices.create({
+            index: topic,
+        }, function (err, resp, status) {
+            if (err) {
+                reject(err);
             }
             else {
-                return res.status(400).json({ name: 'NoSensorsExist', errors: [{ message: 'No Sensors Exist' }] });
-            }
-        }).catch(err => {
-            return responseError(res, err);
-        });
-    },
-    pre_update(data, callback) {
-        callback(data);
-    },
+                var body = {
+                    sensor: {
+                        properties: {
+                            reading: { "type": "string", "index": "not_analyzed" },
+                            sensorId: { "type": "string", "index": "not_analyzed" },
+                            sensorGroup: { "type": "string", "index": "not_analyzed" },
+                            date: { "type": "long", "index": "not_analyzed" },
+                        },
+                    },
+                }
 
-    get(req, res) {
-        Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.device_id }, id: { [Op.eq]: req.params.id } } }).then(data => {
-            if(data){
-            return res.status(200).json({ result: data });
+                elasticClient.indices.putMapping({ index: topic, type: "sensor", body: body },
+                    function (err, resp, status) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(resp);
+                        }
+                    }
+                );
+            }
+        });
+    });
+}
+
+function deleteElasticsearchIndex(topic) {
+    return new Promise(function (resolve, reject) {
+        elasticClient.indices.delete({
+            index: topic,
+        }, function (err, resp, status) {
+            if (err) {
+                reject(err);
             }
             else {
-                return res.status(400).json({ name: 'NoSensorsExist', errors: [{ message: 'No Sensors Exist' }] });
+                resolve(resp);
             }
-        }).catch(err => {
-            return responseError(res, err);
         });
-    },
-    pre_update(data, callback) {
-        callback(data);
-    },
+    });
+}
 
-    update(req, res) {
-        Devices.findOne({ where: { id: { [Op.eq]: req.params.device_id } } }).then(data => {
-            if(data){
-                delete req.body.id;
-                Sensors.update(req.body, { where: { id: { [Op.eq]: req.params.id } } }).then(data2 => {
-                    return res.status(200).json({ result: data2 });
-                }).catch(err => {
-                    return responseError(res, err);
+function addKafkaTopic(topic) {
+    return new Promise(function (resolve, reject) {
+        producer.createTopics([req.body.topic], true, (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(data);
+            }
+        });
+    });
+}
+
+function addFlinkJob(topic) {
+    return new Promise(function (resolve, reject) {
+        axios.get(`${flink}jars/`).then(response => {
+            if (response.data.files.length > 0) {
+                const jarId = response.data.files[0].id;
+                axios.post(`${flink}jars/${jarId}/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D${topic}&savepointPath=`).then(response => {
+                    resolve(response);
+                }).catch(function (err2) {
+                    reject(err2);
                 });
             }
-        });
-    },
+            else {
+                const upload_file = 'flink-kafka-1.0.jar';
+                const filePath = './flink_jars/';
+                fs.readFile(filePath + upload_file, function (_err, content) {
+                    const boundary = "xxxxxxxxxx";
+                    var data = "";
+                    data += "--" + boundary + "\r\n";
+                    data += "Content-Disposition: form-data; name=\"jarfile\"; filename=\"" + upload_file + "\"\r\n";
+                    data += "Content-Type:application/octet-stream\r\n\r\n";
 
-    delete(req, res) {
-        Devices.findOne({ where: { id: { [Op.eq]: req.params.device_id } } }).then(data => {
-            if(data){
-                Sensors.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data2 => {
-                    return res.status(200).json({ result: data2 });
+                    request({
+                        method: 'post',
+                        url: `${flink}jars/upload`,
+                        headers: { "Content-Type": "multipart/form-data; boundary=" + boundary },
+                        body: Buffer.concat([Buffer.from(data, "utf8"), new Buffer(content, 'binary'), Buffer.from("\r\n--" + boundary + "\r\n", "utf8")]),
+                    }, function (err2, response, body) {
+                        if (err2) {
+                            reject(err2);
+                        } else {
+                            addFlinkJob(topic).then(res => {
+                                resolve(res);
+                            }).catch(err3 => {
+                                reject(err3)
+                            })
+                        }
+                    });
+                });
+            }
+        }).catch(err => reject(err));
+    });
+}
+
+function deleteFlinkJob(topic) {
+    return new Promise(function (resolve, reject) {
+        axios.get(`${flink}jobs/`).then(res => {
+            const jobs = res.data["jobs-running"].concat(res.data["jobs-finished"]).concat(res.data["jobs-failed"]);
+
+            for (var i = 0; i < jobs.length; i++) {
+                const job = jobs[i];
+                axios.get(`${flink}jobs/${job}/config/`).then(res => {
+                    if (
+                        res.data["user-config"] &&
+                        res.data["user-config"]["program-args"] &&
+                        res.data["user-config"]["program-args"].split("%2d")[1] == topic
+                    ) {
+                        axios.delete(`${flink}jobs/${job}/cancel/`).then(res => {
+                            resolve(res);
+                        }).catch(err => reject(err));
+                    }
+                }).catch(err => reject(err));
+            }
+        }).catch(err => reject(err));
+    });
+}
+
+const controller = new class {
+
+    getAll(req, res) {
+        Sensors.findAll({ where: { deviceId: { [Op.eq]: req.params.id } } }).then(datas => {
+            return res.status(200).json({ result: datas });
+        }).catch(err => {
+            return responseError(res, err);
+        });
+    }
+
+    add(req, res) {
+        Devices.findById(req.params.id).then(device => {
+            if (device) {
+                Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, path: req.body.path, deviceId: device.id }).then(sensor => {
+                    var topic = device.id + '_' + sensor.id;
+
+                    // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
+                    addElasticsearchIndex(topic).then(() => {
+                        //addKafkaTopic(topic).then(() => {
+                            addFlinkJob(topic).catch(err => console.error(err));
+                        //}).catch(err => console.error(err));
+                    }).catch(err => console.error(err));
+
+                    return res.json(sensor);
                 }).catch(err => {
                     return responseError(res, err);
                 });
             } else {
                 return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
             }
-        });
-    },
-
-    add(req, res) {
-        var Producer = kafka.Producer,
-        client = new kafka.Client('iot.pcxd.me:2181/'),
-        producer = new Producer(client)
-        Devices.findById(req.params.id).then(device => {
-            console.log("device id",device.id);
-            
-            Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, path: req.body.path, deviceId: device.id }).then(res2 => {
-                var device_id_sensor_id = device.id + '_' + res2.id;
-                elasticClient.indices.create({
-                    index: device_id_sensor_id
-                    },function(err,resp,status) {
-                    if(err) {
-                        console.log(err);
-                    }
-                    else {
-                        console.log("create",resp); 
-                        var body = {
-                            device_id_sensor_id:{
-                                properties:{
-                                reading         : {"type" : "string", "index" : "not_analyzed"},
-                                sensorId        : {"type" : "string", "index" : "not_analyzed"},
-                                sensorGroup   : {"type" : "string", "index" : "not_analyzed"},
-                                date         : {"type" : "long", "index" : "not_analyzed"}
-                                    }
-                                }
-                        }
-                        
-                        elasticClient.indices.putMapping({index:device_id_sensor_id, type:"device_id_sensor_id", body:body});
-                    }
-                });
-
-                client.on("error", (err) => {
-                    console.log(err);
-                
-                });
-
-                producer.on("error", (err) => {
-                    console.log(err);
-                
-                });
-        
-                producer.on('ready', () => {
-                    producer.on("error", (err) => {
-                        console.log(err);
-                    })
-        
-                    producer.createTopics([req.body.topic], true, (err, data) => {
-                        if (err) {
-                            console.log("err", err);
-                        }
-                        else {
-                            console.log("data", data);
-                        } 
-                    });
-                });
-
-                // get all jars - done
-                // GET http://iot.pcxd.me:8081/jars/
-                axios.get('http://iot.pcxd.me:8081/jars').then(response => {
-                    if(response.data.files.length>0){
-                        var jarId = response.data.files[0].id,
-                            fixedPart1 = '/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D',
-                            fixedPart2 = '&savepointPath=',
-                            homepage = 'http://iot.pcxd.me:8081/jars/',
-                            finalURL = homepage+jarId+fixedPart1+device_id_sensor_id+fixedPart2;
-                        axios.post(finalURL).then(response => {
-                            console.log('******RESPONSE',response);
-                          })
-                          .catch(function (error) {
-                            console.log(error);
-                          });
-                    }
-                    else{
-                        var fs = require('fs');
-                        var request = require('request');
-                        var upfile = 'flink-kafka-1.0.jar';
-                        var filePath = './flink_jars/';
-                        fs.readFile(filePath+upfile, function(err, content){
-                            if(err){
-                                console.error(err);
-                            }
-                            var url = "http://iot.pcxd.me:8081/jars/upload";
-                            var boundary = "xxxxxxxxxx";
-                            var data = "";
-
-                            data += "--" + boundary + "\r\n";
-                            data += "Content-Disposition: form-data; name=\"jarfile\"; filename=\"" + upfile + "\"\r\n";
-                            data += "Content-Type:application/octet-stream\r\n\r\n";
-                            var payload = Buffer.concat([
-                                    Buffer.from(data, "utf8"),
-                                    new Buffer(content, 'binary'),
-                                    Buffer.from("\r\n--" + boundary + "\r\n", "utf8"),
-                            ]);
-                            var options = {
-                                method: 'post',
-                                url: url,
-                                headers: {"Content-Type": "multipart/form-data; boundary=" + boundary},
-                                body: payload,
-                            };
-                            request(options, function(error, response, body) {
-                                console.log(body);
-                            });
-                        });
-                    }
-                })                      
-                .catch(error => console.log(error));
-                return res.json(res2);
-            });
         }).catch(err => {
-            console.log("err", err);
-            return responseError(res, err);        
+            return responseError(res, err);
         });
-        
+
     }
+
+    update(req, res) {
+        Sensors.findOne({ where: { deviceId: { [Op.eq]: req.params.device_id }, id: { [Op.eq]: req.params.id } } }).then(data => {
+            if (data){
+                delete req.body.id;
+                Sensors.update(req.body, { where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
+                    return res.status(200).json({ result: sensor });
+                }).catch(err => {
+                    return responseError(res, err);
+                });
+            } else {
+                return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
+            }
+        });
+    }
+
+    delete(req, res) {
+        Sensors.findOne({ where: { deviceId: { [Op.eq]: req.params.device_id }, id: { [Op.eq]: req.params.id } } }).then(data => {
+            if (data){
+                Sensors.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
+
+                    // Delete Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
+                    deleteElasticsearchIndex(topic).then(() => {
+                        // TODO Delete Kafka Topic
+                        deleteFlinkJob(topic).catch(err => console.error(err));
+                    }).catch(err => console.error(err));
+
+                    return res.status(200).json({ result: sensor });
+                }).catch(err => {
+                    return responseError(res, err);
+                });
+            } else {
+                return res.status(400).json({ name: 'SensorNotFound', errors: [{ message: 'Sensor not found' }] });
+            }
+        });
+    }
+}
+
+module.exports = {
+    getAll: controller.getAll.bind(controller),
+    add: controller.add.bind(controller),
+    update: controller.update.bind(controller),
+    delete: controller.delete.bind(controller),
 }

@@ -9,7 +9,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
-controller = new class extends BaseController {
+const controller = new class extends BaseController {
     constructor() {
         super(Devices);
     }

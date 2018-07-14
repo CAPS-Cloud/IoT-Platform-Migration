@@ -9,7 +9,6 @@ const Devices = sequelize.define('devices', {
     },
     description: {
         type: Sequelize.STRING,
-        allowNull: false,
     },
 });
 Devices.hasMany(Sensors);

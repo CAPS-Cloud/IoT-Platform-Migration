@@ -2,7 +2,6 @@ const connection = require('../connections/mysql');
 const { responseError, responseSystemError } = require('../utils/express_utils');
 const Consumers = require('../models/ConsumersModel');
 const Sensors = require('../models/SensorsModel');
-const ConsumersSensors = require('../models/ConsumerSensorsModel');
 const BaseController =  require('./BaseController');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;

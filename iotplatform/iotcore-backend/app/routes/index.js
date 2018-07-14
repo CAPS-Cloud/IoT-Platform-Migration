@@ -31,11 +31,10 @@ router.delete('/api/consumers/:id', AuthenticationRequireRole.ADMIN, ConsumersCo
 router.get('/api/consumers/:id/key', AuthenticationRequireRole.ADMIN, ConsumersController.key);
 
 // Sensors
+router.get('/api/devices/:id/sensors', AuthenticationRequireRole.USER, SensorsController.getAll);
 router.post('/api/devices/:id/sensors', AuthenticationRequireRole.ADMIN, SensorsController.add);
 router.patch('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.update);
 router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.delete);
-router.get('/api/devices/:id/sensors/', AuthenticationRequireRole.USER, SensorsController.getAll);
-router.get('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.USER, SensorsController.get);
 
 //ConsumersSensors
 router.post('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumersSensorsController.setPermission);
