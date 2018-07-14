@@ -11,8 +11,7 @@ const Devices = sequelize.define('devices', {
         type: Sequelize.STRING,
     },
 });
-Devices.hasMany(Sensors);
-Sensors.belongsTo(Devices);
-// sequelize.sync();
+Devices.hasMany(Sensors, { onDelete: 'cascade' });
+Sensors.belongsTo(Devices, { onDelete: 'cascade' });
 
 module.exports = Devices;

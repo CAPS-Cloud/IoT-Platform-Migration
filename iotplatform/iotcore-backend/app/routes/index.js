@@ -37,8 +37,7 @@ router.patch('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.AD
 router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, DeviceSensorsController.delete);
 
 //ConsumersSensors
-router.get('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.getAll);
-router.post('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.enablePermission);
-router.delete('/api/devices/consumers/:consumer_id/sensors/:sensor_id', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.disablePermission);
+router.post('/api/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.enablePermission);
+router.delete('/api/consumers/:consumer_id/sensors/:sensor_id', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.disablePermission);
 
 module.exports = router;

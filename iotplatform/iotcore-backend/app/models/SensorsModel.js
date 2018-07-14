@@ -21,7 +21,7 @@ const Sensors = sequelize.define('sensors',{
     },
 });
 
-Sensors.belongsToMany(Consumers, {through: 'ConsumersSensors'});
-Consumers.belongsToMany(Sensors, {through: 'ConsumersSensors'});
+Sensors.belongsToMany(Consumers, { through: 'ConsumersSensors', onDelete: 'cascade' });
+Consumers.belongsToMany(Sensors, { through: 'ConsumersSensors' });
 
 module.exports = Sensors;

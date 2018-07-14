@@ -7,25 +7,14 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 const controller = new class {
-    getAll(req, res) {
-        Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(consumer => {
-            if (consumer) {
-                consumer.getSensors().then(sensors => {
-                    return res.status(200).json({ result: sensors });
-                }).catch(err => responseError(res, err));
-            } else {
-                return res.status(400).json({ name: 'ConsumerNotFound', errors: [{ message: 'Consumer not found' }] });
-            }
-        }).catch(err => responseError(res, err));
-    }
 
     enablePermission(req, res) {
         Consumers.findOne({ where: { id: { [Op.eq]: req.params.consumer_id } } }).then(consumer => {
             if (consumer) {
                 Sensors.findOne({ where: { id: { [Op.eq]: req.body.sensor_id } } }).then(sensor => {
                     if (sensor) {
-                        consumer.getSensors({ where: { sensorId: { [Op.eq]: req.body.sensor_id } } }).then(exist => {
-                            if (exist) {
+                        consumer.getSensors({ where: { id: { [Op.eq]: req.body.sensor_id } } }).then(exist => {
+                            if (exist.length > 0) {
                                 return res.status(400).json({ name: 'PermissionExist', errors: [{ message: 'Permission exist' }] });
                             } else {
                                 consumer.addSensors(sensor).then(consumer_sensor => {
@@ -48,9 +37,9 @@ const controller = new class {
             if (consumer) {
                 Sensors.findOne({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(sensor => {
                     if (sensor) {
-                        consumer.getSensors({ where: { sensorId: { [Op.eq]: req.params.sensor_id } } }).then(exist => {
-                            if (exist) {
-                                consumer.removeSensors({ where: { sensorId: { [Op.eq]: req.params.sensor_id } } }).then(result => {
+                        consumer.getSensors({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(exist => {
+                            if (exist.length > 0) {
+                                consumer.removeSensors({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(result => {
                                     return res.status(200).json({ result });
                                 }).catch(err => responseError(res, err));
                             } else {
@@ -69,7 +58,6 @@ const controller = new class {
 }
 
 module.exports = {
-    getAll: controller.getAll.bind(controller),
     enablePermission: controller.enablePermission.bind(controller),
     disablePermission: controller.disablePermission.bind(controller),
 }
