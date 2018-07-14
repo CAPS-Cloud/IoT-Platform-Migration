@@ -5,8 +5,8 @@ const router = express.Router();
 const UsersController = require('../controllers/UsersController');
 const DevicesController = require('../controllers/DevicesController');
 const ConsumersController = require('../controllers/ConsumersController');
-const SensorsController = require('../controllers/SensorsController');
-const ConsumersSensorsController = require('../controllers/ConsumersSensorsController')
+const DeviceSensorsController = require('../controllers/DeviceSensorsController');
+const ConsumerSensorsController = require('../controllers/ConsumerSensorsController')
 
 // Users
 router.get('/api/users', AuthenticationRequireRole.USER, UsersController.getAll);
@@ -31,14 +31,14 @@ router.delete('/api/consumers/:id', AuthenticationRequireRole.ADMIN, ConsumersCo
 router.get('/api/consumers/:id/key', AuthenticationRequireRole.ADMIN, ConsumersController.key);
 
 // Sensors
-router.get('/api/devices/:id/sensors', AuthenticationRequireRole.USER, SensorsController.getAll);
-router.post('/api/devices/:id/sensors', AuthenticationRequireRole.ADMIN, SensorsController.add);
-router.patch('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.update);
-router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, SensorsController.delete);
+router.get('/api/devices/:id/sensors', AuthenticationRequireRole.USER, DeviceSensorsController.getAll);
+router.post('/api/devices/:id/sensors', AuthenticationRequireRole.ADMIN, DeviceSensorsController.add);
+router.patch('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, DeviceSensorsController.update);
+router.delete('/api/devices/:device_id/sensors/:id', AuthenticationRequireRole.ADMIN, DeviceSensorsController.delete);
 
 //ConsumersSensors
-router.get('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumersSensorsController.getAll);
-router.post('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumersSensorsController.enablePermission);
-router.delete('/api/devices/consumers/:consumer_id/sensors/:sensor_id', AuthenticationRequireRole.ADMIN, ConsumersSensorsController.disablePermission);
+router.get('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.getAll);
+router.post('/api/devices/consumers/:consumer_id/sensors', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.enablePermission);
+router.delete('/api/devices/consumers/:consumer_id/sensors/:sensor_id', AuthenticationRequireRole.ADMIN, ConsumerSensorsController.disablePermission);
 
 module.exports = router;
