@@ -8,6 +8,7 @@ RUN apt-get update -qq \
 # Install Java.
 RUN \
   echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  echo deb http://http.debian.net/debian jessie-backports main >> /etc/apt/sources.list && \
   apt-get update && \
   apt-get install -y software-properties-common && \
   add-apt-repository -y ppa:webupd8team/java && \
