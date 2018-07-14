@@ -26,6 +26,10 @@ import { observer } from 'mobx-react';
 import Snackbar from './utils/Snackbar';
 import SensorsAdd from './pages/SensorsAdd';
 import SensorsEdit from './pages/SensorsEdit';
+import Consumers from './pages/Consumers';
+import ConsumersAdd from './pages/ConsumersAdd';
+import ConsumersView from './pages/ConsumersView';
+import ConsumersEdit from './pages/ConsumersEdit';
 
 @observer
 class Dashboard extends React.Component {
@@ -120,6 +124,10 @@ class Dashboard extends React.Component {
                 <Route exact path="/devices/:id/edit" component={DevicesEdit} />
                 <Route exact path="/devices/:id/sensors/add" component={SensorsAdd} />
                 <Route exact path="/devices/:device_id/sensors/:id/edit" component={SensorsEdit} />
+                <Route exact path="/consumers" component={Consumers} />
+                <Route exact path="/consumers/add" component={ConsumersAdd} />
+                <Route exact path="/consumers/:id" component={ConsumersView} />
+                <Route exact path="/consumers/:id/edit" component={ConsumersEdit} />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
                 <Route exact path="/users/:id/edit" component={UsersEdit} />
