@@ -9,7 +9,6 @@ const BaseController =  require('./BaseController');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-
 const controller = new class extends BaseController {
     constructor() {
         super(Devices);
@@ -21,7 +20,7 @@ const controller = new class extends BaseController {
     key(req, res) {
         this.model.findOne({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
             if (data) {
-                jwt.sign({ id: data.id }, DEVICE_SECRET, (err, token) => {
+                jwt.sign({ iis: 'iotplatform', sub: data.id }, DEVICE_SECRET, { algorithm: 'RS256' }, (err, token) => {
                     return res.json({ token });
                 });
             } else {
