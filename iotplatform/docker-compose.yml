@@ -123,6 +123,7 @@ services:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+            FLINK: ${SERVICE_PREFIX}flink:8081
 
     iotcore-frontend:
         build: ./iotcore-frontend
