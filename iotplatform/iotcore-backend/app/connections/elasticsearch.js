@@ -1,8 +1,15 @@
 const elasticsearch = require('elasticsearch');
 
-module.exports = new elasticsearch.Client({
-  hosts: [
-    'http://' + process.env.ELASTICSEARCH + '/',
-    //'http://iot.pcxd.me:9000/',
-  ],
-});
+const host = process.env.ELASTICSEARCH;
+const bin_port = process.env.ELASTICSEARCH_BIN_PORT;
+//const host = 'iot.pcxd.me:9000';
+
+module.exports = {
+  elasticClient: new elasticsearch.Client({
+    hosts: [
+      `http://${exports.host}/`,
+    ],
+  }),
+  host,
+  bin_port,
+};

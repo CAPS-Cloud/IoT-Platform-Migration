@@ -7,6 +7,6 @@ module.exports = {
     ROOT_PASSWORD: 'x5KATOHT9zHczR49aPy0',
 
     // Device Secrets
-    DEVICE_SECRET: fs.readFileSync('.keys/jwtRS256.key');,
-    CONSUMER_SECRET: fs.readFileSync('.keys/consumer_jwtRS256.key');,
+    DEVICE_SECRET: fs.readFileSync('.keys/jwtRS256.key'),
+    CONSUMER_SECRET: fs.readFileSync('.keys/consumer_jwtRS256.key'),
 }

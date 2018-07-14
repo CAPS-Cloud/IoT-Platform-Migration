@@ -14,6 +14,12 @@ const axios = require('axios');
 const fs = require('fs');
 const request = require('request');
 
+const ELASTICSEARCH_HOST = require('../connections/elasticsearch').host;
+const ELASTICSEARCH_HOST_DOMAIN = ELASTICSEARCH_HOST.split(':')[0];
+const ELASTICSEARCH_BIN_PORT = require('../connections/elasticsearch').bin_port;
+const KAFKA_HOST = require('../connections/kafka').host;
+const ZOOKEEPER_HOST = require('../connections/zookeeper');
+
 function addElasticsearchIndex(topic) {
     return new Promise(function (resolve, reject) {
         elasticClient.indices.create({
@@ -24,12 +30,11 @@ function addElasticsearchIndex(topic) {
             }
             else {
                 var body = {
-                    sensor: {
+                    sensorReading: {
                         properties: {
-                            reading: { "type": "string", "index": "not_analyzed" },
-                            sensorId: { "type": "string", "index": "not_analyzed" },
-                            sensorGroup: { "type": "string", "index": "not_analyzed" },
-                            date: { "type": "long", "index": "not_analyzed" },
+                            timestamp: { "type": "date" },
+                            sensor_id: { "type": "text" },
+                            value: { "type": "text" },
                         },
                     },
                 }
@@ -68,7 +73,8 @@ function addFlinkJob(topic) {
         axios.get(`${flink}jars/`).then(response => {
             if (response.data.files.length > 0) {
                 const jarId = response.data.files[0].id;
-                axios.post(`${flink}jars/${jarId}/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=-topic%3D${topic}&savepointPath=`).then(response => {
+                const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch-port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
+                axios.post(`${flink}jars/${jarId}/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=${encodeURIComponent(programArgs)}&savepointPath=`).then(response => {
                     resolve(response);
                 }).catch(function (err2) {
                     reject(err2);

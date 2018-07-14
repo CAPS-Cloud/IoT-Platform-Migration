@@ -22,42 +22,36 @@ import static java.util.Objects.requireNonNull;
  * An individual sensor reading, describing sensor id, sensor group id, reading, and timestamp.
  */
 public class SensorReading {
-    private String sensorGroup;
-    private String sensorId;
-    private double reading;
-    private long timestamp;
+	private long timestamp;
+	private String sensorId;
+    private String value;
 
     public SensorReading() {
-        this("", "", 0L, 0.0);
+        this(0L, "", "");
     }
 
-    public SensorReading(String sensorGroup, String sensorId, long timestamp, double reading) {
-        this.sensorGroup = requireNonNull(sensorGroup);
+    public SensorReading(long timestamp, String sensorId, String value) {
+		this.timestamp = timestamp;
         this.sensorId = requireNonNull(sensorId);
-        this.timestamp = timestamp;
-        this.reading = reading;
+        this.value = requireNonNull(value);
     }
 
-    public String sensorGroup() {
-        return sensorGroup;
-    }
-
-    public String sensorId() {
-        return sensorId;
-    }
-
-    public long timestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
-
-    public String date() {
+	
+	public String getDate() {
       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
       String date = format.format(new Date(timestamp));
       return date;
     }
+	
+    public String getSensorId() {
+        return sensorId;
+    }
 
-    public double reading() {
-        return reading;
+    public long getValue() {
+        return value;
     }
 
     @Override
@@ -65,6 +59,6 @@ public class SensorReading {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS yy-MM-dd");
         String date = format.format(new Date(timestamp));
 
-        return '(' + sensorId + '/' + sensorGroup + ") @ " + date + " : " + reading;
+        return '(' + this.sensorId + ") @ " + date + " : " + this.value;
     }
 }

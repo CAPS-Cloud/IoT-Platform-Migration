@@ -43,7 +43,7 @@ public class ReadFromKafka {
     config.put("bulk.flush.max.actions", "1");
 
     List<InetSocketAddress> transportAddresses = new ArrayList<>();
-    transportAddresses.add(new InetSocketAddress(InetAddress.getByName(parameterTool.getRequired("elasticsearch")), 9300));
+    transportAddresses.add(new InetSocketAddress(InetAddress.getByName(parameterTool.getRequired("elasticsearch")), Integer.parseInt(parameterTool.getRequired("elasticsearch_port"))));
     System.out.println("Elasticsearch detected at: " + InetAddress.getByName(parameterTool.getRequired("elasticsearch")).toString());
 
     DataStream<ObjectNode> messageStream = env
@@ -61,10 +61,9 @@ public class ReadFromKafka {
 
         public SensorReading map(ObjectNode node) throws Exception {
           return new SensorReading(
-            node.get("sensorGroup").asText(),
-            node.get("sensorId").asText(),
-            node.get("timestamp").asLong(),
-            node.get("reading").asDouble()
+			node.get("timestamp").asLong(),
+            node.get("sensor_id").asText(),
+            node.get("value").asText()
           );
         }
       })
@@ -72,12 +71,11 @@ public class ReadFromKafka {
       .addSink(new ElasticsearchSink<>(config, transportAddresses, new ElasticsearchSinkFunction<SensorReading>() {
         public IndexRequest createIndexRequest(SensorReading element) {
             Map<String, String> json = new HashMap<>();
-            json.put("reading", Double.toString(element.reading()));
-            json.put("sensorId", element.sensorId());
-            json.put("sensorGroup", element.sensorGroup());
-            json.put("date", element.date());
+            json.put("timestamp", element.getTimestamp());
+            json.put("sensor_id", element.getSensorId());
+            json.put("value", element.getValue());
             return Requests.indexRequest()
-                    .index("livedata")
+                    .index(parameterTool.getRequired("topic"))
                     .type("sensorReading")
                     .source(json);
         }

@@ -1,5 +1,5 @@
 const { spawn } = require('child_process');
-const ZOOKEEPER = process.env.ZOOKEEPER;
+const ZOOKEEPER = require('./zookeeper');
 const KAFKA_PATH = "kafka_2.11-1.1.0";
 const KAFKA_TOPIC_PATH = `${KAFKA_PATH}/bin/kafka-topics.sh`;
 
@@ -34,4 +34,5 @@ function deleteTopic(topic) {
 module.exports = {
     addTopic,
     deleteTopic,
+    host: process.env.KAFKA,
 };
