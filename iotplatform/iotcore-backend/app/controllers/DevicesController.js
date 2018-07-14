@@ -1,6 +1,7 @@
 const connection = require('../connections/mysql');
 const { responseError, responseSystemError } = require('../utils/express_utils');
 const Devices = require('../models/DevicesModel');
+const Sensors = require('../models/SensorsModel');
 const jwt = require('jsonwebtoken');
 const { DEVICE_SECRET } = require('../secrets');
 const bcrypt = require('bcryptjs');
@@ -12,6 +13,9 @@ const Op = Sequelize.Op;
 const controller = new class extends BaseController {
     constructor() {
         super(Devices);
+        this.findAllOptions = {
+            include: [{ model: Sensors }],
+        }
     }
 
     key(req, res) {
