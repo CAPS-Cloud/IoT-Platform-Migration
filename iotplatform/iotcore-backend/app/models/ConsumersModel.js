@@ -8,7 +8,6 @@ const Consumers = sequelize.define('consumers', {
     },
     description: {
         type: Sequelize.STRING,
-        allowNull: false,
     },
 });
 
