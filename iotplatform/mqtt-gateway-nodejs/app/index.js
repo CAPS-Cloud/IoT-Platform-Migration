@@ -1,4 +1,3 @@
-const mqtt = require('mqtt')
 const kafka = require("kafka-node")
 const mosca = require('mosca')
 const jwt = require('jsonwebtoken');
@@ -17,18 +16,18 @@ const REDIS_PORT = parseInt(REDIS.split(":")[1]);
 var server, kafkaProducer, kafkaClient
 
 async function initKafka() {
-  return new Promise((resolve) => {
-    console.log("attempting to initiate Kafka connection...")
-    kafkaClient = new kafka.Client(ZOOKEEPER)
+    return new Promise((resolve) => {
+        console.log("attempting to initiate Kafka connection...")
+        kafkaClient = new kafka.Client(ZOOKEEPER)
 
-    kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
-    kafkaProducer.on("ready", () => {
-        console.log("kafka producer is connected and ready")
+        kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
+        kafkaProducer.on("ready", () => {
+            console.log("kafka producer is connected and ready")
+        })
+        kafkaProducer.on('ready', () => {
+          resolve()
+        })
     })
-    kafkaProducer.on('ready', () => {
-      resolve()
-    })
-  })
 }
 
 async function initMqtt() {
@@ -38,7 +37,7 @@ async function initMqtt() {
             redis: require('redis'),
             db: 12,
             port: REDIS_PORT,
-            return_buffers: true, // to handle binary payloads
+            return_buffers: true,
             host: REDIS_HOST
         }
 
@@ -53,14 +52,43 @@ async function initMqtt() {
         }
 
         server = new mosca.Server(moscaSettings)
+
         server.on('ready', setup)
 
-        server.on('clientConnected', function(client) {
+        server.on('clientConnected', (client) => {
         	console.log('client connected', client.id)
         })
 
         // fired when the mqtt server is ready
         function setup() {
+            server.authenticate = (client, username, password, callback) => {
+                if( username !== 'JWT' ) {
+                    return callback("Invalid Credentials", false);
+                }
+
+                jwt.verify(password.toString(), key, (err, profile) => {
+                    if( err ) {
+                        return callback("Error getting UserInfo", false);
+                    }
+                    console.log("Authenticated client " + profile.sub);
+                    client.deviceProfile = profile;
+                    return callback(null, true);
+                });
+            }
+
+            server.authorizePublish = (client, topic, payload, callback) => {
+                if(client.deviceProfile.sub === topic) {
+                    callback(null, true);
+                } else {
+                    console.log("Not authorized to publish on this topic");
+                    callback(null, false);
+                }
+            }
+
+            server.authorizeSubscribe = (client, topic, callback) => {
+                callback(null, false);
+            }
+
             console.log('Mosca server is up and running')
             resolve()
         }
@@ -104,14 +132,7 @@ Promise.all([initKafka()]).then(() => {
         // fired when a message is received
         server.on('published', function(packet, client) {
             if(!(packet.payload.toString().includes('mqttjs_'))) {
-                jwt.verify(packet.topic, key, function(err, decoded) {
-                    if(!(err != null)) {
-                        forwardMsg(packet.payload.toString(), decoded.sub);
-                    } else {
-                        console.log("403 - Forbidden");
-                        console.log(err);
-                    }
-                });
+                forwardMsg(packet.payload.toString(), packet.topic);
             }
         });
     })
