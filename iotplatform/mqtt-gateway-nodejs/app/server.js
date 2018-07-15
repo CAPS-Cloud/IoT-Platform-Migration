@@ -84,25 +84,38 @@ async function initMqtt() {
     })
 }
 
-function forwardMsg(message) {
-  let payloads
-  if(typeof(message) === "object") {
-    payloads = [
-      { topic: 'livedata', messages: message.toString() }
-    ]
-  } else if(typeof(message) === "string") {
-    payloads = [
-      { topic: 'livedata', messages: message }
-    ]
-  } else {
-    console.log("invalid type of data - not forwarded to kafka")
-    return
-  }
+function forwardMsg(message, deviceId) {
+    let payloads, messageString
 
-  kafkaProducer.send(payloads, function (err, data) {
-    console.log("forwarded to kafka:")
-    console.log(payloads)
-  })
+    if(typeof(message) === "object") {
+        messageString = message.toString()
+    } else if(typeof(message) === "string") {
+        messageString = message
+    } else {
+        console.log("invalid type of data - not forwarded to kafka")
+        return
+    }
+
+    if(Array.isArray(JSON.parse(messageString))) {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString)[0].sensor_id, messages: messageString }
+        ]
+    } else {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
+        ]
+    }
+
+    console.log(payloads);
+
+    kafkaProducer.send(payloads, (err) => {
+        if(err) {
+            console.error("couldn't forward message to kafka - ", err);
+        } else {
+            console.log("forwarded to kafka:")
+            console.log(payloads)
+        }
+    })
 }
 
 Promise.all([initKafka(), initGRPC()]).then(() => {

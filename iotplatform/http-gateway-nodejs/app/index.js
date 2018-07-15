@@ -1,7 +1,6 @@
 const express = require('express');
 const kafka = require("kafka-node");
 const bodyParser = require("body-parser");
-const grpc = require('grpc');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
@@ -23,16 +22,13 @@ async function initRest() {
         app.use(bodyParser.urlencoded({ extended: true }))
 
         app.post("/", function (req, res) {
-            console.log(req.headers.authorization)
             if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 // verify a token asymmetric
                 jwt.verify(req.headers.authorization.split(' ')[1], key, function(err, decoded) {
                     if(!(err != null)) {
-                        if(decoded.iss === "iotplatform") {
-                            forwardMsg(JSON.stringify(req.body), decoded.sub)
-                            res.status(200).send('OK');
-                            res.end();
-                        }
+                        forwardMsg(JSON.stringify(req.body), decoded.sub);
+                        res.status(200).send('OK');
+                        res.end();
                     } else {
                         console.log("403 - Forbidden");
                         res.status(403).send('Forbidden');
@@ -70,6 +66,7 @@ async function initKafka() {
 
 function forwardMsg(message, deviceId) {
     let payloads, messageString
+
     if(typeof(message) === "object") {
         messageString = message.toString()
     } else if(typeof(message) === "string") {
@@ -79,18 +76,28 @@ function forwardMsg(message, deviceId) {
         return
     }
 
-    payloads = [
-        { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
-    ]
+    if(Array.isArray(JSON.parse(messageString))) {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString)[0].sensor_id, messages: messageString }
+        ]
+    } else {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
+        ]
+    }
 
-    kafkaProducer.send(payloads, function (err, data) {
-        console.log("forwarded to kafka:")
-        console.log(payloads)
+    kafkaProducer.send(payloads, (err) => {
+        if(err) {
+            console.error("couldn't forward message to kafka - ", err);
+        } else {
+            console.log("forwarded to kafka:")
+            console.log(payloads)
+        }
     })
 }
 
 Promise.all([initKafka()]).then(() => {
     initRest().then(() => {
-
+        console.log("http-gateway available")
     })
 })

@@ -1,13 +1,5 @@
 version: '3.2'
 services:
-  # activemq:
-  #   build: ./activemq
-  #   image: heldic/activemq
-  #   ports:
-  #     - "61616"
-  #     - "1883:1883"
-  #     - "8161"
-  #     - "5672"
     kafka-manager:
         image: sheepkiller/kafka-manager:latest
         ports:
@@ -16,17 +8,18 @@ services:
             ZK_HOSTS: ${SERVICE_PREFIX}zookeeper:2181
             APPLICATION_SECRET: letmein
             KM_ARGS: -Djava.net.preferIPv4Stack=true
+
     nodejs-producer:
         build: ./nodejs-producer
         image: heldic/nodejs-producer
         environment:
-            MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway${EXPOSED_SUFFIX}:1883
+            MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
 
-    java-producer-go:
-        build: ./java-producer
-        image: heldic/java-producer
-        environment:
-            HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
+    # java-producer-go:
+    #     build: ./java-producer
+    #     image: heldic/java-producer
+    #     environment:
+    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
 
     java-producer-nodejs:
         build: ./java-producer
@@ -40,11 +33,11 @@ services:
         environment:
             WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
 
-    python-producer-go:
-        build: ./python-producer
-        image: heldic/python-producer
-        environment:
-            WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
+    # python-producer-go:
+    #     build: ./python-producer
+    #     image: heldic/python-producer
+    #     environment:
+    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
 
     redis:
         build: ./redis
@@ -52,9 +45,9 @@ services:
         ports:
             - "6379"
 
-    mqtt-gateway:
-        build: ./mqtt-gateway
-        image: heldic/mqtt-gateway
+    mqtt-gateway-nodejs:
+        build: ./mqtt-gateway-nodejs
+        image: heldic/mqtt-gateway-nodejs
         environment:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
@@ -73,15 +66,15 @@ services:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
-    ws-gateway-go:
-        build: ./ws-gateway-go
-        image: heldic/ws-gateway-go
-        ports:
-            - "8766:8766"
-        environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    # ws-gateway-go:
+    #     build: ./ws-gateway-go
+    #     image: heldic/ws-gateway-go
+    #     ports:
+    #         - "8766:8766"
+    #     environment:
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+    #         KAFKA: ${SERVICE_PREFIX}kafka:9092
+    #         ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
     http-gateway-nodejs:
         build: ./http-gateway-nodejs
@@ -93,15 +86,15 @@ services:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
-    http-gateway-go:
-        build: ./http-gateway-go
-        image: heldic/http-gateway-go
-        ports:
-            - "8084:8084"
-        environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    # http-gateway-go:
+    #     build: ./http-gateway-go
+    #     image: heldic/http-gateway-go
+    #     ports:
+    #         - "8084:8084"
+    #     environment:
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
+    #         KAFKA: ${SERVICE_PREFIX}kafka:9092
+    #         ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
     mariadb:
         image: mariadb:10
@@ -162,7 +155,7 @@ services:
         command: jobmanager
         environment:
             JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
-          
+
     taskmanager:
         image: flink:1.5-alpine
         depends_on:
@@ -171,16 +164,6 @@ services:
         environment:
             JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
             TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "10000"
-    
-    #flink:
-    #    build: ./flink
-    #    image: heldic/flink
-    #    ports:
-    #        - "8081:8081"
-    #    environment:
-    #        KAFKA: ${SERVICE_PREFIX}kafka:9092
-    #        ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-    #        ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
 
     elasticsearch:
         build: ./elasticsearch

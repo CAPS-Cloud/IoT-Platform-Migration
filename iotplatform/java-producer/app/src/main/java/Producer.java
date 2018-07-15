@@ -56,7 +56,7 @@ public class Producer {
 
         while(true) {
             try {
-                String message = gson.toJson(generateEvent());
+                String message = gson.toJson(generateEvents(5));
 
                 Content response = Request.Post(args[0])
                     .addHeader("Authorization", "Bearer " + token)
@@ -87,5 +87,15 @@ public class Producer {
         evt.timestamp = System.currentTimeMillis();
         evt.value = String.valueOf(Math.random() * 100);
         return evt;
+    }
+
+    private static SensorEvent[] generateEvents(int numOfEvents) {
+        SensorEvent[] evts = new SensorEvent[numOfEvents];
+
+        for (int i = 0; i < evts.length; i++) {
+            evts[i] = generateEvent();
+        }
+
+        return evts;
     }
 }
