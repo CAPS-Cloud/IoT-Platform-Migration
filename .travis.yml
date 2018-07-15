@@ -56,7 +56,7 @@ deploy:
       condition: $LIVE = true
   - provider: script
     skip_cleanup: true
-    script: env IMAGE_NAME=mqtt-gateway BUILD_PATH=./iotplatform/mqtt-gateway/ travis/push-docker-images-to-dockerhub.sh
+    script: env IMAGE_NAME=mqtt-gateway-nodejs BUILD_PATH=./iotplatform/mqtt-gateway-nodejs/ travis/push-docker-images-to-dockerhub.sh
     on:
       #tags: true
       condition: $LIVE = true
