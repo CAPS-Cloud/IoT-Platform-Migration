@@ -10,9 +10,6 @@ const Op = Sequelize.Op;
 const { addTopic, deleteTopic } = require('../connections/kafka');
 const { addFlinkJob, deleteFlinkJob } = require('../connections/flink');
 const { addElasticsearchIndex, deleteElasticsearchIndex } = require('../connections/elasticsearch');
-const axios = require('axios');
-const fs = require('fs');
-const request = require('request');
 
 const controller = new class {
 
