@@ -8,6 +8,9 @@ const bcrypt = require('bcryptjs');
 const BaseController =  require('./BaseController');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const { addTopic, deleteTopic } = require('../connections/kafka');
+const { addFlinkJob, deleteFlinkJob } = require('../connections/flink');
+const { addElasticsearchIndex, deleteElasticsearchIndex } = require('../connections/elasticsearch');
 
 const controller = new class extends BaseController {
     constructor() {
@@ -15,6 +18,29 @@ const controller = new class extends BaseController {
         this.findAllOptions = {
             include: [{ model: Sensors }],
         }
+    }
+
+    pre_delete(req, res, callback) {
+        Devices.findById(req.params.id, { include: [{ model: Sensors }] }).then(device => {
+            if (device) {
+                const DEVICE_ID = device.id;
+                const SENSORS_ID = device.sensors.map(sensor => sensor.id);
+
+                SENSORS_ID.forEach(sensor_id => {
+                    const topic = `${DEVICE_ID}_${sensor_id}`;
+
+                    // Delete Flink Job, then Kafka Topic, then Elasticsearch Index asynchronously.
+                    deleteFlinkJob(topic).then(() => {
+                        deleteTopic(topic).then(() => {
+                            deleteElasticsearchIndex(topic).catch(err => console.error(err));
+                        }).catch(err => console.error(`Kafka topic deletion error with exit code: ${err}`));
+                    }).catch(err => console.error(err));
+                });
+                callback();
+            } else {
+                callback();
+            }
+        }).catch(err => responseError(res, err));
     }
 
     key(req, res) {

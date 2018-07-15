@@ -51,9 +51,15 @@ module.exports = class {
         });
     }
 
+    pre_delete(req, res, callback) {
+        callback();
+    }
+
     delete(req, res) {
-        this.model.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
-            return res.status(200).json({ result: data });
-        }).catch(err => responseError(res, err));
+        this.pre_delete(req, res, () => {
+            this.model.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
+                return res.status(200).json({ result: data });
+            }).catch(err => responseError(res, err));
+        });
     }
 }

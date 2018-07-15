@@ -1,12 +1,13 @@
-var kafka = require("kafka-node")
-var WebSocket = require('ws')
-var grpc = require('grpc');
+var kafka = require("kafka-node");
+var WebSocket = require('ws');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 var wsPort = 8765
-var PROTO_PATH = __dirname + '/protos/helloworld.proto';
-var hello_proto = grpc.load(PROTO_PATH).helloworld;
 
 var wsserver, kafkaProducer, kafkaClient
+
+const key = fs.readFileSync('./.keys/jwtRS256.key.pub');  // get public key
 
 const args = process.argv;
 const ZOOKEEPER = args[2];
@@ -16,24 +17,6 @@ async function initWebSocket() {
   console.log("attempting to initiate ws server...")
   return new Promise((resolve) => {
     wsserver = new WebSocket.Server({ port: wsPort })
-    resolve()
-  })
-}
-
-async function initGRPC() {
-  return new Promise((resolve) => {
-    let client = new hello_proto.Greeter(IOTCORE_BACKEND,
-                                         grpc.credentials.createInsecure())
-    let user
-    if (process.argv.length >= 3) {
-      user = process.argv[2]
-    } else {
-      user = 'world'
-    }
-    client.sayHello({name: user}, function(err, response) {
-      //console.log('Greeting:', response.message)
-      console.log("client.sayHello")
-    })
     resolve()
   })
 }
@@ -53,33 +36,66 @@ async function initKafka() {
   })
 }
 
-function forwardMsg(message) {
-  let payloads
-  if(typeof(message) === "object") {
-    payloads = [
-      { topic: 'livedata', messages: message.toString() }
-    ]
-  } else if(typeof(message) === "string") {
-    payloads = [
-      { topic: 'livedata', messages: message }
-    ]
-  } else {
-    console.log("invalid type of data - not forwarded to kafka")
-    return
-  }
+function forwardMsg(message, deviceId) {
+    let payloads, messageString
 
-  kafkaProducer.send(payloads, function (err, data) {
-    console.log("forwarded to kafka:")
-    console.log(payloads)
-  })
+    if(typeof(message) === "object") {
+        messageString = message.toString()
+    } else if(typeof(message) === "string") {
+        messageString = message
+    } else {
+        console.log("invalid type of data - not forwarded to kafka")
+        return
+    }
+
+    if(Array.isArray(JSON.parse(messageString))) {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString)[0].sensor_id, messages: messageString }
+        ]
+    } else {
+        payloads = [
+            { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
+        ]
+    }
+
+    kafkaProducer.send(payloads, (err) => {
+        if(err) {
+            console.error("couldn't forward message to kafka - ", err);
+        } else {
+            console.log("forwarded to kafka:")
+            console.log(payloads)
+        }
+    })
 }
 
-Promise.all([initKafka(), initGRPC()]).then(() => {
-  initWebSocket().then(() => {
-    wsserver.on('connection', function connection(ws) {
-      ws.on('message', function incoming(message) {
-        forwardMsg(message)
-      })
+function toEvent (message) {
+    try {
+        console.log(message)
+        var event = JSON.parse(message);
+        this.emit(event.type, event.payload);
+    } catch(err) {
+        console.log('not an object' , err);
+    }
+}
+
+Promise.all([initKafka()]).then(() => {
+    initWebSocket().then(() => {
+        console.log("ws gateway available")
+        wsserver.on('connection', function connection(ws) {
+            ws.on('message', toEvent).on('authenticate', function (data) {
+                console.log(data)
+                jwt.verify(data.token, key, function (err, decoded) {
+                    if(!(err != null)) {
+                        console.log(decoded);
+                        //forwardMsg(JSON.stringify(req.body), decoded.sub);
+                        ws.send('OK');
+                    } else {
+                        console.log("403 - Forbidden");
+                        ws.send('Forbidden');
+                    }
+                    console.log(decoded);
+                });
+            });
+        })
     })
-  })
 })

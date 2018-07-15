@@ -150,6 +150,7 @@ services:
         image: flink:1.5-alpine
         ports:
             - "8081:8081"
+            - "6123"
             - "6124"
             - "6125"
         command: jobmanager
@@ -164,6 +165,16 @@ services:
         environment:
             JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
             TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "10000"
+
+    #flink:
+    #    build: ./flink
+    #    image: heldic/flink
+    #    ports:
+    #        - "8081:8081"
+    #    environment:
+    #        KAFKA: ${SERVICE_PREFIX}kafka:9092
+    #        ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    #        ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
 
     elasticsearch:
         build: ./elasticsearch
