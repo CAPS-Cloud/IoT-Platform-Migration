@@ -63,8 +63,8 @@ function addFlinkJob(topic) {
 function deleteFlinkJob(topic) {
     console.log("Canceling flink job", topic);
     return new Promise(function (resolve, reject) {
-        axios.get(`${host}joboverview/`).then(res => {
-            const jobs = res.data["running"].concat(res.data["finished"]);
+        axios.get(`${host}jobs/overview/`).then(res => {
+            const jobs = res.data["jobs"];
 
             for (var i = 0; i < jobs.length; i++) {
                 const job = jobs[i];
