@@ -1,4 +1,6 @@
+const fs = require('fs');
 const axios = require('axios');
+const request = require('request');
 
 const host = 'http://' + process.env.FLINK + '/';
 //const host = 'http://iot.pcxd.me:8081/';
