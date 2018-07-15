@@ -9,6 +9,7 @@ const Op = Sequelize.Op;
 const { CONSUMER_SECRET } = require('../secrets');
 const ELASTICSEARCH_HOST = require('../connections/elasticsearch').host;
 const proxy = require('express-http-proxy');
+const jwt = require('jsonwebtoken');
 
 const controller = new class {
 
