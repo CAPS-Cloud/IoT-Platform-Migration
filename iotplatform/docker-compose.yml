@@ -157,6 +157,7 @@ services:
         image: flink:1.5-alpine
         ports:
             - "8081:8081"
+            - "6123"
             - "6124"
             - "6125"
         command: jobmanager
