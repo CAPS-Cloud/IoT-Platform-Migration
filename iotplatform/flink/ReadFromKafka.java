@@ -70,7 +70,7 @@ public class ReadFromKafka {
 
       .addSink(new ElasticsearchSink<>(config, transportAddresses, new ElasticsearchSinkFunction<SensorReading>() {
         public IndexRequest createIndexRequest(SensorReading element) {
-            Map<String, String> json = new HashMap<>();
+            Map<String, Object> json = new HashMap<>();
             json.put("timestamp", element.getTimestamp());
             json.put("sensor_id", element.getSensorId());
             json.put("value", element.getValue());

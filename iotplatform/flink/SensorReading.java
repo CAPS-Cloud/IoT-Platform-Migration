@@ -50,7 +50,7 @@ public class SensorReading {
         return sensorId;
     }
 
-    public long getValue() {
+    public String getValue() {
         return value;
     }
 
