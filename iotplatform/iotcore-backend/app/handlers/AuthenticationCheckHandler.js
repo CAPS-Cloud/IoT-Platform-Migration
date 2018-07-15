@@ -14,7 +14,7 @@ module.exports = function (req, res, next) {
         }
         const bearerToken = bearer[1];
 
-        jwt.verify(bearerToken, AUTHENTICATION_SECRET, (err, authData) => {
+        jwt.verify(bearerToken, AUTHENTICATION_SECRET, { algorithm: 'RS256' }, (err, authData) => {
             if (!err) {
                 if (authData.id == -1) {
                     req.authenticated_as = { id: -1, name: '<root>', username: ROOT_USERNAME, role: 'SUPER_USER' };
@@ -27,7 +27,7 @@ module.exports = function (req, res, next) {
                         } else {
                             return next();
                         }
-                    })
+                    });
                 }
             } else {
                 return next();

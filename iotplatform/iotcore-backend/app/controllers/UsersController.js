@@ -66,7 +66,7 @@ const controller = new class extends BaseController {
         } else {
             this.model.findOne({ where: { username: { [Op.eq]: req.body.username } } }).then(data => {
                 if (data && bcrypt.compareSync(req.body.password, data.password)) {
-                    jwt.sign({ id: data.id }, AUTHENTICATION_SECRET, (err, token) => {
+                    jwt.sign({ id: data.id }, AUTHENTICATION_SECRET, { algorithm: 'RS256' }, (err, token) => {
                         return res.json({ token });
                     });
                 } else {

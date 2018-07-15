@@ -2,7 +2,7 @@ const fs = require('fs');
 
 module.exports = {
     // Dashboard Secrets
-    AUTHENTICATION_SECRET: '//TODO Generate high entropy secret',
+    AUTHENTICATION_SECRET: fs.readFileSync('.keys/authentication_jwtRS256.key'),
     ROOT_USERNAME: 'root',
     ROOT_PASSWORD: 'x5KATOHT9zHczR49aPy0',
 

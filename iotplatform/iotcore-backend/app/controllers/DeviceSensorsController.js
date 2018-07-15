@@ -9,7 +9,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { addTopic, deleteTopic } = require('../connections/kafka');
 const flink = require('../connections/flink');
-const elasticClient = require('../connections/elasticsearch');
+const { elasticClient } = require('../connections/elasticsearch');
 const axios = require('axios');
 const fs = require('fs');
 const request = require('request');
@@ -39,7 +39,7 @@ function addElasticsearchIndex(topic) {
                     },
                 }
 
-                elasticClient.indices.putMapping({ index: topic, type: "sensor", body: body },
+                elasticClient.indices.putMapping({ index: topic, type: "sensorReading", body: body },
                     function (err, resp, status) {
                         if (err) {
                             reject(err);
@@ -147,7 +147,7 @@ const controller = new class {
         Devices.findById(req.params.id).then(device => {
             if (device) {
                 Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, path: req.body.path, deviceId: device.id }).then(sensor => {
-                    var topic = device.id + '_' + sensor.id;
+                    var topic = `${device.id}_${sensor.id}`;
 
                     // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
                     addElasticsearchIndex(topic).then(() => {

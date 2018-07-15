@@ -7,7 +7,7 @@ const bin_port = process.env.ELASTICSEARCH_BIN_PORT;
 module.exports = {
   elasticClient: new elasticsearch.Client({
     hosts: [
-      `http://${exports.host}/`,
+      `http://${host}/`,
     ],
   }),
   host,

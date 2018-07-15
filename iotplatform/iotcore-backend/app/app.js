@@ -7,7 +7,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
-const AuthenticationCheckHandler = require('./handlers/AuthenticationCheckHandler');
 
 const port = process.env.PORT || 3000;
 
@@ -15,7 +14,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/', AuthenticationCheckHandler, routes);
+app.use('/', routes);
 
 if (require.main === module) {
     app.listen(port);
