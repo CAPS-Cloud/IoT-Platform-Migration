@@ -73,7 +73,7 @@ function addFlinkJob(topic) {
         axios.get(`${flink}jars/`).then(response => {
             if (response.data.files.length > 0) {
                 const jarId = response.data.files[0].id;
-                const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch-port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
+                const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
                 axios.post(`${flink}jars/${jarId}/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=${encodeURIComponent(programArgs)}&savepointPath=`).then(response => {
                     resolve(response);
                 }).catch(function (err2) {
