@@ -18,13 +18,9 @@ export default class extends React.Component {
 
     componentDidMount() {
         this.dialog = new MDCDialog(document.querySelector('#my-mdc-dialog'));
-    }
 
-    deleteClick(object) {
-        this.to_delete = object;
-        this.dialog.show();
         this.dialog.listen('MDCDialog:accept', () => {
-            const { id, name } = object;
+            const { id, name } = this.to_delete;
             DevicesModel.delete(id).then((response) => {
                 Snackbar.show("Deleted device " + name, "success");
                 DevicesModel.fetch();
@@ -32,11 +28,16 @@ export default class extends React.Component {
                 Snackbar.show(new RestError(error).getMessage());
             });
             this.to_delete = null;
-        })
+        });
 
         this.dialog.listen('MDCDialog:cancel', () => {
             this.to_delete = null;
-        })
+        });
+    }
+
+    deleteClick(object) {
+        this.to_delete = object;
+        this.dialog.show();
     }
 
     render() {

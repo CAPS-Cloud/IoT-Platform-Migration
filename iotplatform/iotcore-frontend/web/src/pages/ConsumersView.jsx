@@ -82,13 +82,9 @@ export default class extends React.Component {
 
     componentDidMount() {
         this.dialog = new MDCDialog(document.querySelector('#my-mdc-dialog'));
-    }
 
-    deleteClick(object) {
-        this.to_delete = object;
-        this.dialog.show();
         this.dialog.listen('MDCDialog:accept', () => {
-            const { id, name } = object;
+            const { id, name } = this.to_delete;
             this.deleting = true;
             axios.delete(`/consumers/${this.props.match.params.id}/sensors/${id}`).then((response) => {
                 this.deleting = false;
@@ -104,6 +100,11 @@ export default class extends React.Component {
         this.dialog.listen('MDCDialog:cancel', () => {
             this.to_delete = null;
         });
+    }
+
+    deleteClick(object) {
+        this.to_delete = object;
+        this.dialog.show();
     }
 
     render() {
