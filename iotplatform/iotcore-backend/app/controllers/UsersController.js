@@ -56,7 +56,7 @@ const controller = new class extends BaseController {
             req.body.username == ROOT_USERNAME &&
             req.body.password == ROOT_PASSWORD
         ) {
-            jwt.sign({ id: -1 }, AUTHENTICATION_SECRET, (err, token) => {
+            jwt.sign({}, AUTHENTICATION_SECRET, { algorithm: 'RS256', issuer: 'iotplatform', subject: '-1' }, (err, token) => {
                 return res.json({ token });
             });
         } else if (!req.body.username) {
@@ -66,7 +66,7 @@ const controller = new class extends BaseController {
         } else {
             this.model.findOne({ where: { username: { [Op.eq]: req.body.username } } }).then(data => {
                 if (data && bcrypt.compareSync(req.body.password, data.password)) {
-                    jwt.sign({ id: data.id }, AUTHENTICATION_SECRET, { algorithm: 'RS256' }, (err, token) => {
+                    jwt.sign({}, AUTHENTICATION_SECRET, { algorithm: 'RS256', issuer: 'iotplatform', subject: data.id.toString() }, (err, token) => {
                         return res.json({ token });
                     });
                 } else {

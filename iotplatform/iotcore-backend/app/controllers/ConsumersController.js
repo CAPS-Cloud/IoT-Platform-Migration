@@ -22,7 +22,7 @@ const controller = new class extends BaseController {
     key(req, res) {
         this.model.findOne({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
             if (data) {
-                jwt.sign({ iis: 'iotplatform', sub: data.id }, CONSUMER_SECRET, { algorithm: 'RS256' }, (err, token) => {
+                jwt.sign({}, CONSUMER_SECRET, { algorithm: 'RS256', issuer: 'iotplatform', subject: data.id.toString() }, (err, token) => {
                     return res.json({ token });
                 });
             } else {

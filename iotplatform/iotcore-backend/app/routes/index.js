@@ -44,7 +44,7 @@ router.post('/api/consumers/:consumer_id/sensors', AuthenticationCheckHandler, A
 router.delete('/api/consumers/:consumer_id/sensors/:sensor_id', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, ConsumerSensorsController.disablePermission);
 
 //ConsumerConsume
-router.get('/api/consumers/consume/:sensor_id', ConsumerConsumeController.get)
-router.get('/api/consumers/consume/:sensor_id/*', ConsumerConsumeController.get)
+router.get('/api/consumers/consume/:sensor_id', ConsumerConsumeController.get);
+router.get('/api/consumers/consume/:sensor_id/*', ConsumerConsumeController.get);
 
 module.exports = router;
