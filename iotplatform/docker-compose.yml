@@ -159,7 +159,7 @@ services:
             - "8081:8081"
         command: jobmanager
         environment:
-            JOB_MANAGER_RPC_ADDRESS: flink
+            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
           
     taskmanager:
         image: flink:1.5-alpine
@@ -167,7 +167,7 @@ services:
             - flink
         command: taskmanager
         environment:
-            JOB_MANAGER_RPC_ADDRESS: flink
+            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
             TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "10000"
     
     #flink:
