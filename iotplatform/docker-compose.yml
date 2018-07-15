@@ -157,6 +157,8 @@ services:
         image: flink:1.5-alpine
         ports:
             - "8081:8081"
+            - "6124"
+            - "6125"
         command: jobmanager
         environment:
             JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
