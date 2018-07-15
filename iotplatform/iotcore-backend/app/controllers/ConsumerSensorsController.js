@@ -39,7 +39,7 @@ const controller = new class {
                     if (sensor) {
                         consumer.getSensors({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(exist => {
                             if (exist.length > 0) {
-                                consumer.removeSensors({ where: { id: { [Op.eq]: req.params.sensor_id } } }).then(result => {
+                                consumer.removeSensors(sensor).then(result => {
                                     return res.status(200).json({ result });
                                 }).catch(err => responseError(res, err));
                             } else {
