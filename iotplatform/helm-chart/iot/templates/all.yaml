@@ -28,7 +28,7 @@ spec:
           image: {{ $value.image -}}
 {{- end }}
 {{- if hasKey $value "command" }}
-          command: ["{{- $value.command -}}"]
+          args: ["{{- $value.command -}}"]
 {{- end }}
 {{- if hasKey $value "environment" }}
           env:
