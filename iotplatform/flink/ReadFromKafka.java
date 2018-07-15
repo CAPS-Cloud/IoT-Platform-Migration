@@ -84,7 +84,8 @@ public class ReadFromKafka {
             indexer.add(createIndexRequest(element));
         }
       }));
-
-    env.execute();
+	
+    env.enableCheckpointing(1000);
+    env.execute(parameterTool.getRequired("topic"));
   }
 }

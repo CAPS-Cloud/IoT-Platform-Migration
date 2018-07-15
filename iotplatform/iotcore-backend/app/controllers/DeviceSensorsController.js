@@ -124,24 +124,21 @@ function addFlinkJob(topic) {
 function deleteFlinkJob(topic) {
     console.log("Canceling flink job", topic);
     return new Promise(function (resolve, reject) {
-        axios.get(`${flink}jobs/`).then(res => {
-            const jobs = res.data["jobs-running"].concat(res.data["jobs-finished"]).concat(res.data["jobs-failed"]);
+        axios.get(`${flink}joboverview/`).then(res => {
+            const jobs = res.data["running"].concat(res.data["finished"]);
 
             for (var i = 0; i < jobs.length; i++) {
                 const job = jobs[i];
-                axios.get(`${flink}jobs/${job}/config/`).then(res => {
-                    if (
-                        res.data["user-config"] &&
-                        res.data["user-config"]["program-args"] &&
-                        res.data["user-config"]["program-args"].split("%2d")[1] == topic
-                    ) {
-                        axios.delete(`${flink}jobs/${job}/cancel/`).then(res => {
-                            console.log("Done canceling flink job", topic);
-                            resolve(res);
-                        }).catch(err => reject(err));
-                    }
-                }).catch(err => reject(err));
+
+                if (job.name == topic) {
+                    axios.delete(`${flink}jobs/${job.jid}/cancel/`).then(res => {
+                        console.log("Done canceling flink job", topic);
+                        resolve(res);
+                    }).catch(err => reject(err));
+                    return;
+                }
             }
+            resolve(null);
         }).catch(err => reject(err));
     });
 }
