@@ -23,7 +23,7 @@ export default class extends React.Component {
     deleteClick(object) {
         this.to_delete = object;
         this.dialog.show();
-        this.dialog.listen('MDCDialog:accept', function () {
+        this.dialog.listen('MDCDialog:accept', () => {
             const { id, name } = object;
             UsersModel.delete(id).then((response) => {
                 Snackbar.show("Deleted user " + name, "success");
@@ -34,7 +34,7 @@ export default class extends React.Component {
             this.to_delete = null;
         })
 
-        this.dialog.listen('MDCDialog:cancel', function () {
+        this.dialog.listen('MDCDialog:cancel', () => {
             this.to_delete = null;
         })
     }

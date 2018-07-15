@@ -87,23 +87,23 @@ export default class extends React.Component {
     deleteClick(object) {
         this.to_delete = object;
         this.dialog.show();
-        this.dialog.listen('MDCDialog:accept', function () {
+        this.dialog.listen('MDCDialog:accept', () => {
             const { id, name } = object;
             this.deleting = true;
             axios.delete(`/consumers/${this.props.match.params.id}/sensors/${id}`).then((response) => {
                 this.deleting = false;
-                Snackbar.show("Deleted consumer " + name, "success");
+                Snackbar.show("Revoked sensor " + name, "success");
                 ConsumersModel.fetch();
             }).catch((error) => {
                 this.deleting = false;
                 Snackbar.show(new RestError(error).getMessage());
             });
             this.to_delete = null;
-        })
+        });
 
-        this.dialog.listen('MDCDialog:cancel', function () {
+        this.dialog.listen('MDCDialog:cancel', () => {
             this.to_delete = null;
-        })
+        });
     }
 
     render() {
@@ -141,7 +141,7 @@ export default class extends React.Component {
                         </section>
                         <footer className="mdc-dialog__footer">
                             <button type="button" className="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
-                            <button type="button" className="danger-button mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Delete</button>
+                            <button type="button" className="danger-button mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Revoke</button>
                         </footer>
                     </div>
                     <div className="mdc-dialog__backdrop"></div>
