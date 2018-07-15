@@ -21,6 +21,7 @@ const KAFKA_HOST = require('../connections/kafka').host;
 const ZOOKEEPER_HOST = require('../connections/zookeeper');
 
 function addElasticsearchIndex(topic) {
+    console.log("Adding elasticsearch index", topic);
     return new Promise(function (resolve, reject) {
         elasticClient.indices.create({
             index: topic,
@@ -44,6 +45,7 @@ function addElasticsearchIndex(topic) {
                         if (err) {
                             reject(err);
                         } else {
+                            console.log("Done adding elasticsearch index", topic);
                             resolve(resp);
                         }
                     }
@@ -54,6 +56,7 @@ function addElasticsearchIndex(topic) {
 }
 
 function deleteElasticsearchIndex(topic) {
+    console.log("Deleting elasticsearch index", topic);
     return new Promise(function (resolve, reject) {
         elasticClient.indices.delete({
             index: topic,
@@ -62,6 +65,7 @@ function deleteElasticsearchIndex(topic) {
                 reject(err);
             }
             else {
+                console.log("Done deleting elasticsearch index", topic);
                 resolve(resp);
             }
         });
@@ -69,18 +73,22 @@ function deleteElasticsearchIndex(topic) {
 }
 
 function addFlinkJob(topic) {
+    console.log("Adding flink job", topic);
     return new Promise(function (resolve, reject) {
         axios.get(`${flink}jars/`).then(response => {
             if (response.data.files.length > 0) {
+                console.log("Run flink job", topic);
                 const jarId = response.data.files[0].id;
                 const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
                 axios.post(`${flink}jars/${jarId}/run?allowNonRestoredState=false&entry-class=&parallelism=&program-args=${encodeURIComponent(programArgs)}&savepointPath=`).then(response => {
+                    console.log("Ran flink job", topic);
                     resolve(response);
                 }).catch(function (err2) {
                     reject(err2);
                 });
             }
             else {
+                console.log("Uploading flink jar");
                 const upload_file = 'flink-kafka-1.0.jar';
                 const filePath = './flink_jars/';
                 fs.readFile(filePath + upload_file, function (_err, content) {
@@ -99,6 +107,7 @@ function addFlinkJob(topic) {
                         if (err2) {
                             reject(err2);
                         } else {
+                            console.log("Uploaded flink jar");
                             addFlinkJob(topic).then(res => {
                                 resolve(res);
                             }).catch(err3 => {
@@ -113,6 +122,7 @@ function addFlinkJob(topic) {
 }
 
 function deleteFlinkJob(topic) {
+    console.log("Canceling flink job", topic);
     return new Promise(function (resolve, reject) {
         axios.get(`${flink}jobs/`).then(res => {
             const jobs = res.data["jobs-running"].concat(res.data["jobs-finished"]).concat(res.data["jobs-failed"]);
@@ -126,6 +136,7 @@ function deleteFlinkJob(topic) {
                         res.data["user-config"]["program-args"].split("%2d")[1] == topic
                     ) {
                         axios.delete(`${flink}jobs/${job}/cancel/`).then(res => {
+                            console.log("Done canceling flink job", topic);
                             resolve(res);
                         }).catch(err => reject(err));
                     }
