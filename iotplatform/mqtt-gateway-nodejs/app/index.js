@@ -1,8 +1,10 @@
-var mqtt = require('mqtt')
-var kafka = require("kafka-node")
-var mosca = require('mosca')
+const mqtt = require('mqtt')
+const kafka = require("kafka-node")
+const mosca = require('mosca')
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
-var server, kafkaProducer, kafkaClient
+const key = fs.readFileSync('./.keys/jwtRS256.key.pub');  // get public key
 
 const MQTT_PORT = 1883;
 const args = process.argv;
@@ -11,6 +13,8 @@ const IOTCORE_BACKEND = args[3];
 const REDIS = args[4];
 const REDIS_HOST = REDIS.split(":")[0];
 const REDIS_PORT = parseInt(REDIS.split(":")[1]);
+
+var server, kafkaProducer, kafkaClient
 
 async function initKafka() {
   return new Promise((resolve) => {
@@ -100,7 +104,14 @@ Promise.all([initKafka()]).then(() => {
         // fired when a message is received
         server.on('published', function(packet, client) {
             if(!(packet.payload.toString().includes('mqttjs_'))) {
-                forwardMsg(packet.payload.toString(), 123);
+                jwt.verify(packet.topic, key, function(err, decoded) {
+                    if(!(err != null)) {
+                        forwardMsg(packet.payload.toString(), decoded.sub);
+                    } else {
+                        console.log("403 - Forbidden");
+                        console.log(err);
+                    }
+                });
             }
         });
     })
