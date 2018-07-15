@@ -50,19 +50,7 @@ deploy:
       condition: $LIVE = true
   - provider: script
     skip_cleanup: true
-    script: env IMAGE_NAME=flink BUILD_PATH=./iotplatform/flink/ travis/push-docker-images-to-dockerhub.sh
-    on:
-      #tags: true
-      condition: $LIVE = true
-  - provider: script
-    skip_cleanup: true
     script: env IMAGE_NAME=elasticsearch BUILD_PATH=./iotplatform/elasticsearch/ travis/push-docker-images-to-dockerhub.sh
-    on:
-      #tags: true
-      condition: $LIVE = true
-  - provider: script
-    skip_cleanup: true
-    script: env IMAGE_NAME=kafka BUILD_PATH=./iotplatform/kafka/ travis/push-docker-images-to-dockerhub.sh
     on:
       #tags: true
       condition: $LIVE = true
@@ -111,18 +99,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: env IMAGE_NAME=python-producer BUILD_PATH=./iotplatform/python-producer/ travis/push-docker-images-to-dockerhub.sh
-    on:
-      #tags: true
-      condition: $LIVE = true
-  - provider: script
-    skip_cleanup: true
-    script: env IMAGE_NAME=grafana BUILD_PATH=./iotplatform/grafana/ travis/push-docker-images-to-dockerhub.sh
-    on:
-      #tags: true
-      condition: $LIVE = true
-  - provider: script
-    skip_cleanup: true
-    script: env IMAGE_NAME=activemq BUILD_PATH=./iotplatform/activemq/ travis/push-docker-images-to-dockerhub.sh
     on:
       #tags: true
       condition: $LIVE = true

@@ -154,14 +154,31 @@ services:
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
 
     flink:
-        build: ./flink
-        image: heldic/flink
+        image: flink:1.5-alpine
         ports:
             - "8081:8081"
+        command: jobmanager
         environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
+            JOB_MANAGER_RPC_ADDRESS: flink
+          
+    taskmanager:
+        image: flink:1.5-alpine
+        depends_on:
+            - flink
+        command: taskmanager
+        environment:
+            JOB_MANAGER_RPC_ADDRESS: flink
+            TASK_MANAGER_NUMBER_OF_TASK_SLOTS: 10000
+    
+    #flink:
+    #    build: ./flink
+    #    image: heldic/flink
+    #    ports:
+    #        - "8081:8081"
+    #    environment:
+    #        KAFKA: ${SERVICE_PREFIX}kafka:9092
+    #        ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+    #        ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
 
     elasticsearch:
         build: ./elasticsearch
