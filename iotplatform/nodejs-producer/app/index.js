@@ -29,8 +29,7 @@ client.on('connect', function () {
 
 function produceMessage() {
   let msg = {
-    "sensorGroup" : "someGroup123",
-    "sensorId" : "someId123",
+    "sensor_id" : "123",
     "timestamp" : (new Date()).getTime(),
     "reading" : "" + Math.random() * 100
   }

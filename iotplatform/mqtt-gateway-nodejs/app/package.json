@@ -14,12 +14,11 @@
     "ioredis":"^3.2.2",
     "mongodb":"^3.0.10",
     "mosca":"^2.8.2",
-    "ascoltatori": "4.2.0",
-    "grpc":"^1.11.3"
+    "ascoltatori": "4.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "license": "ISC"
 }

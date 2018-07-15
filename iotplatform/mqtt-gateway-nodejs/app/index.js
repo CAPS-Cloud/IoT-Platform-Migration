@@ -1,10 +1,6 @@
 var mqtt = require('mqtt')
 var kafka = require("kafka-node")
-var grpc = require('grpc')
 var mosca = require('mosca')
-
-var PROTO_PATH = __dirname + '/protos/helloworld.proto'
-var hello_proto = grpc.load(PROTO_PATH).helloworld
 
 var server, kafkaProducer, kafkaClient
 
@@ -15,23 +11,6 @@ const IOTCORE_BACKEND = args[3];
 const REDIS = args[4];
 const REDIS_HOST = REDIS.split(":")[0];
 const REDIS_PORT = parseInt(REDIS.split(":")[1]);
-
-async function initGRPC() {
-  return new Promise((resolve) => {
-    let client = new hello_proto.Greeter(IOTCORE_BACKEND,
-                                         grpc.credentials.createInsecure())
-    let user
-    if (process.argv.length >= 3) {
-      user = process.argv[2]
-    } else {
-      user = 'world'
-    }
-    client.sayHello({name: user}, function(err, response) {
-      console.log("client.sayHello")
-    })
-    resolve()
-  })
-}
 
 async function initKafka() {
   return new Promise((resolve) => {
@@ -106,11 +85,9 @@ function forwardMsg(message, deviceId) {
         ]
     }
 
-    console.log(payloads);
-
     kafkaProducer.send(payloads, (err) => {
         if(err) {
-            console.error("couldn't forward message to kafka - ", err);
+            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
             console.log("forwarded to kafka:")
             console.log(payloads)
@@ -118,11 +95,13 @@ function forwardMsg(message, deviceId) {
     })
 }
 
-Promise.all([initKafka(), initGRPC()]).then(() => {
+Promise.all([initKafka()]).then(() => {
     initMqtt().then(() => {
         // fired when a message is received
         server.on('published', function(packet, client) {
-            forwardMsg(packet.payload.toString())
+            if(!(packet.payload.toString().includes('mqttjs_'))) {
+                forwardMsg(packet.payload.toString(), 123);
+            }
         });
     })
 })
