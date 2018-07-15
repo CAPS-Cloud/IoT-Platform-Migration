@@ -5,8 +5,8 @@ const KAFKA_TOPIC_PATH = `${KAFKA_PATH}/bin/kafka-topics.sh`;
 
 function addTopic(topic) {
     return new Promise(function (resolve, reject) {
-        const child = spawn(KAFKA_TOPIC_PATH, ['--create', '--zookeeper', ZOOKEEPER, '--topic', topic]);
-        console.log(KAFKA_TOPIC_PATH, ['--create', '--zookeeper', ZOOKEEPER, '--topic', topic]);
+        const child = spawn(KAFKA_TOPIC_PATH, ['--create', '--partitions', '1', '--replication-factor', '1', '--topic', topic, '--zookeeper', ZOOKEEPER]);
+        console.log(KAFKA_TOPIC_PATH, ['--create', '--partitions', '1', '--replication-factor', '1', '--topic', topic, '--zookeeper', ZOOKEEPER]);
 
         child.stdout.pipe(process.stdout);
         child.stderr.pipe(process.stderr);
