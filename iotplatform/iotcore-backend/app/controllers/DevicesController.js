@@ -47,7 +47,7 @@ const controller = new class extends BaseController {
         this.model.findOne({ where: { id: { [Op.eq]: req.params.id } } }).then(data => {
             if (data) {
                 jwt.sign({}, DEVICE_SECRET, { algorithm: 'RS256', issuer: 'iotplatform', subject: data.id.toString() }, (err, token) => {
-                    return res.json({ token });
+                    return res.json({ token, device_id: req.params.id });
                 });
             } else {
                 return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
