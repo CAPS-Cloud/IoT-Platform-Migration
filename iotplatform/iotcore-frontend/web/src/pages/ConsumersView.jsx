@@ -208,6 +208,7 @@ export default class extends React.Component {
                                         <tr>
                                             <th className="mdl-data-table__cell--non-numeric">Device</th>
                                             <th className="mdl-data-table__cell--non-numeric">Sensor</th>
+                                            <th className="mdl-data-table__cell--non-numeric">Sensor ID</th>
                                             <th className="mdl-data-table__cell--non-numeric">Actions</th>
                                         </tr>
                                     </thead>
@@ -218,6 +219,7 @@ export default class extends React.Component {
                                                     <tr key={sensor.id}>
                                                         <td className="mdl-data-table__cell--non-numeric font-weight-bold">{sensor.device.name}</td>
                                                         <td className="mdl-data-table__cell--non-numeric">{sensor.name}</td>
+                                                        <td className="mdl-data-table__cell--non-numeric">{sensor.id}</td>
                                                         <td className="mdl-data-table__cell--non-numeric" style={{ width: "200px" }}>
                                                             <Ripple onClick={this.deleteClick.bind(this, sensor)} className={"text-danger mdc-button mdc-card__action mdc-card__action--button" + (this.deleting ? " disabled" : "")}>Revoke</Ripple>
                                                         </td>
