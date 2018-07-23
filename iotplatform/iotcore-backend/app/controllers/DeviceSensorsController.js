@@ -29,7 +29,7 @@ const controller = new class {
                         // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
                         addElasticsearchIndex(topic).then(() => {
                             addTopic(topic).then(() => {
-                                addFlinkJob(topic, req.file.originalname, req.file.buffer).catch(err => console.error(err));
+                                addFlinkJob(topic, `${topic}.jar`, req.file.buffer).catch(err => console.error(err));
                             }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
                         }).catch(err => console.error(err));
 
