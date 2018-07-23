@@ -31,7 +31,7 @@ function addFlinkJob(topic, fileName, fileBuffer) {
                 reject(err);
             } else {
                 console.log("Uploaded flink jar");
-                console.log("Runing flink job", topic);
+                console.log("Running flink job", topic);
                 const body = JSON.parse(response.body);
                 const jarId = body.filename.split("/")[body.filename.split("/").length - 1];
                 const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
