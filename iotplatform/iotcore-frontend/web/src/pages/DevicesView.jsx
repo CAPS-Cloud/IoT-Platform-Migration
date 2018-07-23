@@ -94,7 +94,7 @@ export default class extends React.Component {
                     node.sensors.map((sensor) => (
                         <li key={sensor.id}>
                             <div>
-                                {sensor.name}
+                                {sensor.name.split("/")[sensor.name.split("/").length - 1]}
                                 <div className="etooltip">
                                     <i className="p-0 pl-1 material-icons" style={{ alignItems: "center", verticalAlign: "middle" }}>info</i>
                                     <span className="etooltiptext">
@@ -119,9 +119,9 @@ export default class extends React.Component {
         if (SensorsModel.fetched) {
             SensorsModel.data.forEach((sensor) => {
                 var node = sensorsTree;
-                if (sensor.path) {
-                    const paths = sensor.path.split('/');
-                    for (var i = 0; i < paths.length; i++) {
+                if (sensor.name) {
+                    const paths = sensor.name.split('/');
+                    for (var i = 0; i < paths.length - 1; i++) {
                         const path = paths[i];
                         if (!(path in node.childrens)) {
                             node.childrens[path] = { sensors: [], childrens: {} };

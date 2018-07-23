@@ -33,12 +33,45 @@ export default class extends React.Component {
         if (e) {
             e.preventDefault();
         }
-        SensorsModel.add(this.props.match.params.id, this.form.values).then((response) => {
-            this.form.clearForm();
-            this.setState({ back: true })
-        }).catch((error) => {
-            Snackbar.show(new RestError(error).getMessage());
-        });
+
+        var file = document.getElementById('sensors-add-jar').files[0];
+
+        if (!!file) {
+            var fileReader = new FileReader();
+            fileReader.onloadend = (e) => {
+                var arrayBuffer = e.target.result;
+
+                var blob = new Blob([new Uint8Array(arrayBuffer)], { type: 'application/java-archive' });
+                
+                const data = new FormData();
+
+                if (this.form.values.name) {
+                    data.append('name', this.form.values.name);
+                }
+                if (this.form.values.description) {
+                    data.append('description', this.form.values.description);
+                }
+                if (this.form.values.unit) {
+                    data.append('unit', this.form.values.unit);
+                }
+                data.append('jar', blob);
+
+                SensorsModel.add(this.props.match.params.id, data).then((response) => {
+                    this.form.clearForm();
+                    this.setState({ back: true })
+                }).catch((error) => {
+                    Snackbar.show(new RestError(error).getMessage());
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
+        } else {
+            SensorsModel.add(this.props.match.params.id, {}).then((response) => {
+                this.form.clearForm();
+                this.setState({ back: true })
+            }).catch((error) => {
+                Snackbar.show(new RestError(error).getMessage());
+            });
+        }
     }
 
     render() {
@@ -56,7 +89,7 @@ export default class extends React.Component {
                         <Col md="6">
                             <div className="mdc-text-field" style={{width: "100%"}}>
                                 <input type="text" id="sensors-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="sensors-add-name" className="mdc-floating-label">Name</label>
+                                <label htmlFor="sensors-add-name" className="mdc-floating-label">Name (You can use "/" to specify path)</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>
@@ -81,10 +114,10 @@ export default class extends React.Component {
                     </Row>
                     <Row className="mb-1">
                         <Col md="6">
-                            <div className="mdc-text-field" style={{ width: "100%" }}>
-                                <input type="text" id="sensors-add-path" name="path" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="sensors-add-path" className="mdc-floating-label">Path</label>
-                                <div className="mdc-line-ripple"></div>
+                            <div style={{ width: "100%" }}>
+                                <label style={{color: "rgba(0, 0, 0, 0.6)", paddingBottom: "8px", marginTop: "16px"}}>Data Processing Script (Jar file)</label>
+                                <br/>
+                                <input type="file" id="sensors-add-jar" name="jar" accept=".jar" onChange={this.form.handleChange} />
                             </div>
                         </Col>
                     </Row>

@@ -15,10 +15,6 @@ const Sensors = sequelize.define('sensors',{
         type: Sequelize.STRING,
         allowNull: false,
     },
-    path: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
 });
 
 Sensors.belongsToMany(Consumers, { through: 'ConsumersSensors', onDelete: 'cascade' });

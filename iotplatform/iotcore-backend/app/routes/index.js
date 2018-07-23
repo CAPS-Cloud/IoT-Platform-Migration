@@ -11,6 +11,10 @@ const ConsumerConsumeController = require('../controllers/ConsumerConsumeControl
 
 const AuthenticationCheckHandler = require('../handlers/AuthenticationCheckHandler');
 
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 // Users
 router.get('/api/users', AuthenticationCheckHandler, AuthenticationRequireRole.USER, UsersController.getAll);
 router.post('/api/users', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, UsersController.add);
@@ -35,7 +39,7 @@ router.get('/api/consumers/:id/key', AuthenticationCheckHandler, AuthenticationR
 
 // Sensors
 router.get('/api/devices/:id/sensors', AuthenticationCheckHandler, AuthenticationRequireRole.USER, DeviceSensorsController.getAll);
-router.post('/api/devices/:id/sensors', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, DeviceSensorsController.add);
+router.post('/api/devices/:id/sensors', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, upload.single('jar'), DeviceSensorsController.add);
 router.patch('/api/devices/:device_id/sensors/:id', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, DeviceSensorsController.update);
 router.delete('/api/devices/:device_id/sensors/:id', AuthenticationCheckHandler, AuthenticationRequireRole.ADMIN, DeviceSensorsController.delete);
 

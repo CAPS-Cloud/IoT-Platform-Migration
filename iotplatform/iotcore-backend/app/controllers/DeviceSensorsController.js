@@ -22,18 +22,22 @@ const controller = new class {
     add(req, res) {
         Devices.findById(req.params.id).then(device => {
             if (device) {
-                Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, path: req.body.path, deviceId: device.id }).then(sensor => {
-                    var topic = `${device.id}_${sensor.id}`;
+                if (!!req.file) {
+                    Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, deviceId: device.id }).then(sensor => {
+                        var topic = `${device.id}_${sensor.id}`;
 
-                    // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
-                    addElasticsearchIndex(topic).then(() => {
-                        addTopic(topic).then(() => {
-                            addFlinkJob(topic).catch(err => console.error(err));
-                        }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
-                    }).catch(err => console.error(err));
+                        // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
+                        addElasticsearchIndex(topic).then(() => {
+                            addTopic(topic).then(() => {
+                                addFlinkJob(topic, req.file.originalname, req.file.buffer).catch(err => console.error(err));
+                            }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
+                        }).catch(err => console.error(err));
 
-                    return res.json(sensor);
-                }).catch(err => responseError(res, err));
+                        return res.json(sensor);
+                    }).catch(err => responseError(res, err));
+                } else {
+                    return res.status(400).json({ name: 'MissingField', errors: [{ message: 'Please select a jar file' }] });
+                }
             } else {
                 return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
             }

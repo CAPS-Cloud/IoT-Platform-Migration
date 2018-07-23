@@ -113,7 +113,7 @@ export default class extends React.Component {
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input type="text" id="sensor-update-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="sensor-update-name" className="mdc-floating-label">Name</label>
+                                    <label htmlFor="sensor-update-name" className="mdc-floating-label">Name (You can use "/" to specify path)</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col >
@@ -132,15 +132,6 @@ export default class extends React.Component {
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input type="text" id="sensor-update-unit" name="unit" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                     <label htmlFor="sensor-update-unit" className="mdc-floating-label">Unit</label>
-                                    <div className="mdc-line-ripple"></div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mb-1">
-                            <Col md="6">
-                                <div className="mdc-text-field" style={{ width: "100%" }}>
-                                    <input type="text" id="sensor-update-path" name="path" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="sensor-update-path" className="mdc-floating-label">Path</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>
