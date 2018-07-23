@@ -65,7 +65,7 @@ export default class extends React.Component {
             };
             fileReader.readAsArrayBuffer(file);
         } else {
-            SensorsModel.add(this.props.match.params.id, {}).then((response) => {
+            SensorsModel.add(this.props.match.params.id, this.form.values).then((response) => {
                 this.form.clearForm();
                 this.setState({ back: true })
             }).catch((error) => {
@@ -115,9 +115,9 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="6">
                             <div style={{ width: "100%" }}>
-                                <label style={{color: "rgba(0, 0, 0, 0.6)", paddingBottom: "8px", marginTop: "16px"}}>Data Processing Script (Jar file)</label>
+                                <label style={{color: "rgba(0, 0, 0, 0.6)", paddingBottom: "8px", marginTop: "16px"}}>[Optional] Data Processing Script (Jar file)</label>
                                 <br/>
-                                <input type="file" id="sensors-add-jar" name="jar" accept=".jar" onChange={this.form.handleChange} />
+                                <input type="file" id="sensors-add-jar" name="jar" accept=".jar" />
                             </div>
                         </Col>
                     </Row>
