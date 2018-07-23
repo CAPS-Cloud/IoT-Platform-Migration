@@ -32,7 +32,7 @@ function addFlinkJob(topic, fileName, fileBuffer) {
             } else {
                 console.log("Uploaded flink jar");
                 console.log("Runing flink job", topic);
-                const jarId = response.data.files[0].id;
+                const jarId = response.data.filename.split("/")[response.data.filename.split("/").length - 1];
                 const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
                 axios.post(`${host}jars/${jarId}/run?program-args=${encodeURIComponent(programArgs)}`).then(response2 => {
                     console.log("Ran flink job", topic);
