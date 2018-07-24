@@ -49,6 +49,17 @@ async function initRest() {
     })
 }
 
+function ingestMsgInKafka(payloads) {
+    kafkaProducer.send(payloads, (err) => {
+        if(err) {
+            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
+        } else {
+            console.log("forwarded to kafka:")
+            console.log(payloads)
+        }
+    })
+}
+
 async function initKafka() {
     return new Promise((resolve) => {
         console.log("attempting to initiate Kafka connection...")
@@ -77,23 +88,18 @@ function forwardMsg(message, deviceId) {
     }
 
     if(Array.isArray(JSON.parse(messageString))) {
-        payloads = [
-            { topic: deviceId + "_" + JSON.parse(messageString)[0].sensor_id, messages: messageString }
-        ]
+        JSON.parse(messageString).forEach((elem) => {
+            payloads = [
+                { topic: deviceId + "_" + elem.sensor_id, messages: elem }
+            ];       
+            ingestMsgInKafka(payloads);
+        });
     } else {
         payloads = [
             { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
-        ]
+        ];
+        ingestMsgInKafka(payloads);
     }
-
-    kafkaProducer.send(payloads, (err) => {
-        if(err) {
-            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
-        } else {
-            console.log("forwarded to kafka:")
-            console.log(payloads)
-        }
-    })
 }
 
 Promise.all([initKafka()]).then(() => {
