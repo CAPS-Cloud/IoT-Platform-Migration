@@ -134,7 +134,7 @@ export default class extends React.Component {
                         <Link to={"/devices/" + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
                         {
-                            this.adding & (
+                            this.adding && (
                                 <span> Uploading... {this.uploadPercent}%</span>
                             )
                         }
