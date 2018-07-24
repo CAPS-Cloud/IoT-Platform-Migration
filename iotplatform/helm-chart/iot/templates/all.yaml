@@ -91,4 +91,32 @@ spec:
 ---
 {{- end }}
 {{- end -}}
+
+{{- if hasKey $value "environment" }}
+{{- if hasKey $value.environment "AUTOSCALING" }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "core.fullname" list $ $name }}
+  labels:
+    app: {{ template "core.name" $name }}
+    chart: {{ template "core.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta2
+    kind: Deployment
+    name: {{ template "core.fullname" list $ $name }}
+  minReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._0 }}
+  maxReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._1 }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ atoi (split ":" $value.environment.AUTOSCALING)._2 }}
+---
+{{- end }}
+{{- end -}}
+
 {{- end -}}
