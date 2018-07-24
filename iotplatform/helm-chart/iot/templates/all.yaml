@@ -22,6 +22,13 @@ spec:
     spec:
       containers:
         - name: {{ $name | trunc 63 | trimSuffix "-" }}
+{{- if hasKey $value "environment" }}
+{{- if hasKey $value.environment "AUTOSCALING" }}
+          resources:
+            requests:
+              cpu: {{(split ":" $value.environment.AUTOSCALING)._0}}
+{{- end }}
+{{- end }}
 {{- if and (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) (not (contains ":" $value.image)) }}
           image: {{ $value.image -}}:{{- $.Values.defaults.imageTag }}
 {{- else }}
@@ -108,13 +115,13 @@ spec:
     apiVersion: apps/v1beta2
     kind: Deployment
     name: {{ template "core.fullname" list $ $name }}
-  minReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._0 }}
-  maxReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._1 }}
+  minReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._1 }}
+  maxReplicas: {{ atoi (split ":" $value.environment.AUTOSCALING)._2 }}
   metrics:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: {{ atoi (split ":" $value.environment.AUTOSCALING)._2 }}
+      targetAverageUtilization: {{ atoi (split ":" $value.environment.AUTOSCALING)._3 }}
 ---
 {{- end }}
 {{- end -}}
