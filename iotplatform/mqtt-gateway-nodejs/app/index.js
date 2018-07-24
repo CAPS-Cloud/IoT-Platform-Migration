@@ -121,7 +121,7 @@ function forwardMsg(message, deviceId) {
     if(Array.isArray(JSON.parse(messageString))) {
         JSON.parse(messageString).forEach((elem) => {
             payloads = [
-                { topic: deviceId + "_" + elem.sensor_id, messages: elem }
+                { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
             ];       
             ingestMsgInKafka(payloads);
         });
