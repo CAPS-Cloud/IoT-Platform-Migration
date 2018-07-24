@@ -38,10 +38,10 @@ export default class {
         })
     }
 
-    add(parentId, data) {
+    add(parentId, data, config) {
         this.adding = true;
 
-        return axios.post(this._getBaseLocation(parentId), data).then((response) => {
+        return axios.post(this._getBaseLocation(parentId), data, config).then((response) => {
             this.adding = false;
             return response;
         }).catch((error) => {

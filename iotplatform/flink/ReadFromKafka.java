@@ -10,6 +10,7 @@ import org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunc
 import org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;
 import org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
+import org.apache.flink.streaming.util.serialization.JSONDeserializationSchema;
 import org.apache.flink.util.Collector;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
@@ -42,36 +43,34 @@ public class ReadFromKafka {
                 .addSource(
                         new FlinkKafkaConsumer011<>(
                                 parameterTool.getRequired("topic"),
-                                new ArrayNodeDeserializationSchema(),
+                                new JSONDeserializationSchema(),
                                 parameterTool.getProperties()
                         )
                 )
-                .flatMap(new FlatMapFunction<ObjectNode[], SensorReading>() {
+                .flatMap(new FlatMapFunction<ObjectNode, SensorReading>() {
                     @Override
-                    public void flatMap(ObjectNode[] nodes, Collector<SensorReading> out) throws Exception {
-                        for (ObjectNode node : nodes) {
-                            if (!node.get("timestamp").isNumber() || !node.get("sensor_id").isTextual()) {
-                                break;
-                            }
-                            if (node.get("value").isTextual()) {
-                                out.collect(new SensorReading(
-                                        node.get("timestamp").asLong(),
-                                        node.get("sensor_id").asText(),
-                                        node.get("value").asText()
-                                ));
-                            } else if (node.get("value").isFloatingPointNumber()) {
-                                out.collect(new SensorReading(
-                                        node.get("timestamp").asLong(),
-                                        node.get("sensor_id").asText(),
-                                        node.get("value").asDouble()
-                                ));
-                            } else if (node.get("value").isNumber()) {
-                                out.collect(new SensorReading(
-                                        node.get("timestamp").asLong(),
-                                        node.get("sensor_id").asText(),
-                                        node.get("value").asLong()
-                                ));
-                            }
+                    public void flatMap(ObjectNode node, Collector<SensorReading> out) throws Exception {
+                        if (!node.get("timestamp").isNumber() || !node.get("sensor_id").isTextual()) {
+                            return;
+                        }
+                        if (node.get("value").isTextual()) {
+                            out.collect(new SensorReading(
+                                    node.get("timestamp").asLong(),
+                                    node.get("sensor_id").asText(),
+                                    node.get("value").asText()
+                            ));
+                        } else if (node.get("value").isFloatingPointNumber()) {
+                            out.collect(new SensorReading(
+                                    node.get("timestamp").asLong(),
+                                    node.get("sensor_id").asText(),
+                                    node.get("value").asDouble()
+                            ));
+                        } else if (node.get("value").isNumber()) {
+                            out.collect(new SensorReading(
+                                    node.get("timestamp").asLong(),
+                                    node.get("sensor_id").asText(),
+                                    node.get("value").asLong()
+                            ));
                         }
                     }
                 })

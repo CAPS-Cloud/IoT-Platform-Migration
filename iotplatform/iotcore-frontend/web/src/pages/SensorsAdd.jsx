@@ -12,6 +12,8 @@ import RestError from '../utils/RestError';
 
 @observer
 export default class extends React.Component {
+    @observable adding = false;
+    @observable uploadPercent = 0;
     
     constructor(props) {
         super(props);
@@ -63,10 +65,17 @@ export default class extends React.Component {
             };
             fileReader.readAsArrayBuffer(file);
         } else {
-            SensorsModel.add(this.props.match.params.id, this.form.values).then((response) => {
+            this.adding = true;
+            SensorsModel.add(this.props.match.params.id, this.form.values, {
+                onUploadProgress: progressEvent => {
+                    this.uploadPercent = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+                }
+            }).then((response) => {
+                this.adding = false;
                 this.form.clearForm();
                 this.setState({ back: true })
             }).catch((error) => {
+                this.adding = false;
                 Snackbar.show(new RestError(error).getMessage());
             });
         }
@@ -124,6 +133,11 @@ export default class extends React.Component {
                     <div className="mt-5">
                         <Link to={"/devices/" + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
+                        {
+                            this.adding & (
+                                <span> Uploading... {this.uploadPercent}%</span>
+                            )
+                        }
                     </div>
                 </form>
             </div>
