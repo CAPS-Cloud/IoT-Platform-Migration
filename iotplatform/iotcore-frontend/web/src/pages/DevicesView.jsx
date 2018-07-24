@@ -99,7 +99,6 @@ export default class extends React.Component {
                                     <i className="p-0 pl-1 material-icons" style={{ alignItems: "center", verticalAlign: "middle" }}>info</i>
                                     <span className="etooltiptext">
                                         <h6>Sensor ID: <span style={{ fontWeight: "normal" }}>{sensor.id}</span></h6>
-                                        <h6>Unit: <span style={{ fontWeight: "normal" }}>{sensor.unit}</span></h6>
                                         <h6 className="mb-0">Description: <span style={{ fontWeight: "normal" }}>{sensor.description}</span></h6>
                                     </span>
                                 </div>

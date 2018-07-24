@@ -45,7 +45,6 @@ export default class extends React.Component {
             if (object && this.form.ref) {
                 this.form.ref.elements["name"].value = object.name;
                 this.form.ref.elements["description"].value = object.description;
-                this.form.ref.elements["unit"].value = object.unit;
                 this.form.ref.elements["path"].value = object.path;
                 document.querySelectorAll('.mdc-text-field').forEach((node) => {
                     MDCTextField.attachTo(node);
@@ -61,8 +60,6 @@ export default class extends React.Component {
         var toUpdate = {
             name: this.form.values.name,
             description: this.form.values.description,
-            unit: this.form.values.unit,
-            path: this.form.values.path,
         }
         SensorsModel.update(this.props.match.params.device_id, this.props.match.params.id, toUpdate).then((response) => {
             this.form.clearForm();
@@ -122,16 +119,7 @@ export default class extends React.Component {
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input type="text" id="sensor-update-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="sensor-update-description" className="mdc-floating-label">Description</label>
-                                    <div className="mdc-line-ripple"></div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mb-1">
-                            <Col md="6">
-                                <div className="mdc-text-field" style={{ width: "100%" }}>
-                                    <input type="text" id="sensor-update-unit" name="unit" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                    <label htmlFor="sensor-update-unit" className="mdc-floating-label">Unit</label>
+                                    <label htmlFor="sensor-update-description" className="mdc-floating-label">[Optional] Description</label>
                                     <div className="mdc-line-ripple"></div>
                                 </div>
                             </Col>

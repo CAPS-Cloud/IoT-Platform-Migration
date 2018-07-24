@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import Ripple from "../utils/Ripple";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import { MDCTextField } from '@material/textfield';
-import { MDCSelect } from '@material/select';
 import { Container, Row, Col } from 'reactstrap';
 import SensorsModel from '../models/SensorsModel';
 import FormModel from '../models/FormModel';
@@ -22,14 +21,12 @@ export default class extends React.Component {
         }
 
         this.form = new FormModel();
+        this.form.values.mapping = '{ "type": "double" }';
     }
 
     componentDidMount() {
         document.querySelectorAll('.mdc-text-field').forEach((node) => {
             MDCTextField.attachTo(node);
-        });
-        document.querySelectorAll('.mdc-select').forEach((node) => {
-            MDCSelect.attachTo(node);
         });
     }
 
@@ -54,9 +51,6 @@ export default class extends React.Component {
                 }
                 if (this.form.values.description) {
                     data.append('description', this.form.values.description);
-                }
-                if (this.form.values.unit) {
-                    data.append('unit', this.form.values.unit);
                 }
                 data.append('jar', blob);
 
@@ -102,36 +96,7 @@ export default class extends React.Component {
                         <Col md="6">
                             <div className="mdc-text-field" style={{ width: "100%" }}>
                                 <input type="text" id="sensors-add-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="sensors-add-description" className="mdc-floating-label">Description</label>
-                                <div className="mdc-line-ripple"></div>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row className="mb-1">
-                        <Col md="3">
-                            <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
-                                <select id="sensor-add-type" name="type" onChange={this.form.handleChange} className="mdc-select__native-control" defaultValue="" autoComplete="off" data-lpignore="true">
-                                    <option value="" disabled></option>
-                                    <option value="text">
-                                        Text
-                                    </option>
-                                    <option value="long">
-                                        Number
-                                    </option>
-                                    <option value="double">
-                                        Floating Point
-                                    </option>
-                                </select>
-                                <label className="mdc-floating-label">Pick a data type</label>
-                                <div className="mdc-line-ripple"></div>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row className="mb-1">
-                        <Col md="6">
-                            <div className="mdc-text-field" style={{ width: "100%" }}>
-                                <input type="text" id="sensors-add-unit" name="unit" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="sensors-add-unit" className="mdc-floating-label">Unit</label>
+                                <label htmlFor="sensors-add-description" className="mdc-floating-label">[Optional] Description</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>
@@ -143,6 +108,16 @@ export default class extends React.Component {
                                 <br/>
                                 <input type="file" id="sensors-add-jar" name="jar" accept=".jar" />
                             </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field mdc-text-field--textarea" style={{ width: "100%" }}>
+                                <textarea defaultValue='{ "type": "double" }' rows="4" id="sensors-add-mapping" name="mapping" onChange={this.form.handleChange} class="mdc-text-field__input" autoComplete="off" data-lpignore="true"></textarea>
+                                <label htmlFor="sensors-add-mapping" className="mdc-floating-label">Elasticsearch Value Mapping</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                            <span>You can see mapping document <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html" target="_blank">here</a></span>
                         </Col>
                     </Row>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />

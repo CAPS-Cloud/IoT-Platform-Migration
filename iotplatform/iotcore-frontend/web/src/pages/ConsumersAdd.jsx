@@ -66,7 +66,7 @@ export default class extends React.Component {
                         <Col md="6">
                             <div className="mdc-text-field" style={{ width: "100%" }}>
                                 <input type="text" id="consumers-add-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="consumers-add-description" className="mdc-floating-label">Description</label>
+                                <label htmlFor="consumers-add-description" className="mdc-floating-label">[Optional] Description</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>

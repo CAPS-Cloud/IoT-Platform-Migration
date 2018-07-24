@@ -49,34 +49,26 @@ public class ReadFromKafka {
                         if (!node.get(i).get("timestamp").isNumber() || !node.get(i).get("sensor_id").isTextual()) {
                             break;
                         }
-                        switch (parameterTool.getRequired("elasticsearch-value-type")) {
-                            case "text":
-                                if(node.get(i).get("value").isTextual()) {
-                                    out.collect(new SensorReading(
-                                            node.get(i).get("timestamp").asLong(),
-                                            node.get(i).get("sensor_id").asText(),
-                                            node.get(i).get("value").asText()
-                                    ));
-                                }
-                                break;
-                            case "long":
-                                if(node.get(i).get("value").isNumber()) {
-                                    out.collect(new SensorReading(
-                                            node.get(i).get("timestamp").asLong(),
-                                            node.get(i).get("sensor_id").asText(),
-                                            node.get(i).get("value").asLong()
-                                    ));
-                                }
-                                break;
-                            case "double":
-                                if(node.get(i).get("value").isNumber()) {
-                                    out.collect(new SensorReading(
-                                            node.get(i).get("timestamp").asLong(),
-                                            node.get(i).get("sensor_id").asText(),
-                                            node.get(i).get("value").asDouble()
-                                    ));
-                                }
-                                break;
+                        if(node.get(i).get("value").isTextual()) {
+                            out.collect(new SensorReading(
+                                    node.get(i).get("timestamp").asLong(),
+                                    node.get(i).get("sensor_id").asText(),
+                                    node.get(i).get("value").asText()
+                            ));
+                        }
+                        else if(node.get(i).get("value").isFloatingPointNumber()) {
+                            out.collect(new SensorReading(
+                                    node.get(i).get("timestamp").asLong(),
+                                    node.get(i).get("sensor_id").asText(),
+                                    node.get(i).get("value").asDouble()
+                            ));
+                        }
+                        else if(node.get(i).get("value").isNumber()) {
+                            out.collect(new SensorReading(
+                                    node.get(i).get("timestamp").asLong(),
+                                    node.get(i).get("sensor_id").asText(),
+                                    node.get(i).get("value").asLong()
+                            ));
                         }
                     }
                 })

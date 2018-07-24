@@ -10,7 +10,7 @@ const ELASTICSEARCH_BIN_PORT = require('./elasticsearch').bin_port;
 const KAFKA_HOST = require('./kafka').host;
 const ZOOKEEPER_HOST = require('./zookeeper');
 
-function addFlinkJob(topic, fileName, fileBuffer, valueType) {
+function addFlinkJob(topic, fileName, fileBuffer) {
     console.log("Adding flink job", topic);
     return new Promise(function (resolve, reject) {
         console.log("Uploading flink jar");
@@ -34,7 +34,7 @@ function addFlinkJob(topic, fileName, fileBuffer, valueType) {
                 console.log("Running flink job", topic);
                 const body = JSON.parse(response.body);
                 const jarId = body.filename.split("/")[body.filename.split("/").length - 1];
-                const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --elasticsearch-value-type ${valueType} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
+                const programArgs = `--elasticsearch "${ELASTICSEARCH_HOST_DOMAIN}" --elasticsearch_port ${ELASTICSEARCH_BIN_PORT} --topic ${topic} --bootstrap.servers "${KAFKA_HOST}" --zookeeper.connect "${ZOOKEEPER_HOST}" --groud.id flink_job`;
                 axios.post(`${host}jars/${jarId}/run?program-args=${encodeURIComponent(programArgs)}`).then(response2 => {
                     console.log("Ran flink job", topic);
                     resolve(response2);
