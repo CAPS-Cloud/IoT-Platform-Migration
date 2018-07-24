@@ -10,7 +10,7 @@ const elasticClient = new elasticsearch.Client({
   ],
 });
 
-function addElasticsearchIndex(topic) {
+function addElasticsearchIndex(topic, valueType) {
   console.log("Adding elasticsearch index", topic);
   return new Promise(function (resolve, reject) {
     elasticClient.indices.create({
@@ -25,7 +25,7 @@ function addElasticsearchIndex(topic) {
             properties: {
               timestamp: { "type": "date" },
               sensor_id: { "type": "text" },
-              value: { "type": "text" },
+              value: { "type": valueType },
             },
           },
         }

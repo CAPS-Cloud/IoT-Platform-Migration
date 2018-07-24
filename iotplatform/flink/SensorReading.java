@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,16 +23,16 @@ import static java.util.Objects.requireNonNull;
  * An individual sensor reading, describing sensor id, sensor group id, reading, and timestamp.
  */
 public class SensorReading {
-	private long timestamp;
-	private String sensorId;
-    private String value;
+    private long timestamp;
+    private String sensorId;
+    private Object value;
 
     public SensorReading() {
         this(0L, "", "");
     }
 
-    public SensorReading(long timestamp, String sensorId, String value) {
-		this.timestamp = timestamp;
+    public SensorReading(long timestamp, String sensorId, Object value) {
+        this.timestamp = timestamp;
         this.sensorId = requireNonNull(sensorId);
         this.value = requireNonNull(value);
     }
@@ -39,18 +40,18 @@ public class SensorReading {
     public long getTimestamp() {
         return timestamp;
     }
-	
-	public String getDate() {
-      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-      String date = format.format(new Date(timestamp));
-      return date;
+
+    public String getDate() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String date = format.format(new Date(timestamp));
+        return date;
     }
-	
+
     public String getSensorId() {
         return sensorId;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 

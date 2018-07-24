@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import Ripple from "../utils/Ripple";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import { MDCTextField } from '@material/textfield';
+import { MDCSelect } from '@material/select';
 import { Container, Row, Col } from 'reactstrap';
 import SensorsModel from '../models/SensorsModel';
 import FormModel from '../models/FormModel';
@@ -26,6 +27,9 @@ export default class extends React.Component {
     componentDidMount() {
         document.querySelectorAll('.mdc-text-field').forEach((node) => {
             MDCTextField.attachTo(node);
+        });
+        document.querySelectorAll('.mdc-select').forEach((node) => {
+            MDCSelect.attachTo(node);
         });
     }
 
@@ -99,6 +103,26 @@ export default class extends React.Component {
                             <div className="mdc-text-field" style={{ width: "100%" }}>
                                 <input type="text" id="sensors-add-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                 <label htmlFor="sensors-add-description" className="mdc-floating-label">Description</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="3">
+                            <div className="mdc-select" style={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}>
+                                <select id="sensor-add-type" name="type" onChange={this.form.handleChange} className="mdc-select__native-control" defaultValue="" autoComplete="off" data-lpignore="true">
+                                    <option value="" disabled></option>
+                                    <option value="text">
+                                        Text
+                                    </option>
+                                    <option value="long">
+                                        Number
+                                    </option>
+                                    <option value="double">
+                                        Floating Point
+                                    </option>
+                                </select>
+                                <label className="mdc-floating-label">Pick a data type</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>

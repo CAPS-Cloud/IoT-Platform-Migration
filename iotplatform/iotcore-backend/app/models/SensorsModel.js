@@ -11,6 +11,13 @@ const Sensors = sequelize.define('sensors',{
     description: {
         type: Sequelize.STRING,
     },
+    type: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+            isIn: [['text', 'long', 'double']],
+        },
+    },
     unit: {
         type: Sequelize.STRING,
         allowNull: false,

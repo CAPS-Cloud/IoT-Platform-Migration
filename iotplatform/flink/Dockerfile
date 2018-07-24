@@ -8,6 +8,7 @@ RUN mkdir /proj
 RUN mkdir -p /proj/src/main/java
 COPY ReadFromKafka.java /proj/src/main/java/
 COPY SensorReading.java /proj/src/main/java/
+COPY ArrayNodeDeserializationSchema.java /proj/src/main/java/
 COPY pom.xml /proj/
 
 RUN cd /proj \

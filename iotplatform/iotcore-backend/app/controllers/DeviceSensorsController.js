@@ -22,15 +22,17 @@ const controller = new class {
 
     add(req, res) {
         Devices.findById(req.params.id).then(device => {
-            if (device) {
+            if (!device) {
+                return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
+            } else {
                 if (!!req.file) {
-                    Sensors.create({ name: req.body.name, description: req.body.description, unit: req.body.unit, deviceId: device.id }).then(sensor => {
+                    Sensors.create({ name: req.body.name, description: req.body.description, type: req.body.type, unit: req.body.unit, deviceId: device.id }).then(sensor => {
                         var topic = `${device.id}_${sensor.id}`;
 
                         // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
-                        addElasticsearchIndex(topic).then(() => {
+                        addElasticsearchIndex(topic, req.body.type).then(() => {
                             addTopic(topic).then(() => {
-                                addFlinkJob(topic, `${topic}.jar`, req.file.buffer).catch(err => console.error(err));
+                                addFlinkJob(topic, `${topic}.jar`, req.file.buffer, req.body.type).catch(err => console.error(err));
                             }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
                         }).catch(err => console.error(err));
 
@@ -44,9 +46,9 @@ const controller = new class {
                             var topic = `${device.id}_${sensor.id}`;
 
                             // Add Elasticsearch Index, then Kafka Topic, then Flink Job asynchronously.
-                            addElasticsearchIndex(topic).then(() => {
+                            addElasticsearchIndex(topic, req.body.type).then(() => {
                                 addTopic(topic).then(() => {
-                                    addFlinkJob(topic, `default.jar`, content).catch(err => console.error(err));
+                                    addFlinkJob(topic, `default.jar`, content, req.body.type).catch(err => console.error(err));
                                 }).catch(err => console.error(`Kafka topic creation error with exit code: ${err}`));
                             }).catch(err => console.error(err));
 
@@ -54,8 +56,6 @@ const controller = new class {
                         }).catch(err => responseError(res, err));
                     });
                 }
-            } else {
-                return res.status(400).json({ name: 'DeviceNotFound', errors: [{ message: 'Device not found' }] });
             }
         }).catch(err => responseError(res, err));
     }
@@ -64,6 +64,7 @@ const controller = new class {
         Sensors.findOne({ where: { deviceId: { [Op.eq]: req.params.device_id }, id: { [Op.eq]: req.params.id } } }).then(data => {
             if (data){
                 delete req.body.id;
+                delete req.body.type;
                 Sensors.update(req.body, { where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
                     return res.status(200).json({ result: sensor });
                 }).catch(err => responseError(res, err));
