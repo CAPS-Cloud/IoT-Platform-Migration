@@ -17,12 +17,12 @@ var server, kafkaProducer, kafkaClient
 
 async function initKafka() {
     return new Promise((resolve) => {
-        console.log("attempting to initiate Kafka connection...")
+        // console.log("attempting to initiate Kafka connection...")
         kafkaClient = new kafka.Client(ZOOKEEPER)
 
         kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
         kafkaProducer.on("ready", () => {
-            console.log("kafka producer is connected and ready")
+            // console.log("kafka producer is connected and ready")
         })
         kafkaProducer.on('ready', () => {
           resolve()
@@ -56,7 +56,7 @@ async function initMqtt() {
         server.on('ready', setup)
 
         server.on('clientConnected', (client) => {
-        	console.log('client connected', client.id)
+        	// console.log('client connected', client.id)
         })
 
         // fired when the mqtt server is ready
@@ -70,7 +70,7 @@ async function initMqtt() {
                     if( err ) {
                         return callback("Error getting UserInfo", false);
                     }
-                    console.log("Authenticated client " + profile.sub);
+                    // console.log("Authenticated client " + profile.sub);
                     client.deviceProfile = profile;
                     return callback(null, true);
                 });
@@ -80,7 +80,7 @@ async function initMqtt() {
                 if(client.deviceProfile.sub === topic) {
                     callback(null, true);
                 } else {
-                    console.log("Not authorized to publish on this topic");
+                    // console.log("Not authorized to publish on this topic");
                     callback(null, false);
                 }
             }
@@ -89,7 +89,7 @@ async function initMqtt() {
                 callback(null, false);
             }
 
-            console.log('Mosca server is up and running')
+            // console.log('Mosca server is up and running')
             resolve()
         }
     })
@@ -100,8 +100,8 @@ function ingestMsgInKafka(payloads) {
         if(err) {
             console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
-            console.log("forwarded to kafka:")
-            console.log(payloads)
+            // console.log("forwarded to kafka:")
+            // console.log(payloads)
         }
     })
 }
@@ -114,15 +114,15 @@ function forwardMsg(message, deviceId) {
     } else if(typeof(message) === "string") {
         messageString = message
     } else {
-        console.log("invalid type of data - not forwarded to kafka")
+        // console.log("invalid type of data - not forwarded to kafka")
         return
     }
-    
+
     if(Array.isArray(JSON.parse(messageString))) {
         JSON.parse(messageString).forEach((elem) => {
             payloads = [
                 { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
-            ];       
+            ];
             ingestMsgInKafka(payloads);
         });
     } else {

@@ -13,7 +13,7 @@ const ZOOKEEPER = args[2];
 const IOTCORE_BACKEND = args[3];
 
 async function initWebSocket() {
-    console.log("attempting to initiate ws server...");
+    // console.log("attempting to initiate ws server...");
     return new Promise((resolve) => {
         wsserver = new WebSocket.Server({
             port: wsPort,
@@ -22,15 +22,15 @@ async function initWebSocket() {
                     jwt.verify(info.req.headers.authorization.split(' ')[1], key, function(err, decoded) {
                         if(!(err != null)) {
                             info.req.user = decoded;
-                            console.log("200 - OK");
+                            // console.log("200 - OK");
                             cb(true);
                         } else {
-                            console.log("403 - Forbidden");
+                            // console.log("403 - Forbidden");
                             cb(false, 403, 'Forbidden');
                         }
                     });
                 } else {
-                    console.log("401 - Unauthorized");
+                    // console.log("401 - Unauthorized");
                     cb(false, 401, 'Unauthorized');
                 }
             }
@@ -41,12 +41,12 @@ async function initWebSocket() {
 
 async function initKafka() {
     return new Promise((resolve) => {
-        console.log("attempting to initiate Kafka connection...");
+        // console.log("attempting to initiate Kafka connection...");
         kafkaClient = new kafka.Client(ZOOKEEPER);
 
         kafkaProducer = new kafka.HighLevelProducer(kafkaClient);
         kafkaProducer.on("ready", () => {
-            console.log("kafka producer is connected and ready");
+            // console.log("kafka producer is connected and ready");
         })
         kafkaProducer.on('ready', () => {
             resolve();
@@ -59,8 +59,8 @@ function ingestMsgInKafka(payloads) {
         if(err) {
             console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
-            console.log("forwarded to kafka:")
-            console.log(payloads)
+            // console.log("forwarded to kafka:")
+            // console.log(payloads)
         }
     })
 }
@@ -73,7 +73,7 @@ function forwardMsg(message, deviceId) {
     } else if(typeof(message) === "string") {
         messageString = message;
     } else {
-        console.log("invalid type of data - not forwarded to kafka");
+        // console.log("invalid type of data - not forwarded to kafka");
         return;
     }
 
@@ -81,7 +81,7 @@ function forwardMsg(message, deviceId) {
         JSON.parse(messageString).forEach((elem) => {
             payloads = [
                 { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
-            ];       
+            ];
             ingestMsgInKafka(payloads);
         });
     } else {
@@ -94,7 +94,7 @@ function forwardMsg(message, deviceId) {
 
 Promise.all([initKafka()]).then(() => {
     initWebSocket().then(() => {
-        console.log("ws gateway available");
+        // console.log("ws gateway available");
         wsserver.on('connection', (conn, req) => {
             conn.on('message', (data) => {
                 forwardMsg(data, req.user.sub);
