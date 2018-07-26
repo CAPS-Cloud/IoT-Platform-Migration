@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -42,7 +43,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("403 - JWT token invalid!"))
 			return
 		}
-		// log.Println("authorized")
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -53,20 +53,31 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var message Message
+	var messages []Message
 	err = json.Unmarshal(body, &message)
 	if err != nil {
-		log.Printf("malformed message: deserialize: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		err = json.Unmarshal(body, &messages)
+		if err != nil {
+			log.Printf("malformed message: deserialize: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		for _, message := range messages {
+			_, err = json.Marshal(message)
+			if err != nil {
+				log.Printf("malformed message: serialize: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+		}
+	} else {
+		_, err = json.Marshal(message)
+		if err != nil {
+			log.Printf("malformed message: serialize: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
-
-	_, err = json.Marshal(message)
-	if err != nil {
-		log.Printf("malformed message: serialize: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	// forward message to kafka
 	// log.Printf("%v", message)
 	//g.Producer.Input() <- &sarama.ProducerMessage{
@@ -74,6 +85,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//	Value: sarama.ByteEncoder(b),
 	//}
 
+	fmt.Println(w, "OK")
 	w.WriteHeader(http.StatusOK)
 
 	return
