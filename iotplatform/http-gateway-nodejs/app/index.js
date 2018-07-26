@@ -15,7 +15,7 @@ const ZOOKEEPER = args[2];
 const IOTCORE_BACKEND = args[3];
 
 async function initRest() {
-    console.log("attempting to initiate http server...")
+    // console.log("attempting to initiate http server...")
     return new Promise((resolve) => {
         const app = express()
         app.use(bodyParser.json())
@@ -30,20 +30,20 @@ async function initRest() {
                         res.status(200).send('OK');
                         res.end();
                     } else {
-                        console.log("403 - Forbidden");
+                        // console.log("403 - Forbidden");
                         res.status(403).send('Forbidden');
                         res.end();
                     }
                 });
             } else {
-                console.log("401 - Unauthorized");
+                // console.log("401 - Unauthorized");
                 res.status(401).send('Unauthorized');
                 res.end();
             }
         })
 
         httpServer = app.listen(httpPort, () => {
-            console.log("app running on port ", httpServer.address().port)
+            // console.log("app running on port ", httpServer.address().port)
         })
         resolve()
     })
@@ -54,20 +54,20 @@ function ingestMsgInKafka(payloads) {
         if(err) {
             console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
-            console.log("forwarded to kafka:")
-            console.log(payloads)
+            // console.log("forwarded to kafka:")
+            // console.log(payloads)
         }
     })
 }
 
 async function initKafka() {
     return new Promise((resolve) => {
-        console.log("attempting to initiate Kafka connection...")
+        // console.log("attempting to initiate Kafka connection...")
         kafkaClient = new kafka.Client(ZOOKEEPER)
 
         kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
         kafkaProducer.on("ready", () => {
-            console.log("kafka producer is connected and ready")
+            // console.log("kafka producer is connected and ready")
         })
         kafkaProducer.on('ready', () => {
           resolve()
@@ -83,7 +83,7 @@ function forwardMsg(message, deviceId) {
     } else if(typeof(message) === "string") {
         messageString = message
     } else {
-        console.log("invalid type of data - not forwarded to kafka")
+        // console.log("invalid type of data - not forwarded to kafka")
         return
     }
 
@@ -91,7 +91,7 @@ function forwardMsg(message, deviceId) {
         JSON.parse(messageString).forEach((elem) => {
             payloads = [
                 { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
-            ];       
+            ];
             ingestMsgInKafka(payloads);
         });
     } else {
@@ -104,6 +104,6 @@ function forwardMsg(message, deviceId) {
 
 Promise.all([initKafka()]).then(() => {
     initRest().then(() => {
-        console.log("http-gateway available")
+        // console.log("http-gateway available")
     })
 })
