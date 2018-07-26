@@ -56,7 +56,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		_, msg, err := c.ReadMessage()
 		if err != nil {
 			log.Printf("malformed message: read: %s", err)
-			w.WriteHeader(http.StatusBadRequest)
 			break
 		}
 
@@ -67,14 +66,12 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			err = json.Unmarshal(msg, &messages)
 			if err != nil {
 				log.Printf("malformed message: deserialize: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
 				break
 			}
 			for _, message := range messages {
 				_, err = json.Marshal(message)
 				if err != nil {
 					log.Printf("malformed message: serialize: %s", err)
-					w.WriteHeader(http.StatusBadRequest)
 					break
 				}
 			}
@@ -82,7 +79,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			_, err = json.Marshal(message)
 			if err != nil {
 				log.Printf("malformed message: serialize: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
 				break
 			}
 		}

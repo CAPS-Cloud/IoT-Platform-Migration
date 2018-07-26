@@ -1,0 +1,665 @@
+
+NodeJS without Authorization
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 78.47.65.219 (be patient)
+Completed 25000 requests
+Completed 50000 requests
+Completed 75000 requests
+Completed 100000 requests
+Completed 125000 requests
+Completed 150000 requests
+Completed 175000 requests
+Completed 200000 requests
+Completed 225000 requests
+Completed 250000 requests
+Finished 250000 requests
+
+
+Server Software:
+Server Hostname:        78.47.65.219
+Server Port:            8083
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   58.784 seconds
+Complete requests:      250000
+Failed requests:        0
+Total transferred:      50000000 bytes
+Total body sent:        54000000
+HTML transferred:       500000 bytes
+Requests per second:    4252.83 [#/sec] (mean)
+Time per request:       235.137 [ms] (mean)
+Time per request:       0.235 [ms] (mean, across all concurrent requests)
+Transfer rate:          830.63 [Kbytes/sec] received
+                        897.08 kb/s sent
+                        1727.71 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  162 570.1      0   15443
+Processing:    29   70 168.7     60    7040
+Waiting:       29   70 168.7     60    7040
+Total:         29  233 611.1     61   15555
+
+Percentage of the requests served within a certain time (ms)
+  50%     61
+  66%     66
+  75%     71
+  80%     76
+  90%   1071
+  95%   1088
+  98%   1289
+  99%   3088
+ 100%  15555 (longest request)
+
+
+Golang without Authorization
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 78.47.65.219 (be patient)
+Completed 25000 requests
+Completed 50000 requests
+Completed 75000 requests
+Completed 100000 requests
+Completed 125000 requests
+Completed 150000 requests
+Completed 175000 requests
+Completed 200000 requests
+Completed 225000 requests
+Completed 250000 requests
+Finished 250000 requests
+
+
+Server Software:
+Server Hostname:        78.47.65.219
+Server Port:            8084
+
+Document Path:          /
+Document Length:        3 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   21.960 seconds
+Complete requests:      250000
+Failed requests:        0
+Total transferred:      29750000 bytes
+Total body sent:        54000000
+HTML transferred:       750000 bytes
+Requests per second:    11384.36 [#/sec] (mean)
+Time per request:       87.840 [ms] (mean)
+Time per request:       0.088 [ms] (mean, across all concurrent requests)
+Transfer rate:          1322.99 [Kbytes/sec] received
+                        2401.39 kb/s sent
+                        3724.38 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        4   45  99.7     35    1121
+Processing:     8   43  11.2     42     259
+Waiting:        4   32  10.4     30     254
+Total:         17   88 102.1     79    1378
+
+Percentage of the requests served within a certain time (ms)
+  50%     79
+  66%     83
+  75%     86
+  80%     88
+  90%     94
+  95%     99
+  98%    107
+  99%    140
+ 100%   1378 (longest request)
+
+
+======================================================================================================
+
+Node JS with Auth
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 78.47.65.219 (be patient)
+Completed 10000 requests
+Completed 20000 requests
+Completed 30000 requests
+Completed 40000 requests
+Completed 50000 requests
+Completed 60000 requests
+Completed 70000 requests
+Completed 80000 requests
+Completed 90000 requests
+Completed 100000 requests
+Finished 100000 requests
+
+
+Server Software:
+Server Hostname:        78.47.65.219
+Server Port:            8083
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   88.213 seconds
+Complete requests:      100000
+Failed requests:        0
+Total transferred:      20000000 bytes
+Total body sent:        114100000
+HTML transferred:       200000 bytes
+Requests per second:    1133.62 [#/sec] (mean)
+Time per request:       882.128 [ms] (mean)
+Time per request:       0.882 [ms] (mean, across all concurrent requests)
+Transfer rate:          221.41 [Kbytes/sec] received
+                        1263.15 kb/s sent
+                        1484.56 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  518 2271.5      0   65514
+Processing:    61  289 1128.5    217   57821
+Waiting:       60  289 1128.6    217   57821
+Total:         87  807 2555.1    232   65750
+
+Percentage of the requests served within a certain time (ms)
+  50%    232
+  66%    290
+  75%    358
+  80%    443
+  90%   1268
+  95%   3245
+  98%   7347
+  99%   8866
+ 100%  65750 (longest request)
+
+ Golang with Auth
+
+
+ This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 78.47.65.219 (be patient)
+Completed 25000 requests
+Completed 50000 requests
+Completed 75000 requests
+Completed 100000 requests
+Completed 125000 requests
+Completed 150000 requests
+Completed 175000 requests
+Completed 200000 requests
+Completed 225000 requests
+Completed 250000 requests
+Finished 250000 requests
+
+
+Server Software:
+Server Hostname:        78.47.65.219
+Server Port:            8084
+
+Document Path:          /
+Document Length:        3 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   43.738 seconds
+Complete requests:      250000
+Failed requests:        0
+Total transferred:      29750000 bytes
+Total body sent:        285250000
+HTML transferred:       750000 bytes
+Requests per second:    5715.92 [#/sec] (mean)
+Time per request:       174.950 [ms] (mean)
+Time per request:       0.175 [ms] (mean, across all concurrent requests)
+Transfer rate:          664.25 [Kbytes/sec] received
+                        6369.01 kb/s sent
+                        7033.26 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  124 404.6      0    7264
+Processing:     0   47  64.6     38    3402
+Waiting:        0   46  64.5     37    3388
+Total:          0  171 423.4     40    7366
+
+Percentage of the requests served within a certain time (ms)
+  50%     40
+  66%     54
+  75%     66
+  80%     75
+  90%   1032
+  95%   1078
+  98%   1231
+  99%   1457
+ 100%   7366 (longest request)
+
+
+===========================================================================
+
+
+Nodejs
+
+Summary report @ 17:14:16(+0200) 2018-07-23
+  Scenarios launched:  200000
+  Scenarios completed: 199807
+  Requests completed:  399614
+  RPS sent: 1235.13
+  Request latency:
+    min: 0
+    max: 102.4
+    median: 0.1
+    p95: 3.4
+    p99: 18
+  Scenario counts:
+    0: 200000 (100%)
+  Codes:
+    0: 399614
+  Errors:
+    ECONNRESET: 193
+
+Golang
+
+All virtual users finished
+Summary report @ 17:08:23(+0200) 2018-07-23
+  Scenarios launched:  200000
+  Scenarios completed: 200000
+  Requests completed:  400000
+  RPS sent: 2581.64
+  Request latency:
+    min: 0
+    max: 84.4
+    median: 0.1
+    p95: 2.7
+    p99: 25.4
+  Scenario counts:
+    0: 200000 (100%)
+  Codes:
+    0: 400000
+
+
+
+___________________________________________________________________________________________________________
+
+Improvments:
+
+100 clients
+Node HTTP with Auth and msg:
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 20000 requests
+Completed 40000 requests
+Completed 60000 requests
+Completed 80000 requests
+Completed 100000 requests
+Completed 120000 requests
+Completed 140000 requests
+Completed 160000 requests
+Completed 180000 requests
+Completed 200000 requests
+Finished 200000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8083
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      100
+Time taken for tests:   89.885 seconds
+Complete requests:      200000
+Failed requests:        0
+Total transferred:      40000000 bytes
+Total body sent:        228400000
+HTML transferred:       400000 bytes
+Requests per second:    2225.08 [#/sec] (mean)
+Time per request:       44.942 [ms] (mean)
+Time per request:       0.449 [ms] (mean, across all concurrent requests)
+Transfer rate:          434.59 [Kbytes/sec] received
+                        2481.48 kb/s sent
+                        2916.07 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.3      0      23
+Processing:    26   45   8.0     42     133
+Waiting:       26   45   8.0     42     133
+Total:         28   45   8.0     43     136
+
+Percentage of the requests served within a certain time (ms)
+  50%     43
+  66%     45
+  75%     48
+  80%     50
+  90%     56
+  95%     61
+  98%     67
+  99%     71
+ 100%    136 (longest request)
+
+
+==================================================================
+
+100 clients
+Golang HTTP with Auth and msg:
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 20000 requests
+Completed 40000 requests
+Completed 60000 requests
+Completed 80000 requests
+Completed 100000 requests
+Completed 120000 requests
+Completed 140000 requests
+Completed 160000 requests
+Completed 180000 requests
+Completed 200000 requests
+Finished 200000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8084
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      100
+Time taken for tests:   26.473 seconds
+Complete requests:      200000
+Failed requests:        0
+Total transferred:      23600000 bytes
+Total body sent:        228400000
+HTML transferred:       400000 bytes
+Requests per second:    7554.87 [#/sec] (mean)
+Time per request:       13.236 [ms] (mean)
+Time per request:       0.132 [ms] (mean, across all concurrent requests)
+Transfer rate:          870.58 [Kbytes/sec] received
+                        8425.45 kb/s sent
+                        9296.03 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   1.4      2      14
+Processing:     1   11   6.1     10      79
+Waiting:        0   11   6.1     10      79
+Total:          1   13   6.0     12      80
+
+Percentage of the requests served within a certain time (ms)
+  50%     12
+  66%     14
+  75%     16
+  80%     17
+  90%     21
+  95%     24
+  98%     29
+  99%     34
+ 100%     80 (longest request)
+root@benchmark-client ~ # 
+
+
+
+================================================================================
+
+Nodejs HTTP with Auth and msg
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 10000 requests
+Completed 20000 requests
+Completed 30000 requests
+Completed 40000 requests
+Completed 50000 requests
+Completed 60000 requests
+Completed 70000 requests
+Completed 80000 requests
+Completed 90000 requests
+Completed 100000 requests
+Finished 100000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8083
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   45.246 seconds
+Complete requests:      100000
+Failed requests:        0
+Total transferred:      20000000 bytes
+Total body sent:        114200000
+HTML transferred:       200000 bytes
+Requests per second:    2210.14 [#/sec] (mean)
+Time per request:       452.459 [ms] (mean)
+Time per request:       0.452 [ms] (mean, across all concurrent requests)
+Transfer rate:          431.67 [Kbytes/sec] received
+                        2464.83 kb/s sent
+                        2896.50 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  304 874.0      0   15325
+Processing:    21  138 196.3    116    7393
+Waiting:       21  138 196.3    116    7393
+Total:         23  441 903.7    121   15662
+
+Percentage of the requests served within a certain time (ms)
+  50%    121
+  66%    139
+  75%    159
+  80%   1111
+  90%   1148
+  95%   1328
+  98%   3170
+  99%   3362
+ 100%  15662 (longest request)
+
+
+
+=================================================================================
+
+Golang HTTP with Auth and msg
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 20000 requests
+Completed 40000 requests
+Completed 60000 requests
+Completed 80000 requests
+Completed 100000 requests
+Completed 120000 requests
+Completed 140000 requests
+Completed 160000 requests
+Completed 180000 requests
+Completed 200000 requests
+Finished 200000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8084
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   26.211 seconds
+Complete requests:      200000
+Failed requests:        0
+Total transferred:      23600000 bytes
+Total body sent:        228400000
+HTML transferred:       400000 bytes
+Requests per second:    7630.28 [#/sec] (mean)
+Time per request:       131.057 [ms] (mean)
+Time per request:       0.131 [ms] (mean, across all concurrent requests)
+Transfer rate:          879.27 [Kbytes/sec] received
+                        8509.56 kb/s sent
+                        9388.83 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   89 326.0      2    3056
+Processing:     1   37  45.7     28     917
+Waiting:        1   37  45.7     27     917
+Total:          1  126 331.5     32    3321
+
+Percentage of the requests served within a certain time (ms)
+  50%     32
+  66%     41
+  75%     48
+  80%     54
+  90%    223
+  95%   1046
+  98%   1071
+  99%   1098
+ 100%   3321 (longest request)
+
+
+====================================================================================
+
+Messages Array with 4 messages:
+
+Node
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 10000 requests
+Completed 20000 requests
+Completed 30000 requests
+Completed 40000 requests
+Completed 50000 requests
+Completed 60000 requests
+Completed 70000 requests
+Completed 80000 requests
+Completed 90000 requests
+Completed 100000 requests
+Finished 100000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8083
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   50.860 seconds
+Complete requests:      100000
+Failed requests:        0
+Total transferred:      20000000 bytes
+Total body sent:        138500000
+HTML transferred:       200000 bytes
+Requests per second:    1966.16 [#/sec] (mean)
+Time per request:       508.604 [ms] (mean)
+Time per request:       0.509 [ms] (mean, across all concurrent requests)
+Transfer rate:          384.02 [Kbytes/sec] received
+                        2659.31 kb/s sent
+                        3043.33 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  342 890.1      0   15304
+Processing:    31  157 140.7    134    2126
+Waiting:       30  157 140.7    134    2126
+Total:         50  499 912.5    143   15420
+
+Percentage of the requests served within a certain time (ms)
+  50%    143
+  66%    162
+  75%    196
+  80%   1135
+  90%   1179
+  95%   1547
+  98%   3207
+  99%   3384
+ 100%  15420 (longest request)
+
+
+Golang
+
+
+This is ApacheBench, Version 2.3 <$Revision: 1757674 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 159.69.52.0 (be patient)
+Completed 10000 requests
+Completed 20000 requests
+Completed 30000 requests
+Completed 40000 requests
+Completed 50000 requests
+Completed 60000 requests
+Completed 70000 requests
+Completed 80000 requests
+Completed 90000 requests
+Completed 100000 requests
+Finished 100000 requests
+
+
+Server Software:        
+Server Hostname:        159.69.52.0
+Server Port:            8084
+
+Document Path:          /
+Document Length:        2 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   13.340 seconds
+Complete requests:      100000
+Failed requests:        0
+Total transferred:      11800000 bytes
+Total body sent:        138500000
+HTML transferred:       200000 bytes
+Requests per second:    7495.99 [#/sec] (mean)
+Time per request:       133.405 [ms] (mean)
+Time per request:       0.133 [ms] (mean, across all concurrent requests)
+Transfer rate:          863.80 [Kbytes/sec] received
+                        10138.62 kb/s sent
+                        11002.41 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   86 303.9      2    3050
+Processing:     1   39  50.7     28    1033
+Waiting:        1   38  50.6     27    1033
+Total:          1  125 311.2     31    3143
+
+Percentage of the requests served within a certain time (ms)
+  50%     31
+  66%     40
+  75%     48
+  80%     55
+  90%    229
+  95%   1047
+  98%   1072
+  99%   1094
+ 100%   3143 (longest request)
