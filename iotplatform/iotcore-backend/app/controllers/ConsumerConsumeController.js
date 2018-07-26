@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken');
 const controller = new class {
 
     get(req, res, next) {
-        const bearerHeader = req.headers['authorization'];
+        const bearerHeader = req.headers['Authorization'];
         if (typeof bearerHeader !== 'undefined') {
             const bearer = bearerHeader.split(' ');
             if (bearer.length != 2) {

@@ -18,8 +18,8 @@ async function initWebSocket() {
         wsserver = new WebSocket.Server({
             port: wsPort,
             verifyClient: (info, cb) => {
-                if(info.req.headers.authorization && info.req.headers.authorization.split(' ')[0] === 'Bearer') {
-                    jwt.verify(info.req.headers.authorization.split(' ')[1], key, function(err, decoded) {
+                if(info.req.headers.Authorization && info.req.headers.Authorization.split(' ')[0] === 'Bearer') {
+                    jwt.verify(info.req.headers.Authorization.split(' ')[1], key, function(err, decoded) {
                         if(!(err != null)) {
                             info.req.user = decoded;
                             // console.log("200 - OK");
