@@ -66,30 +66,26 @@ function ingestMsgInKafka(payloads) {
 }
 
 function forwardMsg(message, deviceId) {
-    let payloads, messageString;
+    let messageString
 
-    if(typeof(message) === "object") {
-        messageString = message.toString();
-    } else if(typeof(message) === "string") {
+    if(typeof(message) === "string") {
         messageString = message;
     } else {
-        // console.log("invalid type of data - not forwarded to kafka");
+        // console.log("invalid type of data - not forwarded to kafka")
         return;
     }
 
     let parsedMsg = JSON.parse(messageString)
     if(Array.isArray(parsedMsg)) {
-        parsedMsg.forEach((elem) => {
-            payloads = [
-                { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
-            ];
-            ingestMsgInKafka(payloads);
-        });
+        for (var i = 0, len = parsedMsg.length; i < len; i++) {
+          ingestMsgInKafka([
+              { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
+          ]);
+        }
     } else {
-        payloads = [
+        ingestMsgInKafka([
             { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
-        ];
-        ingestMsgInKafka(payloads);
+        ]);
     }
 }
 
