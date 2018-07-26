@@ -85,8 +85,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//	Value: sarama.ByteEncoder(b),
 	//}
 
-	fmt.Fprintln(w, "OK")
-	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "OK")
 
 	return
 }
