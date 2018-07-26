@@ -9,11 +9,12 @@ import (
 
 	"github.com/Shopify/sarama"
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/gobwas/ws"
-	"github.com/gobwas/ws/wsutil"
+	"github.com/gorilla/websocket"
 )
 
 const pathDelimiter = "_"
+
+var upgrader = websocket.Upgrader{} // use default options
 
 type Gateway struct {
 	PublicKey *rsa.PublicKey
@@ -21,11 +22,12 @@ type Gateway struct {
 }
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	conn, _, _, err := ws.UpgradeHTTP(r, w, nil)
+	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		// handle error
+		log.Print("upgrade:", err)
+		return
 	}
-
+	defer c.Close()
 	// do authentication only if header field was set for performance testing
 	if r.Header.Get("Authorization") != "" {
 		// validate the token
@@ -48,37 +50,29 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("403 - JWT token invalid!"))
 			return
 		}
-		log.Println("authorized")
 	}
 
-	go func() {
-		defer conn.Close()
-
-		for {
-			msg, _, err := wsutil.ReadClientData(conn)
-			if err != nil {
-				log.Print("failed reading message %v", msg)
-				break
-			}
-			var message Message
-			err = json.Unmarshal(msg, &message)
-			if err != nil {
-				log.Printf("malformed message: deserialize: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-			}
-
-			b, err := json.Marshal(message)
-			if err != nil {
-				log.Printf("malformed message: serialize: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-			}
-
-			// forward message to kafka
-			// log.Printf("%v", message)
-			g.Producer.Input() <- &sarama.ProducerMessage{
-				Topic: message.DeviceID + pathDelimiter + string(message.SensorID),
-				Value: sarama.ByteEncoder(b),
-			}
+	for {
+		_, msg, err := c.ReadMessage()
+		if err != nil {
+			log.Printf("malformed message: read: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			break
 		}
-	}()
+
+		var message Message
+		err = json.Unmarshal(msg, &message)
+		if err != nil {
+			log.Printf("malformed message: deserialize: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			break
+		}
+
+		_, err = json.Marshal(message)
+		if err != nil {
+			log.Printf("malformed message: serialize: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			break
+		}
+	}
 }

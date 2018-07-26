@@ -60,7 +60,7 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(message)
+	_, err = json.Marshal(message)
 	if err != nil {
 		log.Printf("malformed message: serialize: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -69,10 +69,12 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// forward message to kafka
 	// log.Printf("%v", message)
-	g.Producer.Input() <- &sarama.ProducerMessage{
-		Topic: message.DeviceID + pathDelimiter + string(message.SensorID),
-		Value: sarama.ByteEncoder(b),
-	}
+	//g.Producer.Input() <- &sarama.ProducerMessage{
+	//	Topic: message.DeviceID + pathDelimiter + string(message.SensorID),
+	//	Value: sarama.ByteEncoder(b),
+	//}
+
+	w.WriteHeader(http.StatusOK)
 
 	return
 }
