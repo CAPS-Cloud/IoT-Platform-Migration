@@ -77,8 +77,9 @@ function forwardMsg(message, deviceId) {
         return;
     }
 
-    if(Array.isArray(JSON.parse(messageString))) {
-        JSON.parse(messageString).forEach((elem) => {
+    let parsedMsg = JSON.parse(messageString)
+    if(Array.isArray(parsedMsg)) {
+        parsedMsg.forEach((elem) => {
             payloads = [
                 { topic: deviceId + "_" + elem.sensor_id, messages: JSON.stringify(elem) }
             ];
@@ -86,7 +87,7 @@ function forwardMsg(message, deviceId) {
         });
     } else {
         payloads = [
-            { topic: deviceId + "_" + JSON.parse(messageString).sensor_id, messages: messageString }
+            { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
         ];
         ingestMsgInKafka(payloads);
     }
