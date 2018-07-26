@@ -84,7 +84,7 @@ public class Producer {
     private static SensorEvent generateEvent() {
         SensorEvent evt = new SensorEvent();
         evt.sensor_id = SENSOR_ID;
-        evt.timestamp = System.currentTimeMillis();
+        evt.timestamp = System.nanoTime();
         evt.value = String.valueOf(Math.random() * 100);
         return evt;
     }

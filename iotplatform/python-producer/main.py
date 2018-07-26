@@ -21,7 +21,7 @@ def main():
 def generate_msg():
     msg = {
         "sensor_id" : "192837466",
-        "timestamp" : int(round(time.time() * 1000)),
+        "timestamp" : int(round(time.time() * 1000000)),
         "value" : str(random.randint(0,100))
     }
     return msg
