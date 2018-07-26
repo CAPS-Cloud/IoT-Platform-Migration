@@ -88,14 +88,14 @@ function forwardMsg(message, deviceId) {
     let parsedMsg = JSON.parse(messageString)
     if(Array.isArray(parsedMsg)) {
         for (var i = 0, len = parsedMsg.length; i < len; i++) {
-          //ingestMsgInKafka([
-        //      { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
-          //]);
+          ingestMsgInKafka([
+              { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
+          ]);
         }
     } else {
-        //ingestMsgInKafka([
-            //{ topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
-        //]);
+        ingestMsgInKafka([
+            { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
+        ]);
     }
 }
 
