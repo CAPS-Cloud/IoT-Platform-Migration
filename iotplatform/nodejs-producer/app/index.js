@@ -41,7 +41,7 @@ client.on('connect', function () {
 
 function generateMessage() {
     return {
-        "sensor_id" : "915692",
+        "sensor_id" : "91345692",
         "timestamp" : (new Date()).getTime(),
         "reading" : "" + Math.random() * 100
     };

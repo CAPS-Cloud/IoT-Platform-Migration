@@ -20,7 +20,7 @@ def main():
 
 def generate_msg():
     msg = {
-        "sensor_id" : 192837466,
+        "sensor_id" : "192837466",
         "timestamp" : int(round(time.time() * 1000)),
         "value" : str(random.randint(0,100))
     }

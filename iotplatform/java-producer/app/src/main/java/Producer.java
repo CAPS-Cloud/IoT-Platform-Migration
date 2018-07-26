@@ -22,7 +22,7 @@ public class Producer {
     private static final String PUBLIC_KEY = ".keys/jwtRS256.key.pub";
     private static final String PRIVATE_KEY_PKCS8 = ".keys/pkcs8_key";
     private static final int DEVICE_ID = 1;
-    private static final int SENSOR_ID = 1;
+    private static final String SENSOR_ID = "12345";
 
     public static RSAPublicKey readPublicKey(InputStream inputStream) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         String content = new String(ByteStreams.toByteArray(inputStream));
@@ -76,7 +76,7 @@ public class Producer {
     }
 
     private static class SensorEvent {
-        public long sensor_id;
+        public String sensor_id;
         public long timestamp;
         public String value;
     }
