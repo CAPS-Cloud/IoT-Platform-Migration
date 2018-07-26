@@ -59,7 +59,7 @@ public class Producer {
                 String message = gson.toJson(generateEvents(5));
 
                 Content response = Request.Post(args[0])
-                    .addHeader("Authorization", "Bearer " + token)
+                    .addHeader("authorization", "Bearer " + token)
                     .bodyString(message,ContentType.APPLICATION_JSON)
                     .execute().returnContent();
                 //System.out.println(response.asString());

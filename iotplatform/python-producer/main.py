@@ -10,7 +10,7 @@ TEST_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpb3RwbGF0Zm9ybSIsI
 def main():
     WS_GATEWAY = sys.argv[1]
     async def hello(uri):
-        async with websockets.connect(uri, extra_headers={"Authorization": "Bearer " + TEST_TOKEN}) as websocket:
+        async with websockets.connect(uri, extra_headers={"authorization": "Bearer " + TEST_TOKEN}) as websocket:
             while True:
                 await websocket.send(json.dumps(generate_msg()))
                 await asyncio.sleep(1)

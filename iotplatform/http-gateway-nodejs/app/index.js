@@ -22,9 +22,9 @@ async function initRest() {
         app.use(bodyParser.urlencoded({ extended: true }))
 
         app.post("/", function (req, res) {
-            if (req.headers.Authorization && req.headers.Authorization.split(' ')[0] === 'Bearer') {
+            if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
                 // verify a token asymmetric
-                jwt.verify(req.headers.Authorization.split(' ')[1], key, function(err, decoded) {
+                jwt.verify(req.headers.authorization.split(' ')[1], key, function(err, decoded) {
                     if(!(err != null)) {
                         forwardMsg(JSON.stringify(req.body), decoded.sub);
                         res.status(200).send('OK');

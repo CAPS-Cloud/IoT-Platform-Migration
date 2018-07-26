@@ -17,7 +17,7 @@ export default new class {
         })
 
         autorun(() => {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${this.authToken}`;
+            axios.defaults.headers.common['authorization'] = `Bearer ${this.authToken}`;
         })
 
         axios.interceptors.response.use(response => response, error => {

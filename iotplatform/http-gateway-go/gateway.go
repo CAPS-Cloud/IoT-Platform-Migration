@@ -22,9 +22,9 @@ type Gateway struct {
 
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// do authentication only if header field was set for performance testing
-	if r.Header.Get("Authorization") != "" {
+	if r.Header.Get("authorization") != "" {
 		// validate the token
-		token, err := jwt.Parse(strings.Replace(r.Header.Get("Authorization"), "Bearer ", "", 1), func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(strings.Replace(r.Header.Get("authorization"), "Bearer ", "", 1), func(token *jwt.Token) (interface{}, error) {
 			// since we only use the one private key to sign the tokens,
 			// we also only use its public counter part to verify
 			return g.PublicKey, nil
