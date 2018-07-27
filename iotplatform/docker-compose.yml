@@ -148,7 +148,6 @@ services:
             KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
             KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-            AUTOSCALING: "200m:1:2:30"
 
     flink:
         image: flink:1.5-alpine
