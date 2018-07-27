@@ -107,26 +107,30 @@ function ingestMsgInKafka(payloads) {
 }
 
 function forwardMsg(message, deviceId) {
-    let messageString
+    try {
+        let messageString
 
-    if(typeof(message) === "string") {
-        messageString = message;
-    } else {
-        // console.log("invalid type of data - not forwarded to kafka")
-        return;
-    }
-
-    let parsedMsg = JSON.parse(messageString)
-    if(Array.isArray(parsedMsg)) {
-        for (var i = 0, len = parsedMsg.length; i < len; i++) {
-          ingestMsgInKafka([
-              { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
-          ]);
+        if(typeof(message) === "string") {
+            messageString = message;
+        } else {
+            // console.log("invalid type of data - not forwarded to kafka")
+            return;
         }
-    } else {
-        ingestMsgInKafka([
-            { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
-        ]);
+
+        let parsedMsg = JSON.parse(messageString)
+        if(Array.isArray(parsedMsg)) {
+            for (var i = 0, len = parsedMsg.length; i < len; i++) {
+              ingestMsgInKafka([
+                  { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
+              ]);
+            }
+        } else {
+            ingestMsgInKafka([
+                { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
+            ]);
+        }
+    } catch(error) {
+      console.error(error);
     }
 }
 
