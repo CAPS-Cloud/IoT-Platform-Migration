@@ -1,5 +1,7 @@
 #!/bin/bash
 
+/wait-for-it.sh $IOTCORE_BACKEND --timeout=0 --strict
+
 cd app
 
 npm start
