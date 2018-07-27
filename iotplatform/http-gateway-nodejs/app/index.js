@@ -52,11 +52,11 @@ async function initRest() {
 function ingestMsgInKafka(payloads) {
     kafkaProducer.send(payloads, (err) => {
         if(err) {
-            // console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
+            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
             // console.log("forwarded to kafka:")
             // console.log(payloads)
-            console.log((new Date()).getTime() + "-----" + payloads)
+            console.log((new Date()).getTime() + "-----" + JSON.stringify(payloads))
         }
     })
 }
