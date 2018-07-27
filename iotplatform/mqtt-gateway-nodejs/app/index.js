@@ -98,10 +98,11 @@ async function initMqtt() {
 function ingestMsgInKafka(payloads) {
     kafkaProducer.send(payloads, (err) => {
         if(err) {
-            // console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
+            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
         } else {
             // console.log("forwarded to kafka:")
             // console.log(payloads)
+            console.log((new Date()).getTime() + "-----" + payloads)
         }
     })
 }
@@ -120,9 +121,9 @@ function forwardMsg(message, deviceId) {
         let parsedMsg = JSON.parse(messageString)
         if(Array.isArray(parsedMsg)) {
             for (var i = 0, len = parsedMsg.length; i < len; i++) {
-              ingestMsgInKafka([
-                  { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
-              ]);
+                ingestMsgInKafka([
+                    { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
+                ]);
             }
         } else {
             ingestMsgInKafka([
