@@ -53,7 +53,7 @@ services:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             REDIS: ${SERVICE_PREFIX}redis:6379
-            AUTOSCALING: "200m:1:2:30"
+            #AUTOSCALING: "200m:1:2:30"
         ports:
             - "1883:1883"
 
@@ -66,7 +66,7 @@ services:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            AUTOSCALING: "200m:1:2:30"
+            #AUTOSCALING: "200m:1:2:30"
 
     ws-gateway-go:
         build: ./ws-gateway-go
@@ -87,7 +87,7 @@ services:
             IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            AUTOSCALING: "200m:1:2:30"
+            #AUTOSCALING: "200m:1:2:30"
 
     http-gateway-go:
         build: ./http-gateway-go
@@ -136,7 +136,7 @@ services:
             - "2181"
 
     kafka:
-        image: wurstmeister/kafka:latest
+        image: wurstmeister/kafka:2.11-0.11.0.2
         ports:
             - "9092"
             - "9094"
