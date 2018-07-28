@@ -12,33 +12,44 @@ const args = process.argv;
 const ZOOKEEPER = args[2];
 const IOTCORE_BACKEND = args[3];
 
+/**
+ * Create a websocket server verifies its clients using JWT tokens
+ *
+ * The JWT token must be given as a HTTP header "authorization: Bearer [token]"
+ * in the initial HTTP-Upgrade request.
+ */
 async function initWebSocket() {
     // console.log("attempting to initiate ws server...");
     return new Promise((resolve) => {
         wsserver = new WebSocket.Server({
             port: wsPort,
             verifyClient: (info, cb) => {
-                if(info.req.headers.authorization && info.req.headers.authorization.split(' ')[0] === 'Bearer') {
-                    jwt.verify(info.req.headers.authorization.split(' ')[1], key, function(err, decoded) {
-                        if(!(err != null)) {
-                            info.req.user = decoded;
-                            // console.log("200 - OK");
-                            cb(true);
-                        } else {
-                            // console.log("403 - Forbidden");
-                            cb(false, 403, 'Forbidden');
-                        }
-                    });
-                } else {
-                    // console.log("401 - Unauthorized");
+                // Look for a HTTP header that looks like: "authorization: Bearer [token]"
+                const auth = info.req.headers.authorization;
+                const bearer = 'Bearer '; // Prefix
+                if(auth === undefined || !auth.startsWith(bearer)) {
                     cb(false, 401, 'Unauthorized');
+                    return;
                 }
+                const jwtToken = auth.substr(bearer.length);
+
+                jwt.verify(jwtToken, key, function(err, decoded) {
+                    if(err) {
+                        cb(false, 403, 'Forbidden');
+                        return;
+                    }
+                    info.req.user = decoded;
+                    cb(true);
+                });
             }
         });
         resolve();
     })
 }
 
+/**
+ * Create a high level producer using the zookeeper given as command line argument.
+ */
 async function initKafka() {
     return new Promise((resolve) => {
         // console.log("attempting to initiate Kafka connection...");
@@ -54,6 +65,18 @@ async function initKafka() {
     })
 }
 
+/**
+ * Send a list of messages to kafka.
+ * @param {array} payloads must be an array where each element has `topic` and `messages`.
+ * @example
+ * ingestMsgInKafka([
+ *   {
+ *     topic: "my_topic_name",
+ *     message: ['my_message'] // single messages can be just a string
+ *   }
+ * ])
+ * @see {@link https://github.com/SOHU-Co/kafka-node#sendpayloads-cb}
+ */
 function ingestMsgInKafka(payloads) {
     kafkaProducer.send(payloads, (err) => {
         if(err) {
@@ -66,6 +89,11 @@ function ingestMsgInKafka(payloads) {
     })
 }
 
+/**
+ * Send one or multiple sensor messages to kafka using `ingestMsgInKafka`.
+ * @param {string} message sensor data to send. Must be a stringified JSON array or JSON object
+ * @param {string} deviceId (verified) device indentifier that is concatenated with the sensor id resulting in the kafka topic name
+ */
 function forwardMsg(message, deviceId) {
     try {
         let messageString
@@ -79,12 +107,14 @@ function forwardMsg(message, deviceId) {
 
         let parsedMsg = JSON.parse(messageString)
         if(Array.isArray(parsedMsg)) {
+            // message was an array of message objects
             for (var i = 0, len = parsedMsg.length; i < len; i++) {
                 ingestMsgInKafka([
                     { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
                 ]);
             }
         } else {
+            // message was the message object itself
             ingestMsgInKafka([
                 { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
             ]);
@@ -97,9 +127,11 @@ function forwardMsg(message, deviceId) {
 
 Promise.all([initKafka()]).then(() => {
     initWebSocket().then(() => {
-        // console.log("ws gateway available");
+        // Wait for new clients connecting to the websocket server
         wsserver.on('connection', (conn, req) => {
             conn.on('message', (data) => {
+                // Forward all messages and use the 'sub' field of the JWT
+                // token as the deviceId
                 forwardMsg(data, req.user.sub);
             });
         });
