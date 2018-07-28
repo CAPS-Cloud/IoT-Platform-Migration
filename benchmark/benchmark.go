@@ -28,6 +28,10 @@ var flags = []cli.Flag{
 		Value: 10000,
 	},
 	cli.IntFlag{
+		Name:  "messages",
+		Value: 1000,
+	},
+	cli.IntFlag{
 		Name:  "period",
 		Value: 500,
 	},
@@ -47,19 +51,21 @@ func benchmark(c *cli.Context) {
 		ctx, _ := context.WithCancel(context.Background())
 		g, _ := errgroup.WithContext(ctx)
 
+		cstart := time.Now()
 		for i := 0; i < step; i++ {
 			client := &Client{
 				Host:       c.String("host"),
 				SendPeriod: c.Int("period"),
 				Result:     Result{Number: int64(0), Total: int64(0), Low: int64(1000000000000000), High: int64(0)},
-				Messages:   10,
+				Messages:   c.Int("messages"),
 			}
 			client.Connect()
 			clients = append(clients, client)
 		}
+		ctime := time.Since(cstart).Seconds()
 		log.Printf("connected %d, sending...", len(clients))
 
-		start := time.Now()
+		rstart := time.Now()
 		for _, client := range clients {
 			g.Go(client.Run)
 		}
@@ -89,7 +95,7 @@ func benchmark(c *cli.Context) {
 		low := float64(l) / 1000000
 		mean := float64(m) / float64(n) / 1000000
 
-		log.Printf("clients: %d requests: %d time: %f s, mean: %f ms low: %f ms high: %f ms", len(clients), n, time.Since(start).Seconds(), mean, low, high)
+		log.Printf("clients: %d ctime: %f requests: %d rtime: %f s, mean: %f ms low: %f ms high: %f ms", len(clients), ctime, n, time.Since(rstart).Seconds(), mean, low, high)
 
 		if len(clients) >= c.Int("max_conn") {
 			break
