@@ -22,24 +22,32 @@ async function initRest() {
         app.use(bodyParser.urlencoded({ extended: true }))
 
         app.post("/", function (req, res) {
-            if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-                // verify a token asymmetric
-                jwt.verify(req.headers.authorization.split(' ')[1], key, function(err, decoded) {
-                    if(!(err != null)) {
-                        forwardMsg(JSON.stringify(req.body), decoded.sub);
-                        res.status(200).send('OK');
-                        res.end();
-                    } else {
-                        // console.log("403 - Forbidden");
-                        res.status(403).send('Forbidden');
-                        res.end();
-                    }
-                });
-            } else {
-                // console.log("401 - Unauthorized");
+            // Look for a HTTP header that looks like: "authorization: Bearer [token]"
+            const auth = req.header('authorization');
+            const bearer = 'Bearer '; // Prefix
+            if(auth === undefined || !auth.startsWith(bearer)) {
+                // If the header is missing or has an invalid format
                 res.status(401).send('Unauthorized');
                 res.end();
+                return;
             }
+            const jwtToken = auth.substr(bearer.length);
+
+            // Verify the RSA-signed JWT token
+            jwt.verify(jwtToken, key, function(err, decoded) {
+                if(err) {
+                    // JWT verification failed
+                    res.status(403).send('Forbidden');
+                    res.end();
+                    return;
+                }
+
+                // Send JSON body to Kafka
+                // The decoded JWT token contains the deviceId in the "sub" field
+                forwardMsg(JSON.stringify(req.body), decoded.sub);
+                res.status(200).send('OK');
+                res.end();
+            });
         })
 
         httpServer = app.listen(httpPort, () => {
@@ -49,6 +57,18 @@ async function initRest() {
     })
 }
 
+/**
+ * Send a list of messages to kafka.
+ * @param {array} payloads must be an array where each element has `topic` and `messages`.
+ * @example
+ * ingestMsgInKafka([
+ *   {
+ *     topic: "my_topic_name",
+ *     message: ['my_message'] // single messages can be just a string
+ *   }
+ * ])
+ * @see {@link https://github.com/SOHU-Co/kafka-node#sendpayloads-cb}
+ */
 function ingestMsgInKafka(payloads) {
     kafkaProducer.send(payloads, (err) => {
         if(err) {
@@ -61,21 +81,26 @@ function ingestMsgInKafka(payloads) {
     })
 }
 
+/**
+ * Create a high level producer using the zookeeper given as command line argument.
+ */
 async function initKafka() {
     return new Promise((resolve) => {
         // console.log("attempting to initiate Kafka connection...")
         kafkaClient = new kafka.Client(ZOOKEEPER)
 
         kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
-        kafkaProducer.on("ready", () => {
-            // console.log("kafka producer is connected and ready")
-        })
         kafkaProducer.on('ready', () => {
           resolve()
         })
     })
 }
 
+/**
+ * Send one or multiple sensor messages to kafka using `ingestMsgInKafka`.
+ * @param {string} message sensor data to send. Must be a stringified JSON array or JSON object
+ * @param {string} deviceId (verified) device indentifier that is concatenated with the sensor id resulting in the kafka topic name
+ */
 function forwardMsg(message, deviceId) {
     try {
         let messageString
