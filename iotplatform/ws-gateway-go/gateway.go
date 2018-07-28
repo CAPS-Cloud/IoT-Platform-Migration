@@ -61,11 +61,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		if mt == websocket.CloseMessage {
-			c.Close()
-			break
-		}
-
 		var message Message
 		var messages []Message
 		err = json.Unmarshal(msg, &message)

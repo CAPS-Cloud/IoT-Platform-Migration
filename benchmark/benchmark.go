@@ -78,19 +78,6 @@ func benchmark(c *cli.Context) {
 		}
 		rtime := time.Since(rstart).Seconds()
 
-		ctx, _ = context.WithCancel(context.Background())
-		g, _ = errgroup.WithContext(ctx)
-
-		for _, client := range clients {
-			g.Go(client.Close)
-		}
-		// wait for all errgroup goroutines
-		if err := g.Wait(); err == nil {
-
-		} else {
-			log.Printf("%s", err.Error())
-		}
-
 		n := int64(0)
 		m := int64(0)
 		h := int64(0)
@@ -165,7 +152,7 @@ func (client *Client) Run() error {
 			client.Result.High = elapsed
 		}
 	}
-	return nil
+	return client.Conn.Close()
 }
 
 func (client *Client) Close() error {
