@@ -52,12 +52,10 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Println("upgraded")
-
 	for {
 		mt, msg, err := c.ReadMessage()
 		if err != nil {
-			log.Printf("malformed message: read: %s", err)
+			//log.Printf("malformed message: read: %s", err)
 			break
 		}
 
