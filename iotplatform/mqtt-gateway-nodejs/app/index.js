@@ -15,6 +15,9 @@ const REDIS_PORT = parseInt(REDIS.split(":")[1]);
 
 var server, kafkaProducer, kafkaClient
 
+/**
+ * Create a high level producer using the zookeeper from command line arguments.
+ */
 async function initKafka() {
     return new Promise((resolve) => {
         // console.log("attempting to initiate Kafka connection...")
@@ -30,6 +33,9 @@ async function initKafka() {
     })
 }
 
+/**
+ * Create a MQTT broker using mosca and redis as the backend.
+ */
 async function initMqtt() {
     return new Promise((resolve) => {
         let ascoltatore = {
@@ -61,6 +67,8 @@ async function initMqtt() {
 
         // fired when the mqtt server is ready
         function setup() {
+            // The MQTT client authenticates by sending 'JWT' as the username
+            // and the JWT token as the password
             server.authenticate = (client, username, password, callback) => {
                 if( username !== 'JWT' ) {
                     return callback("Invalid Credentials", false);
@@ -71,12 +79,14 @@ async function initMqtt() {
                         return callback("Error getting UserInfo", false);
                     }
                     // console.log("Authenticated client " + profile.sub);
+                    // Memorize the verified JWT for the current client
                     client.deviceProfile = profile;
                     return callback(null, true);
                 });
             }
 
             server.authorizePublish = (client, topic, payload, callback) => {
+                // The JWT's 'sub' field contains the device id
                 if(client.deviceProfile.sub === topic) {
                     callback(null, true);
                 } else {
@@ -86,6 +96,7 @@ async function initMqtt() {
             }
 
             server.authorizeSubscribe = (client, topic, callback) => {
+                // Subscription is not allowed on the gateway
                 callback(null, false);
             }
 
@@ -95,6 +106,18 @@ async function initMqtt() {
     })
 }
 
+/**
+ * Send a list of messages to kafka.
+ * @param {array} payloads must be an array where each element has `topic` and `messages`.
+ * @example
+ * ingestMsgInKafka([
+ *   {
+ *     topic: "my_topic_name",
+ *     message: ['my_message'] // single messages can be just a string
+ *   }
+ * ])
+ * @see {@link https://github.com/SOHU-Co/kafka-node#sendpayloads-cb}
+ */
 function ingestMsgInKafka(payloads) {
     kafkaProducer.send(payloads, (err) => {
         if(err) {
@@ -107,6 +130,11 @@ function ingestMsgInKafka(payloads) {
     })
 }
 
+/**
+ * Send one or multiple sensor messages to kafka using `ingestMsgInKafka`.
+ * @param {string} message sensor data to send. Must be a stringified JSON array or JSON object
+ * @param {string} deviceId (verified) device indentifier that is concatenated with the sensor id resulting in the kafka topic name
+ */
 function forwardMsg(message, deviceId) {
     try {
         let messageString
@@ -139,6 +167,7 @@ Promise.all([initKafka()]).then(() => {
     initMqtt().then(() => {
         // fired when a message is received
         server.on('published', function(packet, client) {
+            // TODO Why are checking for 'mqttjs_' ?
             if(!(packet.payload.toString().includes('mqttjs_'))) {
                 forwardMsg(packet.payload.toString(), packet.topic);
             }
