@@ -78,6 +78,19 @@ func benchmark(c *cli.Context) {
 		}
 		rtime := time.Since(rstart).Seconds()
 
+		ctx, _ = context.WithCancel(context.Background())
+		g, _ = errgroup.WithContext(ctx)
+
+		for _, client := range clients {
+			g.Go(client.Close)
+		}
+		// wait for all errgroup goroutines
+		if err := g.Wait(); err == nil {
+
+		} else {
+			log.Printf("%s", err.Error())
+		}
+
 		n := int64(0)
 		m := int64(0)
 		h := int64(0)
@@ -152,7 +165,7 @@ func (client *Client) Run() error {
 			client.Result.High = elapsed
 		}
 	}
-	return client.Conn.Close()
+	return nil
 }
 
 func (client *Client) Close() error {
@@ -160,7 +173,7 @@ func (client *Client) Close() error {
 	if err != nil {
 		log.Printf("%s", err.Error())
 	}
-	return nil
+	return client.Conn.Close()
 }
 
 var upgrader = websocket.Upgrader{} // use default options

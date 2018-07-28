@@ -55,9 +55,14 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println("upgraded")
 
 	for {
-		_, msg, err := c.ReadMessage()
+		mt, msg, err := c.ReadMessage()
 		if err != nil {
-			//log.Printf("malformed message: read: %s", err)
+			log.Printf("malformed message: read: %s", err)
+			break
+		}
+
+		if mt == websocket.CloseMessage {
+			c.Close()
 			break
 		}
 
@@ -84,7 +89,5 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-
-		log.Printf("%v", message)
 	}
 }
