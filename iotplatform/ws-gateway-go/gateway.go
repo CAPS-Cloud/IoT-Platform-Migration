@@ -52,6 +52,8 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	log.Println("upgraded")
+
 	for {
 		mt, msg, err := c.ReadMessage()
 		if err != nil {
