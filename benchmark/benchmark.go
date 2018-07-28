@@ -151,8 +151,15 @@ func (client *Client) Run() error {
 			client.Result.High = elapsed
 		}
 	}
-	err := client.Conn.Close()
-	return err
+	return nil
+}
+
+func (client *Client) Close() error {
+	err := client.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	if err != nil {
+
+	}
+	return client.Conn.Close()
 }
 
 var upgrader = websocket.Upgrader{} // use default options
