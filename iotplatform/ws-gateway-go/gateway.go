@@ -53,9 +53,9 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for {
-		mt, msg, err := c.ReadMessage()
+		_, msg, err := c.ReadMessage()
 		if err != nil {
-			log.Printf("malformed message: read: %s", err)
+			//log.Printf("malformed message: read: %s", err)
 			break
 		}
 
@@ -81,12 +81,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				log.Printf("malformed message: serialize: %s", err)
 				break
 			}
-		}
-
-		err = c.WriteMessage(mt, msg)
-		if err != nil {
-			log.Println("write:", err)
-			break
 		}
 	}
 }

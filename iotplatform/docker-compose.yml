@@ -60,6 +60,9 @@ services:
     ws-gateway-nodejs:
         build: ./ws-gateway-nodejs
         image: heldic/ws-gateway-nodejs
+        ulimits:
+            nproc: 65535
+            nofile: 90000
         ports:
             - "8765:8765"
         environment:
@@ -71,6 +74,9 @@ services:
     ws-gateway-go:
         build: ./ws-gateway-go
         image: heldic/ws-gateway-go
+        ulimits:
+            nproc: 65535
+            nofile: 90000
         ports:
             - "8766:8766"
         environment:
