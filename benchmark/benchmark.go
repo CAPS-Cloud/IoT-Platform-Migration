@@ -171,9 +171,9 @@ func (client *Client) Run() error {
 func (client *Client) Close() error {
 	err := client.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	if err != nil {
-
+		log.Printf("%s", err.Error())
 	}
-	return client.Conn.Close()
+	return nil
 }
 
 var upgrader = websocket.Upgrader{} // use default options
