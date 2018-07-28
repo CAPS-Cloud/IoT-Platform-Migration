@@ -53,14 +53,9 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for {
-		mt, msg, err := c.ReadMessage()
+		_, msg, err := c.ReadMessage()
 		if err != nil {
 			//log.Printf("malformed message: read: %s", err)
-			break
-		}
-
-		if mt == websocket.CloseMessage {
-			c.Close()
 			break
 		}
 
