@@ -76,6 +76,20 @@ func benchmark(c *cli.Context) {
 		} else {
 			log.Printf("%s", err.Error())
 		}
+		rtime := time.Since(rstart).Seconds()
+
+		ctx, _ = context.WithCancel(context.Background())
+		g, _ = errgroup.WithContext(ctx)
+
+		for _, client := range clients {
+			g.Go(client.Close)
+		}
+		// wait for all errgroup goroutines
+		if err := g.Wait(); err == nil {
+
+		} else {
+			log.Printf("%s", err.Error())
+		}
 
 		n := int64(0)
 		m := int64(0)
@@ -95,7 +109,7 @@ func benchmark(c *cli.Context) {
 		low := float64(l) / 1000000
 		mean := float64(m) / float64(n) / 1000000
 
-		log.Printf("clients: %d ctime: %f requests: %d rtime: %f s, mean: %f ms low: %f ms high: %f ms", len(clients), ctime, n, time.Since(rstart).Seconds(), mean, low, high)
+		log.Printf("clients: %d ctime: %f requests: %d rtime: %f s, mean: %f ms low: %f ms high: %f ms", len(clients), ctime, n, rtime, mean, low, high)
 
 		if len(clients) >= c.Int("max_conn") {
 			break
