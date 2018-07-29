@@ -152,7 +152,7 @@ curl \
     -d '{"sensor_id":"4","timestamp":1526717967,"value":"91827364"}' \
     http://iot.pcxd.me:8083/
 ```
-__Attention:__ At the m`oment we're using the header `-H "authorization: Bearer <TOKEN>` for authorization with a lowercase __`a`__, thus deviating from common practice. This is due to relying on Node.js libraries that convert all http headers to lowercase (https://github.com/nodejs/node-v0.x-archive/issues/8502). It would be possible to avoid this workaround, by looping over the request's `rawHeaders`-field, however it was decided against this for now, due to performance considerations.
+__Attention:__ At the moment we're using the header `-H "authorization: Bearer <TOKEN>` for authorization with a lowercase __`a`__, thus deviating from common practice. This is due to relying on Node.js libraries that convert all http headers to lowercase (https://github.com/nodejs/node-v0.x-archive/issues/8502). It would be possible to avoid this workaround, by looping over the request's `rawHeaders`-field, however it was decided against this for now, due to performance considerations.
 
 There is a sample Java client available [here]( https://github.com/heldic/iotplatform/blob/master/iotplatform/java-producer/app/src/main/java/Producer.java).
 
