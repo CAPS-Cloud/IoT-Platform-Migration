@@ -95,8 +95,9 @@ func benchmark(c *cli.Context) {
 		high := float64(h) / 1000000
 		low := float64(l) / 1000000
 		mean := float64(m) / float64(n) / 1000000
+		rps := float64(n) / rtime
 
-		log.Printf("clients: %d ctime: %f requests: %d rtime: %f s, mean: %f ms low: %f ms high: %f ms", len(clients), ctime, n, rtime, mean, low, high)
+		log.Printf("clients: %d ctime: %f requests: %d rtime: %fs rps: %f mean: %f ms low: %f ms high: %f ms", len(clients), ctime, n, rtime, rps, mean, low, high)
 
 		if len(clients) >= c.Int("max_conn") {
 			break

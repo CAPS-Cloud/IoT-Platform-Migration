@@ -52,8 +52,6 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	m := 0
-
 	for {
 		_, msg, err := c.ReadMessage()
 		if err != nil {
@@ -84,8 +82,5 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-		m++
 	}
-
-	log.Println(m)
 }
