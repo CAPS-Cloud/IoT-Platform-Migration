@@ -102,6 +102,8 @@ func benchmark(c *cli.Context) {
 		if len(clients) >= c.Int("max_conn") {
 			break
 		}
+
+		time.Sleep(time.Second * 10)
 	}
 
 }
