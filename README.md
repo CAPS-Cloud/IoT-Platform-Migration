@@ -34,17 +34,21 @@ cluster-resources are limited:
 #### IoTCore Backend + Frontend
 - Metadata administration (CRUD-operations for device and sensor management)
 - Automatically creates Kafka topics, Elasticsearch indices & Flink jobs within
-corresponding pods in the cluster
+corresponding pods in the cluster upon device/sensor creation
+- Generate JWTs and Consumer Secrets
 - Check authorization of incoming requests
-- Provide metadata information to gateways upon request, according to predefined schema
+- Serve as authentication proxy for Elasticsearch, forwarded verified queries
 
 
 [//]: <########################################################################>
-#### MQTT/HTTP/WS Gateway
-- Cloud gateways enabling data ingestion
-- Different protocols are supported by different gateways (depending on load, respective gateways can be scaled)
-- Gateways enrich incoming sensordata with respective device information
-- Data is forwarded to Kafka, topic is received from IoT-Core
+#### Gateways
+- Data ingestion pods
+- Currently three different protocols are supported (HTTP, WebSockets, MQTT)
+- Incoming requests/connections are verified, the included JWT decoded and the
+`device_id` obtained
+- Messages are forwarded to Kafka, the respective topic is assembled: `<DEVICE_ID>_<SENSOR_ID>`
+- In order to compare the performance of Go vs. Node.js within such usecases, the
+WS and HTTP gateways are implemented in both languages
 
 Gateways are available at:
 - MQTT Gateway: `<HOST>:1883/` (Node.js)
@@ -91,6 +95,8 @@ curl \
 ```
 __Attention:__ At the m`oment we're using the header `-H "authorization: Bearer <TOKEN>` for authorization with a lowercase __`a`__, thus deviating from common practice. This is due to relying on Node.js libraries that convert all http headers to lowercase (https://github.com/nodejs/node-v0.x-archive/issues/8502). It would be possible to avoid this workaround, by looping over the request's `rawHeaders`-field, however it was decided against this for now, due to performance considerations.
 
+There is a sample Java client available [here]( https://github.com/heldic/iotplatform/blob/master/iotplatform/java-producer/app/src/main/java/Producer.java).
+
 
 [//]: <########################################################################>
 ##### Websocket Gateway
@@ -98,59 +104,73 @@ The Websocket gateway is a simple websocket server that waits for incoming clien
 connections and holds the connection as long as messages are being sent or
 the client closes the connection. Authorization is being done during the initial
 HTTP-Upgrade (`Connection: Upgrade`) request. In that request, an additional
-`Authorization` header must be sent, containing a JSON Web Token:
-```
-Authorization: Bearer abcd1234...
-```
-In case of a failure, the gateway may terminate the connection and respond with:
-- `401 Unauthorized`, if the `Authorization` header is missing or the header's value is inproperly formatted
-- `403 Forbidden`, if the JWT could not be verified, is expired or invalid for another reason
+`authorization` header must be sent, containing a JSON Web Token. In case of a failure, the gateway may terminate the connection and respond with:
+- `401 Unauthorized`: `authorization` header is missing or the header's value is inproperly formatted
+- `403 Forbidden`: JWT could not be verified, is expired or invalid
 
-After the connection is established, the gateway waits for JSON messages to be sent.
-The messages can be either JSON arrays (for multiple events) or JSON objects
-(for a single event). All sensor events in one websocket are tied to the
-`device_id` that is contained in the JWT's subject field (`sub`).
+There is a sample Python client available [here](https://github.com/heldic/iotplatform/blob/master/iotplatform/python-producer/main.py).
 
 
 [//]: <########################################################################>
 ##### MQTT Gateway
-asdf
+The MQTT gateway is relying on Mosca MQTT with Redis as storage backing service.
+In order to connect to the broker, the client has to provide authentication credentials,
+using `JWT` as username and the actual JWT as password. Additionally, the protocol
+has to be specified explicitly on occasion. Once connected, clients can push JSON objects
+or arrays of JSON objects by publishing using their device_id as topic.
+An examplary connection initialization in Node.js:
+```javascript
+var client  = mqtt.connect({
+    host: <MQTT_GATEWAY_HOST>,
+    port: <MQTT_GATEWAY_PORT>,
+    username: 'JWT',
+    password: <TOKEN>,
+    keepalive: 1000,
+    settings: {
+        protocolId: 'MQIsdp',
+        protocolVersion: 3
+    }
+});
+```
 
-
-[//]: <########################################################################>
-### AccessController
-- API that acts as buffer between consumer and Elasticsearch
-- Check with IoTCore whether user is authorized to receive requested information
+There is a sample Node.js client available [here]( https://github.com/heldic/iotplatform/blob/master/iotplatform/nodejs-producer/app/index.js).
 
 
 [//]: <########################################################################>
 ### Kafka/Zookeeper
-- Big data stream (collecting data from all gateways, no matter the protocol)
-- Act as single point of information for processing layer
+- Collecting all incoming message from the different gateways
+- Act as single point of information for subsequent processing layer
+- Persistence capabilities of Kafka are neglected since it would be redundant
+due to the inclusion of Elasticsearch
 
 
 [//]: <########################################################################>
 ### Flink
-External Dashboard Access: http://iot.pcxd.me:8081/
-- Offer possibilities to add batch processing or analytical jobs
-- Consume Kafka topics provided by IoTCore and forward data to Elasticsearch
+- Dashboard access: `<HOST>:8081/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
+- Offers opportunity to add batch processing or analytical jobs
+- Consume Kafka topics and forward data to Elasticsearch
+- Jobs are created by IoTCore
+- Default job is simply forwarding data without transformation/analysis
+- Detects timestamp format and converts it to nanoseconds for Kibana
 
 
 [//]: <########################################################################>
 ### Elasticsearch
-External REST Access: http://iot.pcxd.me:9000/
+- REST Access: `<HOST>:9000/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
 - Persistence
+- Querying capabilities for clients
 
 
 [//]: <########################################################################>
-### Grafana
-- Monitoring opportunity for Elasticsearch (Dev Ops)
+### Kibana
+- Access at `<HOST>:5601/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
+- Monitoring opportunity for Elasticsearch (e.g. for Dev Ops)
+- Data visualization
 
 
 [//]: <########################################################################>
 ### Java/Node.js/Python Producer
-- Sample producers to simulate the supported protocols
-- Constructed scalable to simulate high loads on cluster
+- Sample producers to simulate the supported protocols and exemplify usage of the platform
 
 
 
@@ -349,3 +369,4 @@ kubeadm join 141.40.254.145:6443 --token <TOKEN FROM STEP 1> --discovery-token-c
 - Actuator expansion (e.g. connected to Flink)
 - Provide more default Flink jobs for analytics
 - MQTT performance testing
+- Set up alternative to Node.js MQTT gateway (e.g. https://github.com/emitter-io/emitter)
