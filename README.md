@@ -14,6 +14,7 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 - [Deployment](https://github.com/heldic/iotplatform#deployment)
 - [Components](https://github.com/heldic/iotplatform#components)
     - [IoTCore](https://github.com/heldic/iotplatform#iotcore)
+        - [API](https://github.com/heldic/iotplatform#api)
     - [Gateways](https://github.com/heldic/iotplatform#gateways)
         - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
         - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
@@ -97,6 +98,11 @@ corresponding pods in the cluster upon device/sensor creation
 - Generate JWTs and Consumer Secrets
 - Check authorization of incoming requests
 - Serve as authentication proxy for Elasticsearch, forwarded verified queries
+
+
+[//]: <########################################################################>
+#### API
+to be written....
 
 
 [//]: <########################################################################>
