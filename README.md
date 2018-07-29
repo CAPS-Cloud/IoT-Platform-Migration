@@ -53,6 +53,15 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 This repository contains all you need to set up an IoT infrastructure that features
 secure communication, scalability, platform independence, HTTP/WS/MQTT protocol support,
 device/sensor administration, persistence and analytical extensibility.
+Ensure Docker is installed and run:
+```bash
+#!/bin/bash
+git clone https://github.com/heldic/iotplatform.git
+
+cd iotplatform/iotplatform
+
+docker-compose up
+```
 
 
 
