@@ -40,6 +40,52 @@ External WS Access: http://iot.pcxd.me:8765/
 - Gateways enrich incoming sensordata with respective device information
 - Data is forwarded to Kafka, topic is received from IoTCore
 
+#### HTTP Gateway
+The HTTP gateway exposes a single endpoint that allows a client to send one or
+multiple sensor values. Authorization is done via the `Authorization` header.
+The request body must contain a JSON array (for multiple events) or JSON object
+(for a single event). All sensor events are tied to the device_id that is
+contained in the payload of JWT's subject field (`sub`).
+
+Example Request:
+```
+POST / HTTP/1.1
+Host: iot.pcxd.me:8084
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer abcd1234...
+
+[
+    {
+        "sensor_id": "12345",
+        "timestamp": 34345342432424,
+        "value": 42
+    }
+]
+```
+
+Response:
+- On success, the endpoint returns `200 OK`.
+- If the `Authorization` header is missing or the header's value is inproperly formatted, the endpoint returns `401 Unauthorized`.
+- If the JWT token could not be verified, is expired or invalid for another reason, the endpoint returns `403 Forbidden`.
+
+#### Websocket Gateway
+The Websocket gateway is a simple websocket server that waits for incoming client
+connections and holds the connection as long as messages are being sent or
+the client closes the connection. Authorization is being done during the initial
+HTTP-Upgrade (`Connection: Upgrade`) request. In that request, an additional
+`Authorization` header must be sent, containing a JSON Web Token:
+```
+Authorization: Bearer abcd1234...
+```
+In case of a failure, the gateway may terminate the connection and respond with:
+- `401 Unauthorized`, if the `Authorization` header is missing or the header's value is inproperly formatted
+- `403 Forbidden`, if the JWT could not be verified, is expired or invalid for another reason
+
+After the connection is established, the gateway waits for JSON messages to be sent.
+The messages can be either JSON arrays (for multiple events) or JSON objects
+(for a single event). All sensor events in one websocket are tied to the
+`device_id` that is contained in the JWT's subject field (`sub`).
+
 #### AccessController
 - API that acts as buffer between consumer and Elasticsearch
 - Check with IoTCore whether user is authorized to receive requested information
@@ -134,7 +180,7 @@ apt-get update
 apt-get install -y kubelet kubeadm kubectl
 
 # swapoff
-swapoff -a 
+swapoff -a
 ```
 #### Adding nodes
 1. Run `kubeadm token create` on the master node (token will be expired after 24 hours).
