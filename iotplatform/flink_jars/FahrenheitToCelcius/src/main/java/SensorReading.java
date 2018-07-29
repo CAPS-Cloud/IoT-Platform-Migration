@@ -32,7 +32,15 @@ public class SensorReading {
     }
 
     public SensorReading(long timestamp, String sensorId, Object value) {
-        this.timestamp = timestamp;
+        long newTimeStamp;
+
+        if(String.valueOf(timestamp).length() < 16) {
+            newTimeStamp = timestamp * 1000;
+        } else {
+            newTimeStamp = timestamp;
+        }
+
+        this.timestamp = newTimeStamp;
         this.sensorId = requireNonNull(sensorId);
         this.value = requireNonNull(value);
     }
