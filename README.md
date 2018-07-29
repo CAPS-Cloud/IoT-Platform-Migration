@@ -7,31 +7,81 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 [//]: <############################################################################################>
-## Overview
-### TL;DR
+## Content
+
+- [TL;DR](https://github.com/heldic/iotplatform#tldr)
+- [Architecture](https://github.com/heldic/iotplatform#architecture)
+- [Deployment](https://github.com/heldic/iotplatform#deployment)
+- [Components](https://github.com/heldic/iotplatform#components)
+    - [IoTCore](https://github.com/heldic/iotplatform#iotcore)
+    - [Gateways](https://github.com/heldic/iotplatform#gateways)
+        - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
+        - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
+        - [MQTT Gateway](https://github.com/heldic/iotplatform#mqtt-gateway)
+    - [Kafka/Zookeeper](https://github.com/heldic/iotplatform#kafkazookeeper)
+    - [Flink](https://github.com/heldic/iotplatform#flink)
+    - [Elasticsearch](https://github.com/heldic/iotplatform#elasticsearch)
+    - [Kibana](https://github.com/heldic/iotplatform#kibana)
+    - [Java/Node.js/Python Producer](https://github.com/heldic/iotplatform#javanodejspython-producer)
+- [Data Model](https://github.com/heldic/iotplatform#data-model)
+    - [Device/Sensor Data Model](https://github.com/heldic/iotplatform#devicesensor-data-model)
+    - [Data Model](https://github.com/heldic/iotplatform#data-model)
+    - [Data Model Example](https://github.com/heldic/iotplatform#data-model-example)
+- [Security Concept](https://github.com/heldic/iotplatform#security-concept)
+    - [Retrieving JWT Tokens](https://github.com/heldic/iotplatform#retrieving-jwt-tokens)
+    - [Pushing Data](https://github.com/heldic/iotplatform#pushing-data)
+- [Gateway Benchmarks](https://github.com/heldic/iotplatform#gateway-benchmarks)
+    - [HTTP Gateways](https://github.com/heldic/iotplatform#http-gateways)
+    - [WS Gateways](https://github.com/heldic/iotplatform#ws-gateways)
+- [Virtual Machines](https://github.com/heldic/iotplatform#virtual-machines)
+    - [Access](https://github.com/heldic/iotplatform#access)
+- [Kubernetes](https://github.com/heldic/iotplatform#kubernetes)
+    - [Accessing the Cluster](https://github.com/heldic/iotplatform#accessing-the-cluster)
+        - [Using `kubectl`](https://github.com/heldic/iotplatform#using-kubectl)
+        - [Using K8s Dashboard](https://github.com/heldic/iotplatform#using-k8s-dashboard)
+    - [Setting up the Cluster](https://github.com/heldic/iotplatform#setting-up-the-cluster)
+        - [Preparing the Host](https://github.com/heldic/iotplatform#preparing-the-host)
+        - [Adding Nodes](https://github.com/heldic/iotplatform#adding-nodes)
+- [Outlook](https://github.com/heldic/iotplatform#outlook)
+
+
+
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+## TL;DR
 This repository contains all you need to set up an IoT infrastructure that features
 secure communication, scalability, platform independence, HTTP/WS/MQTT protocol support,
 device/sensor administration, persistence and analytical extensibility.
 
 
-[//]: <########################################################################>
-### Architecture
+
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+## Architecture
 The full composition of the pipeline of iotplatform:
 
 <img src="./doc/diagrams/iotplatform_pipeline.png" />
 
 
-[//]: <########################################################################>
-### Deployment Process
+
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+## Deployment
 Development is done via docker-compose to enable working locally, since
 cluster-resources are limited:
 
 <img src="./doc/diagrams/deployment.png" />
 
 
-[//]: <########################################################################>
-### Components
-#### IoTCore Backend + Frontend
+
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+[//]: <############################################################################################>
+## Components
+### IoTCore
 - Metadata administration (CRUD-operations for device and sensor management)
 - Automatically creates Kafka topics, Elasticsearch indices & Flink jobs within
 corresponding pods in the cluster upon device/sensor creation
@@ -41,7 +91,7 @@ corresponding pods in the cluster upon device/sensor creation
 
 
 [//]: <########################################################################>
-#### Gateways
+### Gateways
 - Data ingestion pods
 - Currently three different protocols are supported (HTTP, WebSockets, MQTT)
 - Incoming requests/connections are verified, the included JWT decoded and the
@@ -69,7 +119,7 @@ or an array of JSON objects of the following kind:
 
 
 [//]: <########################################################################>
-##### HTTP Gateway
+#### HTTP Gateway
 The HTTP gateway exposes a single endpoint that allows ingesting single or
 multiple sensor values. Authorization is done via the `authorization` header.
 The gateway decodes the token included here and uses the `device_id` contained
@@ -99,7 +149,7 @@ There is a sample Java client available [here]( https://github.com/heldic/iotpla
 
 
 [//]: <########################################################################>
-##### Websocket Gateway
+#### Websocket Gateway
 The Websocket gateway is a simple websocket server that waits for incoming client
 connections and holds the connection as long as messages are being sent or
 the client closes the connection. Authorization is being done during the initial
@@ -112,7 +162,7 @@ There is a sample Python client available [here](https://github.com/heldic/iotpl
 
 
 [//]: <########################################################################>
-##### MQTT Gateway
+#### MQTT Gateway
 The MQTT gateway is relying on Mosca MQTT with Redis as storage backing service.
 In order to connect to the broker, the client has to provide authentication credentials,
 using `JWT` as username and the actual JWT as password. Additionally, the protocol
@@ -243,7 +293,7 @@ The resulting structure:
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 ## Gateway Benchmarks
-### HTTP Gateway
+### HTTP Gateways
 <img src="./doc/diagrams/benchmark_1.png" />
 
 ------
@@ -251,7 +301,7 @@ The resulting structure:
 <img src="./doc/diagrams/benchmark_2.png" />
 
 [//]: <########################################################################>
-### WS Gateway
+### WS Gateways
 <img src="./doc/diagrams/benchmark_3.png" />
 
 ------
@@ -272,7 +322,7 @@ The resulting structure:
 
 
 [//]: <########################################################################>
-### Accessing
+### Access
 You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
 
 
@@ -281,8 +331,8 @@ You can use any ssh client to access the VM using username of root and certifica
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 ## Kubernetes
-### Accessing
-#### Using kubectl
+### Accessing the Cluster
+#### Using `kubectl`
 1. Follows this guide to install kubectl on your machine. https://kubernetes.io/docs/tasks/tools/install-kubectl/
 2. Copy .kube folder from /infrastructure in this repository to your user's home directory.
 3. You can now use kubectl refering to this reference. https://kubernetes.io/docs/reference/kubectl/overview/
