@@ -3,47 +3,37 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
-	"net/url"
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/urfave/cli"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/yosssi/gmq/mqtt"
+	mclient "github.com/yosssi/gmq/mqtt/client"
 )
 
 var flags = []cli.Flag{
 	// Environment
 	cli.StringFlag{
 		Name:  "host",
-		Value: "159.69.52.0:8765",
+		Value: "159.69.52.0:1883",
 	},
 	cli.IntFlag{
 		Name:  "rate",
-		Value: 1000,
+		Value: 10,
 	},
 	cli.IntFlag{
 		Name:  "max_conn",
-		Value: 10000,
+		Value: 100,
 	},
 	cli.IntFlag{
 		Name:  "messages",
-		Value: 1000,
-	},
-	cli.IntFlag{
-		Name:  "period",
-		Value: 500,
+		Value: 10,
 	},
 }
 
 func benchmark(c *cli.Context) {
-	/*
-		go func() {
-			http.HandleFunc("/", echo)
-			http.ListenAndServe("localhost:8080", nil)
-		}()
-	*/
 	step := 0
 	for {
 		step += c.Int("rate")
@@ -109,7 +99,7 @@ func benchmark(c *cli.Context) {
 }
 
 type Client struct {
-	Conn       *websocket.Conn
+	Conn       *mclient.Client
 	Host       string
 	SendPeriod int
 	Result     Result
@@ -125,25 +115,38 @@ type Result struct {
 }
 
 func (client *Client) Connect() {
-	u := url.URL{Scheme: "ws", Host: client.Host}
+	cli := mclient.New(&mclient.Options{
+		// Define the processing of the error handler.
+		ErrorHandler: func(err error) {
+			log.Printf("%v", err)
+		},
+	})
 
-	header := http.Header{}
-	header.Set("authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpb3RwbGF0Zm9ybSIsInN1YiI6IjEyMzQ1IiwibmJmIjoxNTMxMTMyODA4LCJleHAiOjE1NjI2Njg4MDgsImlhdCI6MTUzMTEzMjgwOCwianRpIjoiaWQxMjM0NTYiLCJ0eXAiOiJodHRwczovL2lvdHBsYXRmb3JtLmNvbSJ9.dZoOJcfI2bd32FJtQoTtMt7AxlklFFbzmPdJQ3Q08JSvn82y4eje1MGFOQDa76HfyOUuvhxiw6kzxpH2i5bSP-KrJ-TsXfrlgY0YxX2SqNFVm7ArzYtH3auHpht8q3ZfNch3RbnDHDv2VyUNFeoYOWjBtveGQgk5I9Ox_bbYZ5EuBakTlahuv_PG3OSkq59626Usvzqo77XyWYPuHcsxTa-m3DBSBHufF95sbtDemjxQP5NhYkE_OM6ZZmRItxHEJqBVDEG9JI64ECnwi6XNcq3nk_CzJNXbEnivN42vIPzdodzDECsJr2say9hOJhvpAQMCdh3SYwN063rPMjf9aMIXYmilxh0y0uCo8w2E8RxoRw51gbDlDZiq3D1LXlAL2h6-3Zm21_ip1kKSzaT6DdYsjssns1ofl6xRY5bVZbEi9oNO7WxgWVCnSHQ2Xim8TsXCPvAczsiLehHCW-ZC6xHvU7yZ0n6QLC3Oo4VTA7gAR9R1B4tIpwKcuc6fo0hqZ24lUwtpcnahmC6CBv-WPQ07pED677PguqEk_NVXL6LAZHFcI9fFeQX7ubWAXwjGyv7xKnA88453k6ylczb6KuHGvc9FY351CRiBXDxu0wnl9j9lAJaTs7Mb-52A5UuANUhbaXgAD1uMhIA3xtJJ3wL_yq8LTurSHVOEAS9xFl8")
-	c, resp, err := websocket.DefaultDialer.Dial(u.String(), header)
-	if err == websocket.ErrBadHandshake {
-		log.Printf("handshake failed with status %d", resp.StatusCode)
-		log.Printf("%v", resp)
-	}
+	// Connect to the MQTT Server.
+	err := cli.Connect(&mclient.ConnectOptions{
+		UserName: []byte("JWT"),
+		Password: []byte("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpb3RwbGF0Zm9ybSIsInN1YiI6IjEyMzQ1IiwibmJmIjoxNTMxMTMyODA4LCJleHAiOjE1NjI2Njg4MDgsImlhdCI6MTUzMTEzMjgwOCwianRpIjoiaWQxMjM0NTYiLCJ0eXAiOiJodHRwczovL2lvdHBsYXRmb3JtLmNvbSJ9.dZoOJcfI2bd32FJtQoTtMt7AxlklFFbzmPdJQ3Q08JSvn82y4eje1MGFOQDa76HfyOUuvhxiw6kzxpH2i5bSP-KrJ-TsXfrlgY0YxX2SqNFVm7ArzYtH3auHpht8q3ZfNch3RbnDHDv2VyUNFeoYOWjBtveGQgk5I9Ox_bbYZ5EuBakTlahuv_PG3OSkq59626Usvzqo77XyWYPuHcsxTa-m3DBSBHufF95sbtDemjxQP5NhYkE_OM6ZZmRItxHEJqBVDEG9JI64ECnwi6XNcq3nk_CzJNXbEnivN42vIPzdodzDECsJr2say9hOJhvpAQMCdh3SYwN063rPMjf9aMIXYmilxh0y0uCo8w2E8RxoRw51gbDlDZiq3D1LXlAL2h6-3Zm21_ip1kKSzaT6DdYsjssns1ofl6xRY5bVZbEi9oNO7WxgWVCnSHQ2Xim8TsXCPvAczsiLehHCW-ZC6xHvU7yZ0n6QLC3Oo4VTA7gAR9R1B4tIpwKcuc6fo0hqZ24lUwtpcnahmC6CBv-WPQ07pED677PguqEk_NVXL6LAZHFcI9fFeQX7ubWAXwjGyv7xKnA88453k6ylczb6KuHGvc9FY351CRiBXDxu0wnl9j9lAJaTs7Mb-52A5UuANUhbaXgAD1uMhIA3xtJJ3wL_yq8LTurSHVOEAS9xFl8"),
+		Network:  "tcp",
+		Address:  client.Host,
+		ClientID: []byte("benchmark"),
+	})
 	if err != nil {
-		log.Fatal("dial:", err)
+		panic(err)
 	}
-	client.Conn = c
+
+	time.Sleep(time.Second)
+
+	client.Conn = cli
 }
 
 func (client *Client) Run() error {
 	for i := 0; i < client.Messages; i++ {
 		start := time.Now()
-		err := client.Conn.WriteMessage(websocket.TextMessage, []byte("{\"sensor_id\": \"1231241541\", \"timestamp\": 1214125125, \"value\":\"12412421\"}"))
+		err := client.Conn.Publish(&mclient.PublishOptions{
+			QoS:       mqtt.QoS0,
+			TopicName: []byte("123"),
+			Message:   []byte("{\"sensor_id\": \"1231241541\", \"timestamp\": 1214125125, \"value\":\"12412421\"}"),
+		})
 		if err != nil {
 			log.Printf("%s", err.Error())
 		}
@@ -159,36 +162,11 @@ func (client *Client) Run() error {
 			client.Result.High = elapsed
 		}
 	}
-	return client.Conn.Close()
+
+	return client.Conn.Disconnect()
 }
 
 func (client *Client) Close() error {
-	err := client.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-	if err != nil {
-		log.Printf("%s", err.Error())
-	}
-	return client.Conn.Close()
-}
-
-var upgrader = websocket.Upgrader{} // use default options
-func echo(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
+	defer client.Conn.Terminate()
+	return client.Conn.Disconnect()
 }

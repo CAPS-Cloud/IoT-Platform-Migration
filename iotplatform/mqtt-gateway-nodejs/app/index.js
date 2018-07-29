@@ -62,7 +62,7 @@ async function initMqtt() {
         server.on('ready', setup)
 
         server.on('clientConnected', (client) => {
-        	// console.log('client connected', client.id)
+        	 console.log('client connected', client.id)
         })
 
         // fired when the mqtt server is ready
@@ -75,10 +75,11 @@ async function initMqtt() {
                 }
 
                 jwt.verify(password.toString(), key, (err, profile) => {
+                    console.log(err)
                     if( err ) {
                         return callback("Error getting UserInfo", false);
                     }
-                    // console.log("Authenticated client " + profile.sub);
+                    console.log("Authenticated client " + profile.sub);
                     // Memorize the verified JWT for the current client
                     client.deviceProfile = profile;
                     return callback(null, true);
