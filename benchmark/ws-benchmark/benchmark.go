@@ -83,7 +83,7 @@ func benchmark(c *cli.Context) {
 				h = client.Result.High
 			}
 			if client.Result.Low <= l {
-				l = client.Result.High
+				l = client.Result.Low
 			}
 			n += client.Result.Number
 			m += client.Result.Total
