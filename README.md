@@ -102,7 +102,8 @@ corresponding pods in the cluster upon device/sensor creation
 
 [//]: <########################################################################>
 #### API
-to be written....
+
+<img src="./doc/diagrams/iotcore_api.png" />
 
 
 [//]: <########################################################################>
