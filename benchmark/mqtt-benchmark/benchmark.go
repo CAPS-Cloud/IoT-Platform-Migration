@@ -118,7 +118,7 @@ func (client *Client) Connect() {
 	cli := mclient.New(&mclient.Options{
 		// Define the processing of the error handler.
 		ErrorHandler: func(err error) {
-			log.Printf("%v", err)
+			//log.Printf("%v", err)
 		},
 	})
 
@@ -131,7 +131,7 @@ func (client *Client) Connect() {
 		ClientID: []byte("benchmark"),
 	})
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	time.Sleep(time.Second)
@@ -148,7 +148,7 @@ func (client *Client) Run() error {
 			Message:   []byte("{\"sensor_id\": \"1231241541\", \"timestamp\": 1214125125, \"value\":\"12412421\"}"),
 		})
 		if err != nil {
-			log.Printf("%s", err.Error())
+			//log.Printf("%s", err.Error())
 		}
 		elapsed := time.Since(start).Nanoseconds()
 		client.Result.Total += elapsed
