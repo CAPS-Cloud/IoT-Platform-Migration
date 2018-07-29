@@ -30,7 +30,8 @@ cluster-resources are limited:
 
 
 [//]: <########################################################################>
-### IoTCore Backend + Frontend
+### Components
+#### IoTCore Backend + Frontend
 - Metadata administration (CRUD-operations for device and sensor management)
 - Automatically creates Kafka topics, Elasticsearch indices & Flink jobs within
 corresponding pods in the cluster
@@ -39,7 +40,7 @@ corresponding pods in the cluster
 
 
 [//]: <########################################################################>
-### MQTT/HTTP/WS Gateway
+#### MQTT/HTTP/WS Gateway
 - Cloud gateways enabling data ingestion
 - Different protocols are supported by different gateways (depending on load, respective gateways can be scaled)
 - Gateways enrich incoming sensordata with respective device information
@@ -51,18 +52,9 @@ Gateways are available at:
 - HTTP Gateway: `<HOST>:8083/` (Node.js)
 - WS Gateway: `<HOST>:8765/` (Node.js)
 - WS Gateway: `<HOST>:8766/` (Go)
-Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform.
 
-
-[//]: <########################################################################>
-#### HTTP Gateway
-The HTTP gateway exposes a single endpoint that allows ingesting single or
-multiple sensor values. Authorization is done via the `authorization` header.
-The gateway decodes the token included here and uses the `device_id` contained
-in the payload of the JWT's subject field (`sub`) to determine the Kafka topic.
-The `Content-Type` header has to be set to `application/json` and the request
-body must contain a JSON array (for multiple events) or a single JSON object,
-that looks as follows:
+Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform. Every gateway supports ingesting either single JSON objects
+or an array of JSON objects of the following kind:
 ```json
 {
     "sensor_id": "4",
@@ -70,6 +62,22 @@ that looks as follows:
     "value": "91827364"
 }
 ```
+
+
+[//]: <########################################################################>
+##### HTTP Gateway
+The HTTP gateway exposes a single endpoint that allows ingesting single or
+multiple sensor values. Authorization is done via the `authorization` header.
+The gateway decodes the token included here and uses the `device_id` contained
+in the payload of the JWT's subject field (`sub`) to determine the Kafka topic.
+The `Content-Type` header has to be set to `application/json` and the request
+body must contain a JSON array (for multiple events) or a single JSON object.
+The server responds with one of the following HTTP response codes:
+- `200 OK`: On success, the format of the message was valid and the request authorized.
+Message is forwarded to Kafka
+- `401 Unauthorized`: The `authorization` header is missing or the header's value is inproperly
+formatted
+- `403 Forbidden`: JWT token could not be verified, is expired or invalid
 
 Sample Request:
 ```bash
@@ -83,16 +91,9 @@ curl \
 ```
 __Attention:__ At the m`oment we're using the header `-H "authorization: Bearer <TOKEN>` for authorization with a lowercase __`a`__, thus deviating from common practice. This is due to relying on Node.js libraries that convert all http headers to lowercase (https://github.com/nodejs/node-v0.x-archive/issues/8502). It would be possible to avoid this workaround, by looping over the request's `rawHeaders`-field, however it was decided against this for now, due to performance considerations.
 
-Response:
-- On success, the server returns `200 OK`
-- If the `authorization` header is missing or the header's value is inproperly
-formatted, the endpoint returns `401 Unauthorized`
-- If the JWT token could not be verified, is expired or invalid for another
-reason, the endpoint returns `403 Forbidden`
-
 
 [//]: <########################################################################>
-#### Websocket Gateway
+##### Websocket Gateway
 The Websocket gateway is a simple websocket server that waits for incoming client
 connections and holds the connection as long as messages are being sent or
 the client closes the connection. Authorization is being done during the initial
@@ -112,7 +113,7 @@ The messages can be either JSON arrays (for multiple events) or JSON objects
 
 
 [//]: <########################################################################>
-#### MQTT Gateway
+##### MQTT Gateway
 asdf
 
 
