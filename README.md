@@ -7,11 +7,15 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 [//]: <############################################################################################>
-## Architecture
-### Overview (& TL;DR)
+## Overview
+### TL;DR
 This repository contains all you need to set up an IoT infrastructure that features
 secure communication, scalability, platform independence, HTTP/WS/MQTT protocol support,
 device/sensor administration, persistence and analytical extensibility.
+
+
+[//]: <########################################################################>
+### Architecture
 The full composition of the pipeline of iotplatform:
 
 <img src="./doc/diagrams/iotplatform_pipeline.png" />
@@ -221,11 +225,15 @@ The resulting structure:
 ### HTTP Gateway
 <img src="./doc/diagrams/benchmark_1.png" />
 
+------
+
 <img src="./doc/diagrams/benchmark_2.png" />
 
 [//]: <########################################################################>
 ### WS Gateway
 <img src="./doc/diagrams/benchmark_3.png" />
+
+------
 
 <img src="./doc/diagrams/benchmark_4.png" />
 
@@ -260,7 +268,7 @@ You can use any ssh client to access the VM using username of root and certifica
 
 
 [//]: <########################################################################>
-#### Using dashboard
+#### Using K8s Dashboard
 1. Go to https://kube-dashboard.iot.pcxd.me:30443
 2. Select "Token".
 3. Enter this token into the text field. `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWt6N3M3Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMzViMjRiMS02NWYzLTExZTgtYTJlYi0wMjAxMDBmODAwMjkiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.l9U5z4wcWXBMIYMLH6TJL0FQj4YyfIjQBmFcM7TVWMhiM56PFRrHuxLZ0F-CZ-mSP2O3tAllXsLiy9j6Hsz1Q0DspPbiLv7CZT7l_5RAQ0F3VqVvY3anxX7hx6LgoLiamF9y5Y000wBaZLnpVBZozMp9VVm8UzflhdvQT1L6FI27P9p0SnJ-SZ4D9m_96KOdGGLVc5wNVETjTpugpbC-lqtwD94NTNvyEfkMQfK-_VJaQiGbZN-qSYhh7I1CFkBBaREQgAjubX4aPaox8sMTZtsh5bOzK_HjxwTqua_O25SGfg1q3soB20glGKTuNmA9OnlYMRLmPv50D1IIUHq3Fw`
