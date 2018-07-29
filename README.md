@@ -116,7 +116,7 @@ Gateways are available at:
 - WS Gateway: `<HOST>:8765/` (Node.js)
 - WS Gateway: `<HOST>:8766/` (Go)
 
-Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform. Every gateway supports ingesting either single JSON objects
+Depending on the environment `<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform. Every gateway supports ingesting either single JSON objects
 or an array of JSON objects of the following kind:
 ```json
 {
@@ -205,7 +205,7 @@ due to the inclusion of Elasticsearch
 
 [//]: <########################################################################>
 ### Flink
-- Dashboard access: `<HOST>:8081/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
+- Dashboard access: `<HOST>:8081/` (Depending on the environment `<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
 - Offers opportunity to add batch processing or analytical jobs
 - Consume Kafka topics and forward data to Elasticsearch
 - Jobs are created by IoTCore
@@ -215,14 +215,14 @@ due to the inclusion of Elasticsearch
 
 [//]: <########################################################################>
 ### Elasticsearch
-- REST Access: `<HOST>:9000/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
+- REST Access: `<HOST>:9000/` (Depending on the environment `<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
 - Persistence
 - Querying capabilities for clients
 
 
 [//]: <########################################################################>
 ### Kibana
-- Access at `<HOST>:5601/` (Depending on the environment `\<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
+- Access at `<HOST>:5601/` (Depending on the environment `<HOST>` has to be replaced by `http://iot.pcxd.me`, `http://localhost` or whereever you deploy iotplatform)
 - Monitoring opportunity for Elasticsearch (e.g. for Dev Ops)
 - Data visualization
 
