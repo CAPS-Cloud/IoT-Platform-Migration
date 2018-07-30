@@ -10,7 +10,6 @@ const wsPort = 8765;
 
 const args = process.argv;
 const ZOOKEEPER = args[2];
-const IOTCORE_BACKEND = args[3];
 
 /**
  * Create a websocket server verifies its clients using JWT tokens

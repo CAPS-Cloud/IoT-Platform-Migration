@@ -8,8 +8,7 @@ const key = fs.readFileSync('./.keys/jwtRS256.key.pub');  // get public key
 const MQTT_PORT = 1883;
 const args = process.argv;
 const ZOOKEEPER = args[2];
-const IOTCORE_BACKEND = args[3];
-const REDIS = args[4];
+const REDIS = args[3];
 const REDIS_HOST = REDIS.split(":")[0];
 const REDIS_PORT = parseInt(REDIS.split(":")[1]);
 

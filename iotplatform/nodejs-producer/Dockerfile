@@ -1,4 +1,9 @@
-FROM node:9
+FROM node:alpine
+
+RUN apk update \
+ && apk add jq \
+ && apk add bash \
+ && rm -rf /var/cache/apk/*
 
 COPY app /app/
 
@@ -9,6 +14,9 @@ RUN chmod -R a+x /app \
 
 COPY wait-for-it.sh /
 RUN chmod a+x /wait-for-it.sh
+
+COPY prepare-integration-test.sh /
+RUN chmod a+x /prepare-integration-test.sh
 
 # add entrypoint script
 USER root

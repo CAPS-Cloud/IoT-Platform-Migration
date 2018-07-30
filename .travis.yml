@@ -1,7 +1,7 @@
 sudo: false
 servies:
   - docker
-language: python
+language: generic
 branches:
   only:
   - master

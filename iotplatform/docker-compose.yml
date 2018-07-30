@@ -1,5 +1,46 @@
 version: '3.2'
 services:
+    # nodejs-producer:
+    #     build: ./nodejs-producer
+    #     image: heldic/nodejs-producer
+    #     environment:
+    #         MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+    #         NAME: mqtt
+    #
+    # java-producer-go:
+    #     build: ./java-producer
+    #     image: heldic/java-producer
+    #     environment:
+    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+    #         NAME: http-go
+    #
+    #
+    # java-producer-nodejs:
+    #     build: ./java-producer
+    #     image: heldic/java-producer
+    #     environment:
+    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+    #         NAME: http-nodejs
+    #
+    # python-producer-nodejs:
+    #     build: ./python-producer
+    #     image: heldic/python-producer
+    #     environment:
+    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+    #         NAME: ws-nodejs
+    #
+    # python-producer-go:
+    #     build: ./python-producer
+    #     image: heldic/python-producer
+    #     environment:
+    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
+    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+    #         NAME: ws-go
+
     kafka-manager:
         image: sheepkiller/kafka-manager:latest
         ports:
@@ -8,36 +49,6 @@ services:
             ZK_HOSTS: ${SERVICE_PREFIX}zookeeper:2181
             APPLICATION_SECRET: letmein
             KM_ARGS: -Djava.net.preferIPv4Stack=true
-
-    # nodejs-producer:
-    #     build: ./nodejs-producer
-    #     image: heldic/nodejs-producer
-    #     environment:
-    #         MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
-
-    # java-producer-go:
-    #     build: ./java-producer
-    #     image: heldic/java-producer
-    #     environment:
-    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
-
-    # java-producer-nodejs:
-    #     build: ./java-producer
-    #     image: heldic/java-producer
-    #     environment:
-    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
-
-    # python-producer-nodejs:
-    #     build: ./python-producer
-    #     image: heldic/python-producer
-    #     environment:
-    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
-
-    # python-producer-go:
-    #     build: ./python-producer
-    #     image: heldic/python-producer
-    #     environment:
-    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
 
     redis:
         build: ./redis
@@ -49,7 +60,6 @@ services:
         build: ./mqtt-gateway-nodejs
         image: heldic/mqtt-gateway-nodejs
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             REDIS: ${SERVICE_PREFIX}redis:6379
@@ -66,7 +76,6 @@ services:
         ports:
             - "8765:8765"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             #AUTOSCALING: "200m:1:2:30"
@@ -80,7 +89,6 @@ services:
         ports:
             - "8766:8766"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
@@ -90,7 +98,6 @@ services:
         ports:
             - "8083:8083"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             #AUTOSCALING: "200m:1:2:30"
@@ -101,7 +108,6 @@ services:
         ports:
             - "8084:8084"
         environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend:50051
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
 
@@ -175,16 +181,6 @@ services:
             JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
             TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "100"
 
-    #flink:
-    #    build: ./flink
-    #    image: heldic/flink
-    #    ports:
-    #        - "8081:8081"
-    #    environment:
-    #        KAFKA: ${SERVICE_PREFIX}kafka:9092
-    #        ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-    #        ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch
-
     elasticsearch:
         build: ./elasticsearch
         image: heldic/elasticsearch
@@ -193,17 +189,11 @@ services:
             - "9200"
             - "9300"
 
-  # grafana:
-  #   build: ./grafana
-  #   image: grafana
-  #   ports:
-  #     - "3000:3000"
-
     kibana:
-      depends_on:
-        - elasticsearch
-      image: kibana:5
-      environment:
-        ELASTICSEARCH_URL: http://${SERVICE_PREFIX}elasticsearch:9200
-      ports:
-        - "5601:5601"
+        depends_on:
+            - elasticsearch
+        image: kibana:5
+        environment:
+            ELASTICSEARCH_URL: http://${SERVICE_PREFIX}elasticsearch:9200
+        ports:
+            - "5601:5601"

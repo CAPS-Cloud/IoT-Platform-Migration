@@ -12,7 +12,6 @@ var httpServer, kafkaProducer, kafkaClient
 
 const args = process.argv;
 const ZOOKEEPER = args[2];
-const IOTCORE_BACKEND = args[3];
 
 async function initRest() {
     // console.log("attempting to initiate http server...")

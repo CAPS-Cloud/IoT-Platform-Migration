@@ -6,7 +6,7 @@
 
 cd /app
 
-npm run start -- $ZOOKEEPER $IOTCORE_BACKEND $REDIS
+npm run start -- $ZOOKEEPER $REDIS
 
 # don't exit
 /usr/bin/tail -f /dev/null

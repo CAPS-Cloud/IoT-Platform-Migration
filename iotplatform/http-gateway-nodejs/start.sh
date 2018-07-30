@@ -5,7 +5,7 @@
 
 cd /app
 
-npm run start -- $ZOOKEEPER $IOTCORE_BACKEND
+npm run start -- $ZOOKEEPER 
 
 # don't exit
 /usr/bin/tail -f /dev/null
