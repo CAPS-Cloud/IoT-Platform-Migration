@@ -28,16 +28,7 @@ client.on('connect', function () {
 
     setInterval(() => {
         produceMessage()
-    }, 1000)
-
-    setInterval(() => {
-        var int = setInterval(() => {
-            produceMessage()
-        },1000)
-        setTimeout(() => {
-            clearInterval(int)
-        }, 2500)
-    }, 10000)
+    }, 1000);
 })
 
 function generateMessage() {

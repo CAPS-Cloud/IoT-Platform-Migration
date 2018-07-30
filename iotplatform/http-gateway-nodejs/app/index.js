@@ -75,7 +75,7 @@ function ingestMsgInKafka(payloads) {
         } else {
             // console.log("forwarded to kafka:")
             // console.log(payloads)
-            console.log((new Date()).getTime() + "-----" + JSON.stringify(payloads))
+            // console.log((new Date()).getTime() + "-----" + JSON.stringify(payloads))
         }
     })
 }
