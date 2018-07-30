@@ -90,7 +90,7 @@ const controller = new class {
         Sensors.findOne({ where: { deviceId: { [Op.eq]: req.params.device_id }, id: { [Op.eq]: req.params.id } } }).then(data => {
             if (data){
                 Sensors.destroy({ where: { id: { [Op.eq]: req.params.id } } }).then(sensor => {
-                    var topic = `${req.params.device_id}_${sensor.id}`;
+                    var topic = `${req.params.device_id}_${req.params.id}`;
 
                     // Delete Flink Job, then Kafka Topic, then Elasticsearch Index asynchronously.
                     deleteFlinkJob(topic).then(() => {
