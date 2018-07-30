@@ -33,7 +33,7 @@ client.on('connect', function () {
     setInterval(() => {
         var int = setInterval(() => {
             produceMessage()
-        },250)
+        },1000)
         setTimeout(() => {
             clearInterval(int)
         }, 2500)

@@ -18,45 +18,17 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 public class Producer {
-
-    private static final String PUBLIC_KEY = ".keys/jwtRS256.key.pub";
-    private static final String PRIVATE_KEY_PKCS8 = ".keys/pkcs8_key";
-    private static final int DEVICE_ID = 1;
-    private static final String SENSOR_ID = "12345";
-
-    public static RSAPublicKey readPublicKey(InputStream inputStream) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        String content = new String(ByteStreams.toByteArray(inputStream));
-
-        byte[] keyBytes = Base64.getDecoder().decode(content.replaceAll("\\n", "").replaceAll("\\r", "").replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", ""));
-
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return (RSAPublicKey) kf.generatePublic(spec);
-    }
-
-    public static RSAPrivateKey readPrivateKey(InputStream inputStream) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        byte[] keyBytes = ByteStreams.toByteArray(inputStream);
-
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return (RSAPrivateKey) kf.generatePrivate(spec);
-    }
-
     public static void main(String args[]) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        RSAPublicKey publicKey = readPublicKey(Producer.class.getClassLoader().getResourceAsStream(PUBLIC_KEY));
-        RSAPrivateKey privateKey = readPrivateKey(Producer.class.getClassLoader().getResourceAsStream(PRIVATE_KEY_PKCS8));
-
-        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
-        String token = JWT.create()
-            .withClaim("iis", "iotplatform")
-            .withClaim("sub", DEVICE_ID)
-            .sign(algorithm);
-
         Gson gson = new Gson();
+
+        String token = args[4];
+        String device_id = args[2];
+        String sensor_id = args[3];
+        String iotcore_backend = args[1];
 
         while(true) {
             try {
-                String message = gson.toJson(generateEvents(5));
+                String message = gson.toJson(generateEvents(3, sensor_id));
 
                 Content response = Request.Post(args[0])
                     .addHeader("authorization", "Bearer " + token)
@@ -81,19 +53,19 @@ public class Producer {
         public String value;
     }
 
-    private static SensorEvent generateEvent() {
+    private static SensorEvent generateEvent(String sensor_id) {
         SensorEvent evt = new SensorEvent();
-        evt.sensor_id = SENSOR_ID;
+        evt.sensor_id = sensor_id;
         evt.timestamp = System.nanoTime();
         evt.value = String.valueOf(Math.random() * 100);
         return evt;
     }
 
-    private static SensorEvent[] generateEvents(int numOfEvents) {
+    private static SensorEvent[] generateEvents(int numOfEvents, String sensor_id) {
         SensorEvent[] evts = new SensorEvent[numOfEvents];
 
         for (int i = 0; i < evts.length; i++) {
-            evts[i] = generateEvent();
+            evts[i] = generateEvent(sensor_id);
         }
 
         return evts;

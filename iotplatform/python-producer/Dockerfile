@@ -1,4 +1,10 @@
-FROM jfloff/alpine-python:3.6-slim
+FROM python:alpine
+
+RUN apk update \
+ && apk add jq \
+ && apk add bash \
+ && apk add curl \
+ && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY requirements.txt /app
@@ -8,6 +14,9 @@ COPY main.py /app
 
 COPY wait-for-it.sh /
 RUN chmod u+x /wait-for-it.sh
+
+COPY prepare-integration-test.sh /
+RUN chmod a+x /prepare-integration-test.sh
 
 # add entrypoint script
 USER root
