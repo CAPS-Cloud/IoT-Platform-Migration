@@ -3,7 +3,7 @@
 /wait-for-it.sh $MQTT_GATEWAY --timeout=0 --strict
 /wait-for-it.sh $IOTCORE_BACKEND --timeout=0 --strict
 
-/prepare-integration-test.sh
+source /prepare-integration-test.sh
 
 echo $DEVICE_KEY
 

@@ -3,6 +3,7 @@ FROM node:alpine
 RUN apk update \
  && apk add jq \
  && apk add bash \
+ && apk add curl \
  && rm -rf /var/cache/apk/*
 
 COPY app /app/

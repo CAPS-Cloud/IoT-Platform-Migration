@@ -1,12 +1,12 @@
 version: '3.2'
 services:
-    # nodejs-producer:
-    #     build: ./nodejs-producer
-    #     image: heldic/nodejs-producer
-    #     environment:
-    #         MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: mqtt
+    nodejs-producer:
+        build: ./nodejs-producer
+        image: heldic/nodejs-producer
+        environment:
+            MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
+            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
+            NAME: mqtt
     #
     # java-producer-go:
     #     build: ./java-producer
