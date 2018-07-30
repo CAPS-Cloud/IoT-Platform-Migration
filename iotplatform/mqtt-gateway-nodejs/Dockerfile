@@ -1,9 +1,9 @@
-FROM node:9
+FROM node:alpine
 
-RUN apt-get update -qq \
-    && apt-get install -y libzmq3 libzmq3-dev build-essential make \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apk update \
+ && apk add jq \
+ && apk add bash \
+ && rm -rf /var/cache/apk/*
 
 COPY app /app/
 

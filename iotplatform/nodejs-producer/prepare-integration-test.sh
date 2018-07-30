@@ -23,7 +23,7 @@ create_device() {
             -X POST \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer "${JWT} \
-            -d '{"name":"'${NAME}'","description":"'${NAME}'-integration-test-device"}' \
+            -d '{"name":"'${NAME}'-device","description":"'${NAME}'-integration-test-device"}' \
             ${IOTCORE_BACKEND}/api/devices/ \
         > device.json
 
@@ -38,7 +38,7 @@ create_sensor() {
             -X POST \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer "${JWT} \
-            -d '{"name":"'${NAME}'","description":"'${NAME}'-integration-test-sensor","mapping":"{\"type\":\"double\"}"}' \
+            -d '{"name":"'${NAME}'-sensor","description":"'${NAME}'-integration-test-sensor","mapping":"{\"type\":\"double\"}"}' \
             ${IOTCORE_BACKEND}/api/devices/${DEVICE_ID}/sensors/ \
         > sensor.json
 

@@ -1,4 +1,9 @@
-FROM node:9
+FROM node:alpine
+
+RUN apk update \
+ && apk add jq \
+ && apk add bash \
+ && rm -rf /var/cache/apk/*
 
 COPY app /app/
 
