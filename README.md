@@ -562,4 +562,5 @@ kubeadm join 141.40.254.145:6443 --token <TOKEN FROM STEP 1> --discovery-token-c
 - Actuator expansion (e.g. connected to Flink)
 - Provide more default Flink jobs for analytics
 - MQTT performance testing
-- Set up alternative to Node.js MQTT gateway (e.g. https://github.com/emitter-io/emitter)
+- Set up alternative to Node.js MQTT gateway (e.g. written in Go - https://github.com/emitter-io/emitter)
+- Add support for document/object ingestion in Flink and ES, e.g. for gyro data: `{ "x": <VALUE> }`
