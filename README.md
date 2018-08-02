@@ -15,6 +15,9 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 - [Components](https://github.com/heldic/iotplatform#components)
     - [IoTCore](https://github.com/heldic/iotplatform#iotcore)
         - [API](https://github.com/heldic/iotplatform#api)
+        - [Creating Devices and Sensors using the GUI](https://github.com/heldic/iotplatform#creating-devices-and-sensors-using-the-gui)
+        - [Creating Devices and Sensors using the API](https://github.com/heldic/iotplatform#creating-devices-and-sensors-using-the-api)
+        - [Retrieving Data](https://github.com/heldic/iotplatform#retrieving-data)
     - [Gateways](https://github.com/heldic/iotplatform#gateways)
         - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
         - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
@@ -101,9 +104,133 @@ corresponding pods in the cluster upon device/sensor creation
 
 
 [//]: <########################################################################>
+#### Creating Devices and Sensors using the GUI
+In order to create a device and sensor follow these steps:
+1. Go to `http://<HOST>:8080/devices`
+2. Login using the following credentials:
+    - user: `root`
+    - passowrd: `x5KATOHT9zHczR49aPy0`
+3. Click _add device_
+4. Enter the desired device details
+5. Click _add_
+6. Look for your device and click _view_ to enter it's corresponding detail page
+7. Click _add sensor_
+8. Enter the desired sensor details
+9. Click _add_
+10. Click _download device key_ and save the file. It obtains the token required for data ingestion via one of the protocols
+11. Hover over the info icon next to the sensor and note the _sensor_id_
+12. Turn towards one of the following chapters to connect your device to the platform.
+    - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
+    - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
+    - [MQTT Gateway](https://github.com/heldic/iotplatform#mqtt-gateway)
+
+
+[//]: <########################################################################>
+#### Creating Devices and Sensors using the API
+Alternatively you can use the following sample functions to administer your devices using _curl_, or at least get a quick overview how you can automate device creation by issueing a couple of GET/POST-requests.
+
+The following script creates a sample device (named: `${NAME}-device`) and sensor (named `${NAME}-sensor`) at the iotcore at `${IOTCORE_BACKEND}` and stores the _token_ and _device_id_ and _sensor_id_ to corresponding environment variables for further use. 
+```bash
+#!/bin/bash
+set -e
+
+export NAME=<YOUR_DESIRED_NAME>
+
+# Login to retrieve initial token
+get_initial_token() {
+    curl \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"username":"root","password":"x5KATOHT9zHczR49aPy0"}' \
+            ${IOTCORE_BACKEND}/api/users/signin \
+        > jwt.json
+
+    export JWT=$(cat jwt.json \
+        | jq -r '.token'
+    )
+}
+
+# Create device by issueing POST request to IoTCore backend
+create_device() {
+    curl \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer "${JWT} \
+            -d '{"name":"'${NAME}'-device","description":"'${NAME}'-integration-test-device"}' \
+            ${IOTCORE_BACKEND}/api/devices/ \
+        > device.json
+
+    export DEVICE_ID=$(cat device.json \
+        | jq -r '.result.id'
+    )
+}
+
+# Create sensor by issueing POST request to IoTCore backend
+create_sensor() {
+    curl \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer "${JWT} \
+            -d '{"name":"'${NAME}'-sensor","description":"'${NAME}'-integration-test-sensor","mapping":"{\"type\":\"double\"}"}' \
+            ${IOTCORE_BACKEND}/api/devices/${DEVICE_ID}/sensors/ \
+        > sensor.json
+
+    export SENSOR_ID=$(cat sensor.json \
+        | jq -r '.id'
+    )
+}
+
+# Retrieve auth key for device from IoTCore backend
+retrieve_auth_key() {
+    curl \
+            -X GET \
+            -H "Authorization: Bearer "${JWT} \
+            ${IOTCORE_BACKEND}/api/devices/${DEVICE_ID}/key \
+        > token.json
+
+    export TOKEN=$(cat token.json \
+        | jq -r '.token'
+    )
+}
+
+
+################################################################################
+################################################################################
+################################################################################
+
+get_initial_token
+create_device
+create_sensor
+retrieve_auth_key
+
+```
+
+[//]: <########################################################################>
 #### API
 
 <img src="./doc/diagrams/iotcore_api.png" />
+
+
+[//]: <########################################################################>
+#### Retrieving Data
+Currently there are two ways to extract your data from the platform:
+
+__Using Elasticsearch APIs:__</br>
+1. Go to `http://<HOST>:8080/devices`
+2. Login using the following credentials:
+    - user: `root`
+    - passowrd: `x5KATOHT9zHczR49aPy0`
+3. Click _consumer_
+4. Click _add consumer_
+5. Enter consumer details
+6. Click _add_
+7. Click _view_ to access the consumer you have just added
+8. Pick a sensor to grant that consumer and click _grant_
+9. Click _download consumer key_ and keep this file for later
+10. ... tbc
+
+Using Kibana:</br>
+Users can configure there own Kibana dashboards at `http://<HOST>:5601`.
 
 
 [//]: <########################################################################>
