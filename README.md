@@ -129,7 +129,7 @@ In order to create a device and sensor follow these steps:
 #### Creating Devices and Sensors using the API
 Alternatively you can use the following sample functions to administer your devices using _curl_, or at least get a quick overview how you can automate device creation by issueing a couple of GET/POST-requests.
 
-The following script creates a sample device (named: `${NAME}-device`) and sensor (named `${NAME}-sensor`) at the iotcore at `${IOTCORE_BACKEND}` and stores the _token_ and _device_id_ and _sensor_id_ to corresponding environment variables for further use. 
+The following script creates a sample device (named: `${NAME}-device`) and sensor (named `${NAME}-sensor`) at the iotcore at `${IOTCORE_BACKEND}` and stores the _token_ and _device_id_ and _sensor_id_ to corresponding environment variables for further use.
 ```bash
 #!/bin/bash
 set -e
@@ -292,7 +292,7 @@ There is a sample Java client available [here]( https://github.com/heldic/iotpla
 
 
 [//]: <########################################################################>
-#### Websocket Gateway
+#### WS Gateway
 The Websocket gateway is a simple websocket server that waits for incoming client
 connections and holds the connection as long as messages are being sent or
 the client closes the connection. Authorization is being done during the initial
