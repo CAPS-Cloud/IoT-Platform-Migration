@@ -1,0 +1,30 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+.build-and-push:
+  stage: build
+  script:
+    - cd ${BUILD_PATH}
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest || echo Tag latest not available - starting from scratch
+    - echo Quietly building ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}
+    - docker build -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:$CI_COMMIT_SHA -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:latest --quiet .
+    - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}
+  only:
+    - master
+
+build-frontend:
+  extend: .build-and-push
+  variables:
+    IMAGE_NAME: iotcore-frontend
+    BUILD_PATH: ./iotplatform/iotcore-frontend/
+
+build-backend:
+  extend: .build-and-push
+  variables:
+    IMAGE_NAME: iotcore-backend
+    BUILD_PATH: ./iotplatform/iotcore-backend/
