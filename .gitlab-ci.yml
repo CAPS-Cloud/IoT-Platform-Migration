@@ -18,13 +18,13 @@ before_script:
     - master
 
 build-frontend:
-  extend: .build-and-push
+  extends: .build-and-push
   variables:
     IMAGE_NAME: iotcore-frontend
     BUILD_PATH: ./iotplatform/iotcore-frontend/
 
 build-backend:
-  extend: .build-and-push
+  extends: .build-and-push
   variables:
     IMAGE_NAME: iotcore-backend
     BUILD_PATH: ./iotplatform/iotcore-backend/
