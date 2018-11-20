@@ -17,14 +17,74 @@ before_script:
   only:
     - master
 
-build-frontend:
+build-iotcore-frontend:
   extends: .build-and-push
   variables:
     IMAGE_NAME: iotcore-frontend
     BUILD_PATH: ./iotplatform/iotcore-frontend/
 
-build-backend:
+build-iotcore-backend:
   extends: .build-and-push
   variables:
     IMAGE_NAME: iotcore-backend
     BUILD_PATH: ./iotplatform/iotcore-backend/
+
+build-elasticsearch:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: elasticsearch
+    BUILD_PATH: ./iotplatform/elasticsearch/
+
+build-mqtt-gateway-nodejs:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: mqtt-gateway-nodejs
+    BUILD_PATH: ./iotplatform/mqtt-gateway-nodejs/
+
+build-http-gateway-nodejs:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: http-gateway-nodejs
+    BUILD_PATH: ./iotplatform/http-gateway-nodejs/
+
+build-http-gateway-go:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: http-gateway-go
+    BUILD_PATH: ./iotplatform/http-gateway-go/
+
+build-ws-gateway-nodejs:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: ws-gateway-nodejs
+    BUILD_PATH: ./iotplatform/ws-gateway-nodejs/
+
+build-ws-gateway-go:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: ws-gateway-go
+    BUILD_PATH: ./iotplatform/ws-gateway-go/
+
+build-java-producer:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: java-producer
+    BUILD_PATH: ./iotplatform/java-producer/
+
+build-nodejs-producer:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: nodejs-producer
+    BUILD_PATH: ./iotplatform/nodejs-producer/
+
+build-python-producer:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: python-producer
+    BUILD_PATH: ./iotplatform/python-producer/
+
+build-redis:
+  extends: .build-and-push
+  variables:
+    IMAGE_NAME: redis
+    BUILD_PATH: ./iotplatform/redis/
