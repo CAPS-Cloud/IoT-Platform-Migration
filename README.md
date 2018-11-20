@@ -1,4 +1,4 @@
-# iotplatform - [![Build Status](https://travis-ci.com/heldic/iotplatform.svg?token=UgRpWYHRU3yqYszd3B6x&branch=master)](https://travis-ci.com/heldic/iotplatform)
+# iotplatform
 
 _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Hans Kirchner_
 
@@ -9,44 +9,46 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 [//]: <############################################################################################>
 ## Content
 
-- [TL;DR](https://github.com/heldic/iotplatform#tldr)
-- [Architecture](https://github.com/heldic/iotplatform#architecture)
-- [Deployment](https://github.com/heldic/iotplatform#deployment)
-- [Components](https://github.com/heldic/iotplatform#components)
-    - [IoTCore](https://github.com/heldic/iotplatform#iotcore)
-        - [API](https://github.com/heldic/iotplatform#api)
-        - [Creating Devices and Sensors using the GUI](https://github.com/heldic/iotplatform#creating-devices-and-sensors-using-the-gui)
-        - [Creating Devices and Sensors using the API](https://github.com/heldic/iotplatform#creating-devices-and-sensors-using-the-api)
-        - [Retrieving Data](https://github.com/heldic/iotplatform#retrieving-data)
-    - [Gateways](https://github.com/heldic/iotplatform#gateways)
-        - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
-        - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
-        - [MQTT Gateway](https://github.com/heldic/iotplatform#mqtt-gateway)
-    - [Kafka/Zookeeper](https://github.com/heldic/iotplatform#kafkazookeeper)
-    - [Flink](https://github.com/heldic/iotplatform#flink)
-    - [Elasticsearch](https://github.com/heldic/iotplatform#elasticsearch)
-    - [Kibana](https://github.com/heldic/iotplatform#kibana)
-    - [Java/Node.js/Python Producer](https://github.com/heldic/iotplatform#javanodejspython-producer)
-- [Data Model](https://github.com/heldic/iotplatform#data-model)
-    - [Device/Sensor Data Model](https://github.com/heldic/iotplatform#devicesensor-data-model)
-    - [Data Model](https://github.com/heldic/iotplatform#data-model)
-    - [Data Model Example](https://github.com/heldic/iotplatform#data-model-example)
-- [Security Concept](https://github.com/heldic/iotplatform#security-concept)
-    - [Retrieving JWT Tokens](https://github.com/heldic/iotplatform#retrieving-jwt-tokens)
-    - [Pushing Data](https://github.com/heldic/iotplatform#pushing-data)
-- [Gateway Benchmarks](https://github.com/heldic/iotplatform#gateway-benchmarks)
-    - [HTTP Gateways](https://github.com/heldic/iotplatform#http-gateways)
-    - [WS Gateways](https://github.com/heldic/iotplatform#ws-gateways)
-- [Virtual Machines](https://github.com/heldic/iotplatform#virtual-machines)
-    - [Access](https://github.com/heldic/iotplatform#access)
-- [Kubernetes](https://github.com/heldic/iotplatform#kubernetes)
-    - [Accessing the Cluster](https://github.com/heldic/iotplatform#accessing-the-cluster)
-        - [Using `kubectl`](https://github.com/heldic/iotplatform#using-kubectl)
-        - [Using K8s Dashboard](https://github.com/heldic/iotplatform#using-k8s-dashboard)
-    - [Setting up the Cluster](https://github.com/heldic/iotplatform#setting-up-the-cluster)
-        - [Preparing the Host](https://github.com/heldic/iotplatform#preparing-the-host)
-        - [Adding Nodes](https://github.com/heldic/iotplatform#adding-nodes)
-- [Outlook](https://github.com/heldic/iotplatform#outlook)
+- [TL;DR](#tldr)
+- [Architecture](#architecture)
+- [Deployment](#deployment)
+    - [Deploy using Helm](#deploy-using-helm)
+    - [Undeploy using Helm](#undeploy-using-helm)
+- [Components](#components)
+    - [IoTCore](#iotcore)
+        - [API](#api)
+        - [Creating Devices and Sensors using the GUI](#creating-devices-and-sensors-using-the-gui)
+        - [Creating Devices and Sensors using the API](#creating-devices-and-sensors-using-the-api)
+        - [Retrieving Data](#retrieving-data)
+    - [Gateways](#gateways)
+        - [HTTP Gateway](#http-gateway)
+        - [WS Gateway](#ws-gateway)
+        - [MQTT Gateway](#mqtt-gateway)
+    - [Kafka/Zookeeper](#kafkazookeeper)
+    - [Flink](#flink)
+    - [Elasticsearch](#elasticsearch)
+    - [Kibana](#kibana)
+    - [Java/Node.js/Python Producer](#javanodejspython-producer)
+- [Data Model](#data-model)
+    - [Device/Sensor Data Model](#devicesensor-data-model)
+    - [Data Model](#data-model)
+    - [Data Model Example](#data-model-example)
+- [Security Concept](#security-concept)
+    - [Retrieving JWT Tokens](#retrieving-jwt-tokens)
+    - [Pushing Data](#pushing-data)
+- [Gateway Benchmarks](#gateway-benchmarks)
+    - [HTTP Gateways](#http-gateways)
+    - [WS Gateways](#ws-gateways)
+- [Virtual Machines](#virtual-machines)
+    - [Access](#access)
+- [Kubernetes](#kubernetes)
+    - [Accessing the Cluster](#accessing-the-cluster)
+        - [Using `kubectl`](#using-kubectl)
+        - [Using K8s Dashboard](#using-k8s-dashboard)
+    - [Setting up the Cluster](#setting-up-the-cluster)
+        - [Preparing the Host](#preparing-the-host)
+        - [Adding Nodes](#adding-nodes)
+- [Outlook](#outlook)
 
 
 
@@ -60,7 +62,7 @@ device/sensor administration, persistence and analytical extensibility.
 Ensure Docker is installed and run:
 ```bash
 #!/bin/bash
-git clone https://github.com/heldic/iotplatform.git
+git clone https://gitlab.com/tum-iot-lab/iotplatform.git
 
 cd iotplatform/iotplatform
 
@@ -88,7 +90,15 @@ cluster-resources are limited:
 
 <img src="./doc/diagrams/deployment.png" />
 
+### Deploy using Helm
+```bash
+helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=latest iot ./iotplatform/helm-chart/iot
+```
 
+### Undeploy using Helm
+```bash
+helm delete --debug --purge iot
+```
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
@@ -120,9 +130,9 @@ In order to create a device and sensor follow these steps:
 10. Click _download device key_ and save the file. It obtains the token required for data ingestion via one of the protocols
 11. Hover over the info icon next to the sensor and note the _sensor_id_
 12. Turn towards one of the following chapters to connect your device to the platform.
-    - [HTTP Gateway](https://github.com/heldic/iotplatform#http-gateway)
-    - [WS Gateway](https://github.com/heldic/iotplatform#ws-gateway)
-    - [MQTT Gateway](https://github.com/heldic/iotplatform#mqtt-gateway)
+    - [HTTP Gateway](#http-gateway)
+    - [WS Gateway](#ws-gateway)
+    - [MQTT Gateway](#mqtt-gateway)
 
 
 [//]: <########################################################################>
@@ -288,7 +298,7 @@ curl \
 ```
 __Attention:__ At the moment we're using the header `-H "authorization: Bearer <TOKEN>` for authorization with a lowercase __`a`__, thus deviating from common practice. This is due to relying on Node.js libraries that convert all http headers to lowercase (https://github.com/nodejs/node-v0.x-archive/issues/8502). It would be possible to avoid this workaround, by looping over the request's `rawHeaders`-field, however it was decided against this for now, due to performance considerations.
 
-There is a sample Java client available [here]( https://github.com/heldic/iotplatform/blob/master/iotplatform/java-producer/app/src/main/java/Producer.java).
+There is a sample Java client available [here]( https://gitlab.com/tum-iot-lab/iotplatform/tree/master/iotplatform/java-producer/app/src/main/java/Producer.java).
 
 
 [//]: <########################################################################>
@@ -301,7 +311,7 @@ HTTP-Upgrade (`Connection: Upgrade`) request. In that request, an additional
 - `401 Unauthorized`: `authorization` header is missing or the header's value is inproperly formatted
 - `403 Forbidden`: JWT could not be verified, is expired or invalid
 
-There is a sample Python client available [here](https://github.com/heldic/iotplatform/blob/master/iotplatform/python-producer/main.py).
+There is a sample Python client available [here](https://gitlab.com/tum-iot-lab/iotplatform/tree/master/iotplatform/python-producer/main.py).
 
 
 [//]: <########################################################################>
@@ -326,7 +336,7 @@ var client  = mqtt.connect({
 });
 ```
 
-There is a sample Node.js client available [here]( https://github.com/heldic/iotplatform/blob/master/iotplatform/nodejs-producer/app/index.js).
+There is a sample Node.js client available [here]( https://gitlab.com/tum-iot-lab/iotplatform/tree/master/iotplatform/nodejs-producer/app/index.js).
 
 
 [//]: <########################################################################>
