@@ -22,6 +22,9 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 COPY app /app/
 
+COPY web/index.html /app/public/index.html
+COPY web/dist /app/public/static
+
 RUN chmod -R a+x /app \
     && cd /app \
     && npm install --no-optional --save \

@@ -1,0 +1,80 @@
+version: '3.2'
+services:
+    http-gateway-nodejs:
+        build: ./http-gateway-nodejs
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs
+        ports:
+            - "8083:8083"
+        environment:
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+
+    mariadb:
+        image: mariadb:10
+        ports:
+            - "3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: mP6AMBTSSElsq1oQttZ1
+            MYSQL_DATABASE: backend
+            MYSQL_USER: backend
+            MYSQL_PASSWORD: qmJDiqlAr9Fcu5Rav0XJ
+
+    iotcore:
+        build: ./iotcore
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore
+        ports:
+            - "3000:3000"
+        environment:
+            MARIADB: ${SERVICE_PREFIX}mariadb${EXPOSED_SUFFIX}:3306
+            KAFKA: ${SERVICE_PREFIX}kafka:9092
+            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
+            ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
+            ELASTICSEARCH_BIN_PORT: "9300"
+            FLINK: ${SERVICE_PREFIX}flink${EXPOSED_SUFFIX}:8081
+
+    zookeeper:
+        image: wurstmeister/zookeeper:latest
+        ports:
+            - "2181"
+
+    kafka:
+        image: wurstmeister/kafka:2.11-0.11.0.2
+        ports:
+            - "9092"
+            - "9094"
+        environment:
+            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+
+    flink:
+        image: flink:1.5-alpine
+        ports:
+            - "8081:8081"
+            - "6123"
+            - "6124"
+            - "6125"
+        command: jobmanager
+        environment:
+            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
+
+    taskmanager:
+        image: flink:1.5-alpine
+        depends_on:
+            - flink
+        command: taskmanager
+        environment:
+            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
+            TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "100"
+
+    elasticsearch:
+        build: ./elasticsearch
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch
+        ports:
+            - "9000:9200"
+            - "9200"
+            - "9300"

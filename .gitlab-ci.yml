@@ -17,17 +17,11 @@ before_script:
   only:
     - master
 
-build-iotcore-frontend:
+build-iotcore:
   extends: .build-and-push
   variables:
-    IMAGE_NAME: iotcore-frontend
-    BUILD_PATH: ./iotplatform/iotcore-frontend/
-
-build-iotcore-backend:
-  extends: .build-and-push
-  variables:
-    IMAGE_NAME: iotcore-backend
-    BUILD_PATH: ./iotplatform/iotcore-backend/
+    IMAGE_NAME: iotcore
+    BUILD_PATH: ./iotplatform/iotcore/
 
 build-elasticsearch:
   extends: .build-and-push

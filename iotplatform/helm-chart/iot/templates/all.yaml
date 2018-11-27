@@ -20,6 +20,8 @@ spec:
         app: {{ $name | trunc 63 | trimSuffix "-" }}
         release: {{ $.Release.Name }}
     spec:
+      imagePullSecrets:
+        - name: gitlab-registry
       containers:
         - name: {{ $name | trunc 63 | trimSuffix "-" }}
 {{- if hasKey $value "environment" }}
@@ -27,7 +29,15 @@ spec:
           resources:
             requests:
               cpu: {{(split ":" $value.environment.AUTOSCALING)._0}}
+{{- else }}
+          resources:
+            requests:
+              cpu: "10m"
 {{- end }}
+{{- else }}
+          resources:
+            requests:
+              cpu: "10m"
 {{- end }}
 {{- if and (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) (not (contains ":" $value.image)) }}
           image: {{ $value.image -}}:{{- $.Values.defaults.imageTag }}
@@ -56,12 +66,11 @@ metadata:
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
 {{- range $value.ports }}
 {{- if regexMatch "^[0-9]+[:][0-9]+$" . }}
-    - nodePort: {{ atoi (split ":" .)._0 }}
-      port: {{ atoi (split ":" .)._0 }}
+    - port: {{ atoi (split ":" .)._0 }}
       targetPort: {{ atoi (split ":" .)._1 }}
       protocol: TCP
       name: "port-{{ (split ":" .)._0 }}-{{ (split ":" .)._1 }}"

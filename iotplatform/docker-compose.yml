@@ -120,9 +120,9 @@ services:
             MYSQL_USER: backend
             MYSQL_PASSWORD: qmJDiqlAr9Fcu5Rav0XJ
 
-    iotcore-backend:
-        build: ./iotcore-backend
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore-backend
+    iotcore:
+        build: ./iotcore
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore
         ports:
             - "3000:3000"
         environment:
@@ -132,14 +132,6 @@ services:
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
             ELASTICSEARCH_BIN_PORT: "9300"
             FLINK: ${SERVICE_PREFIX}flink${EXPOSED_SUFFIX}:8081
-
-    iotcore-frontend:
-        build: ./iotcore-frontend
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore-frontend
-        ports:
-            - "8080:80"
-        environment:
-            IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
 
     zookeeper:
         image: wurstmeister/zookeeper:latest
