@@ -11,9 +11,7 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 
 - [TL;DR](#tldr)
 - [Architecture](#architecture)
-- [Deployment](#deployment)
-    - [Deploy using Helm](#deploy-using-helm)
-    - [Undeploy using Helm](#undeploy-using-helm)
+- [Deployment and Usage](#deployment-and-usage)
 - [Components](#components)
     - [IoTCore](#iotcore)
         - [API](#api)
@@ -84,21 +82,32 @@ The full composition of the pipeline of iotplatform:
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 [//]: <############################################################################################>
-## Deployment
+## Deployment and Usage
 Development is done via docker-compose to enable working locally, since
 cluster-resources are limited:
 
 <img src="./doc/diagrams/deployment.png" />
 
-### Deploy using Helm
-```bash
-helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=latest iot ./iotplatform/helm-chart/iot
-```
+### Requirements
+1. Install the Google Cloud SDK and execute `gcloud components install kubectl`
+2. Install helm on your machine
 
-### Undeploy using Helm
-```bash
-helm delete --debug --purge iot
-```
+### Setting Up Cluster
+1. Create Kubernetes Cluster
+2. Connect to cluster
+3. Execute `kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default`
+4. Execute `helm init`
+5. Create personal access token at https://gitlab.com/profile/personal_access_tokens with scope `read_registry`
+6. Execute `kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=<your gitlab username> --docker-password=<your personal access token> --docker-email=<your gitlab email>`
+
+### Deploying IoT Platform
+1. Execute `helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=latest iot ./iotplatform/helm-chart/iot`
+
+### Undeploying IoT Platform
+1. Execute `helm delete --debug --purge iot`
+
+### Usage
+https://docs.google.com/document/d/1THz9gFxGTb3e7I_xPTrnHU-Q_VTgQr2pWHsDjzQCYtg/edit?usp=sharing
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
