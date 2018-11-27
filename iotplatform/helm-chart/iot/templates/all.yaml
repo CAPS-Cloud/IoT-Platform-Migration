@@ -41,12 +41,12 @@ spec:
 {{- else }}
           resources:
             requests:
-              cpu: "10m"
+              cpu: "5m"
 {{- end }}
 {{- else }}
           resources:
             requests:
-              cpu: "10m"
+              cpu: "5m"
 {{- end }}
 {{- if and (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) (not (contains ":" $value.image)) }}
           image: {{ $value.image -}}:{{- $.Values.defaults.imageTag }}
