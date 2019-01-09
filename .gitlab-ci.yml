@@ -9,7 +9,7 @@ before_script:
 .build-and-push:
   stage: build
   script:
-    - if [ "${CI_COMMIT_REF_NAME}" = "master" ]; then 'TAG="latest"'; else "TAG=${CI_COMMIT_REF_NAME}"; fi
+    - if [ "${CI_COMMIT_REF_NAME}" = "master" ]; then TAG="latest"; else TAG="${CI_COMMIT_REF_NAME}"; fi
     - cd ${BUILD_PATH}
     - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG} || echo Existing image not available - starting from scratch
     - echo Quietly building ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG}
