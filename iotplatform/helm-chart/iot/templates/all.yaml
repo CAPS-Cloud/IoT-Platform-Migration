@@ -49,9 +49,9 @@ spec:
               cpu: "5m"
 {{- end }}
 {{- if (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) }}
-          image: {{ $value.image | replace "${TAG}" $.Values.defaults.imageTag -}}
+          image: {{ $value.image | replace "${TAG}" (print ":" $.Values.defaults.imageTag) -}}
 {{- else }}
-          image: {{ $value.image | replace "${TAG}" "latest" -}}
+          image: {{ $value.image | replace "${TAG}" "" -}}
 {{- end }}
 {{- if hasKey $value "command" }}
           args: ["{{- $value.command -}}"]
