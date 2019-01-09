@@ -2,7 +2,7 @@ version: '3.2'
 services:
     http-gateway-nodejs:
         build: ./http-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs:${TAG}
         ports:
             - "8083:8083"
         environment:
@@ -21,7 +21,7 @@ services:
 
     iotcore:
         build: ./iotcore
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore:${TAG}
         ports:
             - "3000:3000"
         environment:
@@ -73,7 +73,7 @@ services:
 
     elasticsearch:
         build: ./elasticsearch
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch:${TAG}
         ports:
             - "9000:9200"
             - "9200"

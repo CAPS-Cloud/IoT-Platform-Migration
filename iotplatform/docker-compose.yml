@@ -2,7 +2,7 @@ version: '3.2'
 services:
     # nodejs-producer:
     #     build: ./nodejs-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/nodejs-producer
+    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/nodejs-producer:${TAG}
     #     environment:
     #         MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
     #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
@@ -10,7 +10,7 @@ services:
     #
     # java-producer-go:
     #     build: ./java-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer
+    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer:${TAG}
     #     environment:
     #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
     #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
@@ -18,7 +18,7 @@ services:
     #
     # java-producer-nodejs:
     #     build: ./java-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer
+    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer:${TAG}
     #     environment:
     #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
     #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
@@ -26,7 +26,7 @@ services:
     #
     # python-producer-nodejs:
     #     build: ./python-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer
+    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer:${TAG}
     #     environment:
     #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
     #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
@@ -34,7 +34,7 @@ services:
     #
     # python-producer-go:
     #     build: ./python-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer
+    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer:${TAG}
     #     environment:
     #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
     #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
@@ -51,13 +51,13 @@ services:
 
     redis:
         build: ./redis
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/redis
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/redis:${TAG}
         ports:
             - "6379"
 
     mqtt-gateway-nodejs:
         build: ./mqtt-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/mqtt-gateway-nodejs
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/mqtt-gateway-nodejs:${TAG}
         environment:
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
@@ -68,7 +68,7 @@ services:
 
     ws-gateway-nodejs:
         build: ./ws-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-nodejs
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-nodejs:${TAG}
         ulimits:
             nproc: 65535
             nofile: 90000
@@ -81,7 +81,7 @@ services:
 
     ws-gateway-go:
         build: ./ws-gateway-go
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-go
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-go:${TAG}
         ulimits:
             nproc: 65535
             nofile: 90000
@@ -93,7 +93,7 @@ services:
 
     http-gateway-nodejs:
         build: ./http-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs:${TAG}
         ports:
             - "8083:8083"
         environment:
@@ -103,7 +103,7 @@ services:
 
     http-gateway-go:
         build: ./http-gateway-go
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-go
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-go:${TAG}
         ports:
             - "8084:8084"
         environment:
@@ -122,7 +122,7 @@ services:
 
     iotcore:
         build: ./iotcore
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore:${TAG}
         ports:
             - "3000:3000"
         environment:
@@ -174,7 +174,7 @@ services:
 
     elasticsearch:
         build: ./elasticsearch
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch
+        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch:${TAG}
         ports:
             - "9000:9200"
             - "9200"

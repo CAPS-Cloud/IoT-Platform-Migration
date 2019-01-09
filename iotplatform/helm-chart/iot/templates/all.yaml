@@ -48,10 +48,10 @@ spec:
             requests:
               cpu: "5m"
 {{- end }}
-{{- if and (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) (not (contains ":" $value.image)) }}
-          image: {{ $value.image -}}:{{- $.Values.defaults.imageTag }}
+{{- if (and (hasKey $.Values "defaults") (hasKey $.Values.defaults "imageTag")) }}
+          image: {{ $value.image | replace "${TAG}" $.Values.defaults.imageTag -}}
 {{- else }}
-          image: {{ $value.image -}}
+          image: {{ $value.image | replace "${TAG}" "latest" -}}
 {{- end }}
 {{- if hasKey $value "command" }}
           args: ["{{- $value.command -}}"]
