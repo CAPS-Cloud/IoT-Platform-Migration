@@ -16,8 +16,6 @@ before_script:
 #    - docker build -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:$CI_COMMIT_SHA -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG} --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG} --quiet .
     - docker build -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG} --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${TAG} --quiet .
     - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}
-  only:
-    - master
 
 build-iotcore:
   extends: .build-and-push
