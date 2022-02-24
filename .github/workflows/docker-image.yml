@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ faas-ow-lrz-test ]
   pull_request:
-    branches: [ master ]
+    branches: [ faas-ow-lrz-test ]
 
 jobs:
 
