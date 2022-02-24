@@ -14,5 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the Docker images
       run: docker-compose build -f iotplatform/docker-compose.yml --push
