@@ -48,7 +48,7 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
         - [Adding Nodes](#adding-nodes)
 - [Outlook](#outlook)
 
-test info
+
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
