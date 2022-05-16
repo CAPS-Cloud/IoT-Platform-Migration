@@ -25,13 +25,14 @@ import static java.util.Objects.requireNonNull;
 public class SensorReading {
     private long timestamp;
     private String sensorId;
+    private String deviceId;
     private Object value;
 
     public SensorReading() {
-        this(0L, "", "");
+        this(0L, "", "", "");
     }
 
-    public SensorReading(long timestamp, String sensorId, Object value) {
+    public SensorReading(long timestamp, String sensorId, String deviceId, Object value) {
         long newTimeStamp;
 
         if(String.valueOf(timestamp).length() < 16) {
@@ -42,6 +43,7 @@ public class SensorReading {
 
         this.timestamp = newTimeStamp;
         this.sensorId = requireNonNull(sensorId);
+        this.deviceId = requireNonNull(deviceId);
         this.value = requireNonNull(value);
     }
 
@@ -58,6 +60,9 @@ public class SensorReading {
     public String getSensorId() {
         return sensorId;
     }
+    public String getDeviceId() {
+            return deviceId;
+        }
 
     public Object getValue() {
         return value;

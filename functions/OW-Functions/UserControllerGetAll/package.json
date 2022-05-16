@@ -1,0 +1,16 @@
+{
+  "name": "UserControllerGetAllApp",
+  "version": "1.0.0",
+  "description": "Application for getall in User controller",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sequelize": "^4.37.10",
+    "mysql2": "^1.5.3"
+  }
+}

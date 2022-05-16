@@ -103,7 +103,7 @@ export default class extends React.Component {
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
                         <Link to="/users" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
-                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
+                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (UsersModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                     </div>
                 </form>
             </div>

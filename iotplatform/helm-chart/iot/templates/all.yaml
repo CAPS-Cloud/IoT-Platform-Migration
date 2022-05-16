@@ -1,5 +1,5 @@
 {{- range $name, $value := .Values.services }}
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "core.fullname" list $ $name }}
@@ -21,6 +21,28 @@ spec:
         release: {{ $.Release.Name }}
     spec:
       initContainers:
+{{- if hasKey $value "volumes" }}
+      - name: init-permission
+        image: busybox:1.27.2
+        command:
+{{- range $volume := $value.volumes }}
+{{- if eq $volume.type "bind" }}
+        - chmod
+        - -R
+        - "777"
+        - {{ $volume.target }}
+{{- end }}
+{{- end }}
+        securityContext:
+          privileged: true
+        volumeMounts:
+{{- range $volume := $value.volumes }}
+{{- if eq $volume.type "bind" }}
+        - mountPath: {{ $volume.target }}
+          name: {{ printf "%s-persistent-storage" $name }}
+{{- end }}
+{{- end }}
+{{- end }}
       - name: init-sysctl
         image: busybox:1.27.2
         command:
@@ -29,10 +51,20 @@ spec:
         - vm.max_map_count=262144
         securityContext:
           privileged: true
+{{- if hasKey $value "environment" }}
+{{- if hasKey $value.environment "WAIT" }}
+      - name: init-wait
+        image: busybox:1.27.2
+        command:
+        - sleep
+        - "{{$value.environment.WAIT}}"
+{{- end }}
+{{- end }}
       imagePullSecrets:
         - name: gitlab-registry
       containers:
         - name: {{ $name | trunc 63 | trimSuffix "-" }}
+          imagePullPolicy: Always
 {{- if hasKey $value "environment" }}
 {{- if hasKey $value.environment "AUTOSCALING" }}
           resources:
@@ -62,6 +94,55 @@ spec:
 {{ toYaml (list (dict "name" $envKey "value" ($envValue | replace "${SERVICE_PREFIX}" (print $.Release.Name "-") | replace "${SERVICE_NAME}" $name | replace "_{HOSTNAME_COMMAND}" "kafka.iot.pcxd.me" | replace "${EXPOSED_SUFFIX}" "-exposed"))) | indent 12 -}}
 {{- end -}}
 {{- end }}
+{{- if hasKey $value "volumes" }}
+          volumeMounts:
+{{- range $volume := $value.volumes }}
+{{- if eq $volume.type "bind" }}
+          - mountPath: {{ $volume.target }}
+            name: {{ printf "%s-persistent-storage" $name }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if hasKey $value "volumes" }}
+      volumes:
+      - name: {{ printf "%s-persistent-storage" $name }}
+        persistentVolumeClaim:
+          claimName: {{ printf "%s-persistent-claim" $name }}
+{{- end }}
+---
+{{- if hasKey $value "volumes" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ printf "%s-persistent-storage" $name }}
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+{{- range $volume := $value.volumes }}
+{{- if eq $volume.type "bind" }}
+    path: {{ $volume.source }}
+{{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if hasKey $value "volumes" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-persistent-claim" $name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: {{ printf "%s-persistent-storage" $name }}
+{{- end }}
 ---
 {{- if hasKey $value "ports" }}
 {{- if regexMatch "[_][0-9]+[:][0-9]+[_]" (print "_" ($value.ports | join "_") "_") }}
@@ -75,12 +156,13 @@ metadata:
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
 {{- range $value.ports }}
 {{- if regexMatch "^[0-9]+[:][0-9]+$" . }}
     - port: {{ atoi (split ":" .)._0 }}
       targetPort: {{ atoi (split ":" .)._1 }}
+      nodePort: {{ atoi (split ":" .)._0 }}
       protocol: TCP
       name: "port-{{ (split ":" .)._0 }}-{{ (split ":" .)._1 }}"
 {{- end }}

@@ -252,7 +252,7 @@ label {
 .top-app-bar {
     @include mdc-top-app-bar-ink-color(black);//	Sets the ink color of the top app bar.
     @include mdc-top-app-bar-icon-ink-color(black);//	Sets the ink color of the top app bar icons.
-    @include mdc-top-app-bar-fill-color(white);//	Sets the fill color of the top app bar.
+    @include mdc-top-app-bar-fill-color(#3170B3);//	Sets the fill color of the top app bar.
     border-bottom: solid 1px rgba(0, 0, 0, 0.12);
 }
 

@@ -12,6 +12,7 @@ import Snackbar from "../utils/Snackbar";
 import DevicesModel from '../models/DevicesModel';
 import FormModel from '../models/FormModel';
 import RestError from '../utils/RestError';
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -33,7 +34,7 @@ export default class extends React.Component {
             var notFound = false;
             var object;
             if (DevicesModel.fetched) {
-                const objects = DevicesModel.data.filter((object) => (object.id == this.props.match.params.id));
+                const objects = DevicesModel.data.filter((object) => (object.id == this.props.match.params.device_id));
                 if (objects.length >= 1) {
                     object = objects[0];
                 } else {
@@ -45,6 +46,11 @@ export default class extends React.Component {
             if (object && this.form.ref) {
                 this.form.ref.elements["name"].value = object.name;
                 this.form.ref.elements["description"].value = object.description;
+                this.form.ref.elements["clientId"].value = object.clientId;
+                this.form.ref.elements["username"].value = object.username;
+                this.form.ref.elements["password"].value = object.password;
+                this.form.ref.elements["url"].value = object.url;
+                this.form.ref.elements["ttn_topic_to_subscribe"].value = object.ttn_topic_to_subscribe;
                 document.querySelectorAll('.mdc-text-field').forEach((node) => {
                     MDCTextField.attachTo(node);
                 });
@@ -59,11 +65,18 @@ export default class extends React.Component {
         var toUpdate = {
             name: this.form.values.name,
             description: this.form.values.description,
-        }
-        DevicesModel.update(this.props.match.params.id, toUpdate).then((response) => {
+            clientId: this.form.values.clientId,
+            username: this.form.values.username,
+            password: this.form.values.password,
+            url: this.form.values.url,
+            ttn_topic_to_subscribe: this.form.values.ttn_topic_to_subscribe,
+
+        };
+        DevicesModel.update(AuthModel.userInfo.get("id"), this.props.match.params.device_id, toUpdate).then((response) => {
+            console.log(response);
             this.form.clearForm();
             this.setState({ back: true });
-            DevicesModel.fetch();
+            DevicesModel.fetch(AuthModel.userInfo.get("id"));
             Snackbar.show("Updated device", "success");
         }).catch((error) => {
             Snackbar.show(new RestError(error).getMessage());
@@ -71,7 +84,7 @@ export default class extends React.Component {
     }
 
     componentWillMount() {
-        DevicesModel.fetch();
+        DevicesModel.fetch(AuthModel.userInfo.get("id"));
     }
 
     componentDidMount() {
@@ -88,7 +101,7 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to={'/devices/' + this.props.match.params.id} />
+            return <Redirect to={'/users/' + AuthModel.userInfo.get("id") + '/devices/' + this.props.match.params.device_id} />
         }
 
         return (
@@ -117,6 +130,51 @@ export default class extends React.Component {
                         <Row className="mb-1">
                             <Col md="6">
                                 <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="device-update-clientId" name="clientId" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="device-update-clientId" className="mdc-floating-label">MQTT ClientId</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="device-update-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="device-update-username" className="mdc-floating-label">MQTT Username</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="device-update-password" name="password" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="device-update-password" className="mdc-floating-label">MQTT Password</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="device-update-url" name="url" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="device-update-url" className="mdc-floating-label">MQTT URL</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
+                                    <input type="text" id="device-update-ttn_topic_to_subscribe" name="ttn_topic_to_subscribe" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                    <label htmlFor="device-update-url" className="mdc-floating-label">MQTT Topic to subscribe</label>
+                                    <div className="mdc-line-ripple"></div>
+                                </div>
+                            </Col >
+                        </Row >
+                        <Row className="mb-1">
+                            <Col md="6">
+                                <div className="mdc-text-field" style={{ width: "100%" }}>
                                     <input type="text" id="device-update-description" name="description" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
                                     <label htmlFor="device-update-description" className="mdc-floating-label">[Optional] Description</label>
                                     <div className="mdc-line-ripple"></div>
@@ -126,14 +184,15 @@ export default class extends React.Component {
                     </div>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to={'/devices/' + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Link to={'/users/' + AuthModel.userInfo.get("id") + '/devices/' + this.props.match.params.device_id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
                             !(this.failedFetching || !DevicesModel.fetched || this.notFound) && (
-                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (DevicesModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (DevicesModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                             )
                         }
                     </div>
                 </form>
+                <br/><br/><br/><br/>
             </div>
         )
     }

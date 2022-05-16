@@ -10,6 +10,7 @@ import DevicesModel from '../models/DevicesModel';
 import FormModel from '../models/FormModel';
 import Snackbar from '../utils/Snackbar';
 import RestError from '../utils/RestError';
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -34,7 +35,7 @@ export default class extends React.Component {
         if (e) {
             e.preventDefault();
         }
-        DevicesModel.add(this.form.values).then((response) => {
+        DevicesModel.add(AuthModel.userInfo.get("id"), this.form.values).then((response) => {
             this.form.clearForm();
             this.setState({ back: true })
         }).catch((error) => {
@@ -44,7 +45,7 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to='/devices' />
+            return <Redirect to={'/users/' + AuthModel.userInfo.get("id") + "/devices"}  />
         }
 
         return (
@@ -56,8 +57,68 @@ export default class extends React.Component {
                     <Row className="mb-1">
                         <Col md="6">
                             <div className="mdc-text-field" style={{width: "100%"}}>
-                                <input type="text" id="devices-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                <input type="text" id="devices-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" style={{display: "inline%"}} />
                                 <label htmlFor="devices-add-name" className="mdc-floating-label">Name</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    Leave the below fields empty if you want to send the data to this device using IoT platform MQTT gateway!!
+
+                   {/* <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                Select MQTT Gateway Type:
+
+                                <select onChange="val()" id="select_id">
+                                    <option value="0">TTN MQTT</option>
+                                    <option value="1">IoT Platform MQTT</option>
+                                </select>
+                            </div>
+                        </Col>
+                    </Row>*/}
+
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                <input type="text" id="devices-add-clientId" name="clientId" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                <label htmlFor="devices-add-clientId" className="mdc-floating-label">[Optional] MQTT ClientId</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                <input type="text" id="devices-add-username" name="username" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                <label htmlFor="devices-add-username" className="mdc-floating-label">[Optional] MQTT Username</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                <input type="text" id="devices-add-password" name="password" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
+                                <label htmlFor="devices-add-password" className="mdc-floating-label">[Optional] MQTT Password</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                <input type="text" id="devices-add-url" name="url" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true"  />
+                                <label htmlFor="devices-add-url" className="mdc-floating-label">[Optional] MQTT URL</label>
+                                <div className="mdc-line-ripple"></div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row className="mb-1">
+                        <Col md="6">
+                            <div className="mdc-text-field" style={{width: "100%"}}>
+                                <input type="text" id="devices-add-url" name="ttn_topic_to_subscribe" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true"  />
+                                <label htmlFor="devices-add-ttn_topic_to_subscribe" className="mdc-floating-label">[Optional] MQTT Topic to subscribe</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>
@@ -73,10 +134,11 @@ export default class extends React.Component {
                     </Row>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to="/devices" className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
-                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (DevicesModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
+                        <Link to={'/users/' + AuthModel.userInfo.get("id") + "/devices"}  className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (DevicesModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                     </div>
                 </form>
+                <br/><br/><br/><br/>
             </div>
         )
     }

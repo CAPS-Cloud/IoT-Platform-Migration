@@ -1,9 +1,9 @@
 import { observable, action, autorun } from "mobx";
 import axios from "../utils/Axios";
-import BaseSubModel from "./BaseSubModel";
+import BaseSubSubModel from "./BaseSubSubModel";
 
-export default new class extends BaseSubModel {
+export default new class extends BaseSubSubModel {
     constructor() {
-        super("devices", "sensors");
+        super("users", "devices", "sensors");
     }
 }

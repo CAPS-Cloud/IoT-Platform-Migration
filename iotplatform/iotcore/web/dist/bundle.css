@@ -833,6 +833,8 @@ a.mdc-list-item {
     height: 64px; }
   .mdc-top-app-bar__section {
     display: inline-flex;
+    font-size: 14px;
+    margin-right: 5px;
     flex: 1 1 auto;
     align-items: center;
     min-width: 0;
@@ -845,12 +847,12 @@ a.mdc-list-item {
       justify-content: flex-end;
       order: 1; }
   .mdc-top-app-bar__title {
-    font-family: Roboto, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
-    font-size: 1.25rem;
+    font-size: 2rem;
     line-height: 2rem;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.0125em;
     text-decoration: inherit;
     text-transform: inherit;
@@ -1447,7 +1449,9 @@ a.mdc-list-item {
   font-weight: 400;
   letter-spacing: normal;
   text-decoration: inherit;
-  text-transform: inherit; }
+  text-transform: inherit;
+  text-align: center;
+}
 
 .mdc-typography--headline6 {
   font-family: Roboto, sans-serif;
@@ -2963,7 +2967,7 @@ a.mdc-list-item {
 .mdc-snackbar {
   display: flex;
   position: fixed;
-  bottom: 0;
+  bottom: 0px;
   left: 50%;
   align-items: center;
   justify-content: flex-start;
@@ -3353,8 +3357,8 @@ label {
   height: 100%; }
 
 .top-app-bar {
-  color: black;
-  background-color: white;
+  color: white;
+  background-color: #3271B3;
   border-bottom: solid 1px rgba(0, 0, 0, 0.12); }
   .top-app-bar .mdc-top-app-bar__action-item,
   .top-app-bar .mdc-top-app-bar__navigation-icon {

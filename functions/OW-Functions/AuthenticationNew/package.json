@@ -1,0 +1,17 @@
+{
+  "name": "AuthenticationApp",
+  "version": "1.0.0",
+  "description": "Autentication Application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^8.2.1",
+    "sequelize": "^4.37.10",
+    "mysql2": "^1.5.3"
+  }
+}

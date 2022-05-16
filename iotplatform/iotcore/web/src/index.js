@@ -30,7 +30,14 @@ import Consumers from './pages/Consumers';
 import ConsumersAdd from './pages/ConsumersAdd';
 import ConsumersView from './pages/ConsumersView';
 import ConsumersEdit from './pages/ConsumersEdit';
+import Alerts from './pages/Alerts';
+import AlertsAdd from './pages/AlertsAdd'
 
+import Predictions from './pages/Predictions';
+import PredictionsAdd from './pages/PredictionsAdd';
+import PredictionsView from './pages/PredictionsView';
+
+console.disableYellowBox = true;
 @observer
 class Dashboard extends React.Component {
 
@@ -41,35 +48,25 @@ class Dashboard extends React.Component {
   render() {
     return (
       <div>
-        <header className="top-app-bar mdc-top-app-bar" style={{ position: "absolute" }}>
-          <div className="mdc-top-app-bar__row">
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-              <Link to="/" className="plain-link"><span className="mdc-top-app-bar__title" style={{ cursor: "pointer" }}>IoT Platform Admin Dashboard</span></Link>
-            </section>
-            <section className="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
-              <button className="top-bar-button mdc-button" aria-label="Sign out" onClick={this.signOut.bind(this)}>Sign out</button>
-            </section>
-          </div>
-        </header>
         <div className="full-height mdc-top-app-bar--fixed-adjust">
           <div className="drawer-container-flex">
             <aside className="mdc-drawer mdc-drawer--permanent">
               <nav className="mdc-drawer__drawer">
                 <header className="name-drawer-header mdc-drawer__header">
                   <div className="mdc-drawer__header-content" style={{ display: "block" }}>
-                    <div className="d-flex justify-content-left mb-3">
+                    <div className="d-flex justify-content-center mb-3">
                       <i className="material-icons" style={{ fontSize: "70px", color: "#666" }}>account_circle</i>
                     </div>
-                    <h5 className="mdc-typography--headline5">{AuthModel.userInfo.has("name") && AuthModel.userInfo.get("name")}</h5>
+                    <h5 className="mdc-typography--headline5" style={{ textAlign:"center" }}>{AuthModel.userInfo.has("name") && AuthModel.userInfo.get("name")}</h5>
                   </div>
                 </header>
                 <nav className="mdc-drawer__content mdc-list-group">
                   <hr className="mdc-list-divider" />
                   <div className="mdc-list">
                     <Route
-                      path="/devices"
+                      path="/users/:user_id/devices"
                       children={({ match }) => (
-                        <Link to="/devices" className="plain-link">
+                        <Link to={"/users/" + AuthModel.userInfo.get("id") + "/devices"} className="plain-link">
                           <Ripple className={"drawer-list-item mdc-list-item" + (match ? " mdc-list-item--selected" : "")} data-mdc-tabindex-handled="true" tabIndex={-1}>
                             <i className="material-icons mdc-list-item__graphic" aria-hidden="true">developer_board</i>Devices
                         </Ripple>
@@ -98,6 +95,17 @@ class Dashboard extends React.Component {
                       )
                       }
                     />
+                    <Route
+                      path="/predictions"
+                      children={({ match }) => (
+                          <Link to="/predictions" className="plain-link">
+                              <Ripple className={"drawer-list-item mdc-list-item" + (match ? " mdc-list-item--selected" : "")} data-mdc-tabindex-handled="true" tabIndex={-1}>
+                                <i className="material-icons mdc-list-item__graphic" aria-hidden="true">insert_chart</i>Predictions
+                              </Ripple>
+                          </Link>
+                      )
+                      }
+                    />
                   </div>
                   <hr className="mdc-list-divider" />
                   <div className="mdc-list">
@@ -114,16 +122,16 @@ class Dashboard extends React.Component {
                   path="/"
                   exact
                   children={({ match }) => (
-                    match ? <Redirect to="/devices" /> : null
+                    match ? <Redirect to="/users/"/> : null
                   )
                   }
                 />
-                <Route exact path="/devices" component={Devices} />
-                <Route exact path="/devices/add" component={DevicesAdd} />
-                <Route exact path="/devices/:id" component={DevicesView} />
-                <Route exact path="/devices/:id/edit" component={DevicesEdit} />
-                <Route exact path="/devices/:id/sensors/add" component={SensorsAdd} />
-                <Route exact path="/devices/:device_id/sensors/:id/edit" component={SensorsEdit} />
+                <Route exact path="/users/:user_id/devices" component={Devices} />
+                <Route exact path="/users/:user_id/devices/add" component={DevicesAdd} />
+                <Route exact path="/users/:user_id/devices/:device_id" component={DevicesView} />
+                <Route exact path="/users/:user_id/devices/:device_id/edit" component={DevicesEdit} />
+                <Route exact path="/users/:user_id/devices/:device_id/sensors/add" component={SensorsAdd} />
+                <Route exact path="/users/:user_id/devices/:device_id/sensors/:id/edit" component={SensorsEdit} />
                 <Route exact path="/consumers" component={Consumers} />
                 <Route exact path="/consumers/add" component={ConsumersAdd} />
                 <Route exact path="/consumers/:id" component={ConsumersView} />
@@ -131,6 +139,11 @@ class Dashboard extends React.Component {
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/add" component={UsersAdd} />
                 <Route exact path="/users/:id/edit" component={UsersEdit} />
+                <Route exact path="/predictions" component={Predictions} />
+                <Route exact path="/predictions/add" component={PredictionsAdd} />
+                <Route exact path="/predictions/:id" component={PredictionsView} />
+                <Route exact path="/alerts" component={Alerts} />
+                <Route exact path="/alerts/add" component={AlertsAdd} />
               </Switch>
             </div>
           </div>

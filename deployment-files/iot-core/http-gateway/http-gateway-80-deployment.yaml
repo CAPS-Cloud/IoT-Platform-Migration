@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    meta.helm.sh/release-name: iot
+    meta.helm.sh/release-namespace: default
+  labels:
+    app: http-gateway-80
+    app.kubernetes.io/managed-by: Helm
+    chart: iot-platform-0.1.0
+    heritage: Helm
+    release: iot
+  name: iot-http-gateway-80
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: http-gateway-80
+      release: iot
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: http-gateway-80
+        release: iot
+    spec:
+      hostAliases:
+      containers:
+        - env:
+            - name: ZOOKEEPER
+              value: 10.156.0.15:2181
+            - name: KAFKA
+              value: 10.156.0.16:9094
+          image: registry.gitlab.com/vpacyna/iot-platform-slim/http-gateway-nodejs:microservice
+          imagePullPolicy: Always
+          name: http-gateway
+          resources:
+            requests:
+              cpu: 0.5
+            limits:
+              cpu: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      imagePullSecrets:
+        - name: gitlab-registry
+      dnsPolicy: ClusterFirst

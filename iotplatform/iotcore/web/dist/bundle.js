@@ -847,7 +847,7 @@ eval("/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__foundation__ = __web
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n\nvar _axios = __webpack_require__(46);\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n_axios2.default.defaults.baseURL = 'http://' + window.location.hostname + ':3000/api';\n//axios.defaults.baseURL = 'http://127.0.0.1:3000/api';\n\nexports.default = _axios2.default;\n\n//////////////////\n// WEBPACK FOOTER\n// ./src/utils/Axios.jsx\n// module id = 17\n// module chunks = 0\n\n//# sourceURL=webpack:///./src/utils/Axios.jsx?");
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n\nvar _axios = __webpack_require__(46);\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n_axios2.default.defaults.baseURL = 'http://' + window.location.hostname + ':80/api';\n//axios.defaults.baseURL = 'http://127.0.0.1:80/api';\n\nexports.default = _axios2.default;\n\n//////////////////\n// WEBPACK FOOTER\n// ./src/utils/Axios.jsx\n// module id = 17\n// module chunks = 0\n\n//# sourceURL=webpack:///./src/utils/Axios.jsx?");
 
 /***/ }),
 /* 18 */

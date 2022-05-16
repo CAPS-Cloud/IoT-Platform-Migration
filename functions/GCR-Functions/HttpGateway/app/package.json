@@ -1,0 +1,18 @@
+{
+  "name": "HttpGateway",
+  "version": "1.0.0",
+  "description": "Application to authenticate and forward messages to Kafka",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "express-http-proxy": "^1.2.0",
+    "jsonwebtoken": "^8.2.1",
+    "kafkajs": "^1.16.0"
+  }
+}

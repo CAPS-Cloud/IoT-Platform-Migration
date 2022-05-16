@@ -1,135 +1,131 @@
-const express = require('express');
-const kafka = require("kafka-node");
+const express = require("express");
+const http = require("http");
 const bodyParser = require("body-parser");
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const { Kafka } = require("kafkajs");
+const AUTHENTICATION_PUBLIC = fs.readFileSync(".keys/jwtRS256.key.pub");
+const { kafkahost } = require("./connections/common");
+const kafka = new Kafka({
+  clientId: "http-gateway",
+  brokers: [kafkahost],
+});
+const producer = kafka.producer();
 
-const httpPort = 8083
+const app = express();
+const port = 8083;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const key = fs.readFileSync('./.keys/jwtRS256.key.pub');  // get public key
+app.post("/", function (req, res) {
+  sendMessageToKafka(req, res);
+});
 
-var httpServer, kafkaProducer, kafkaClient
+http.createServer(app).listen(port, function () {
+  console.log(`Server is listening on port ${port}`);
+});
 
-const args = process.argv;
-const ZOOKEEPER = args[2];
+function sendMessageToKafka(req, res) {
+  if (!req.headers?.authorization) {
+    return res.status(401).json({ error: "Error bearerHeader undefined" });
+  }
 
-async function initRest() {
-    // console.log("attempting to initiate http server...")
-    return new Promise((resolve) => {
-        const app = express()
-        app.use(bodyParser.json())
-        app.use(bodyParser.urlencoded({ extended: true }))
+  const jwtToken = req.headers?.authorization.split(" ")[1];
+  if (!jwtToken) {
+    return res
+      .status(401)
+      .json({ error: "Syntax error in Authorization Header" });
+  }
 
-        app.post("/", function (req, res) {
-            // Look for a HTTP header that looks like: "authorization: Bearer [token]"
-            const auth = req.header('authorization');
-            const bearer = 'Bearer '; // Prefix
-            if(auth === undefined || !auth.startsWith(bearer)) {
-                // If the header is missing or has an invalid format
-                res.status(401).send('Unauthorized');
-                res.end();
-                return;
-            }
-            const jwtToken = auth.substr(bearer.length);
+  let userDeviceId;
+  try {
+    userDeviceId = jwt.verify(jwtToken, AUTHENTICATION_PUBLIC).sub;
+  } catch (error) {
+    return res.status(401).json({ error: "Error in JWT verification" });
+  }
 
-            // Verify the RSA-signed JWT token
-            jwt.verify(jwtToken, key, function(err, decoded) {
-                if(err) {
-                    // JWT verification failed
-                    res.status(403).send('Forbidden');
-                    res.end();
-                    return;
-                }
+  if (!req.body) {
+    return res.status(401).json({ error: "Body is missing!" });
+  }
 
-                // Send JSON body to Kafka
-                // The decoded JWT token contains the deviceId in the "sub" field
-                forwardMsg(JSON.stringify(req.body), decoded.sub);
-                res.status(200).send('OK');
-                res.end();
+  messages = req.body;
+  if (!Array.isArray(messages)) {
+    console.log("Array had to be transformed");
+    messages = [messages];
+  }
+
+  producer
+    .connect()
+    .then(() => {
+      return Promise.all(
+        messages.map((message, i) => {
+          console.log(message);
+
+          if (
+            !message["sensor_id"] ||
+            !message["timestamp"] ||
+            !message["value"]
+          ) {
+            return {
+              type: "ERROR",
+              message:
+                "Message " +
+                i +
+                " should include keys sensor_id, timestamp and value",
+            };
+          }
+
+          const stringMessage = JSON.stringify({
+            sensor_id: message["sensor_id"],
+            timestamp: message["timestamp"],
+            value: message["value"],
+          });
+
+          console.log("Stringified JSON: ", stringMessage);
+
+          return producer
+            .send({
+              topic: userDeviceId + "_" + message["sensor_id"],
+              messages: [{ value: stringMessage }],
+            })
+            .then(() => {
+              console.log("Message " + i + " sent!");
+              return {
+                type: "SUCCESS",
+              };
+            })
+            .catch((error) => {
+              console.log(error);
+              return {
+                type: "ERROR",
+                message: "Sending message " + i + " failed",
+              };
             });
         })
+      )
+        .then((arr) => {
+          let errMessage = arr
+            .filter((obj) => obj.type === "ERROR")
+            .reduce((acc, obj) => {
+              return acc + obj.message + "\n ";
+            }, "");
 
-        httpServer = app.listen(httpPort, () => {
-            // console.log("app running on port ", httpServer.address().port)
+          if (errMessage) {
+            return res.status(401).json({ error: errMessage });
+          }
+
+          console.log("All messages sent");
+          return res.status(200).json({ status: "Messages sent" });
         })
-        resolve()
+        .catch((error) => {
+          console.error(error);
+          return res
+            .status(401)
+            .json({ error: "Sending Kafka messages failed" });
+        });
     })
-}
-
-/**
- * Send a list of messages to kafka.
- * @param {array} payloads must be an array where each element has `topic` and `messages`.
- * @example
- * ingestMsgInKafka([
- *   {
- *     topic: "my_topic_name",
- *     message: ['my_message'] // single messages can be just a string
- *   }
- * ])
- * @see {@link https://github.com/SOHU-Co/kafka-node#sendpayloads-cb}
- */
-function ingestMsgInKafka(payloads) {
-    kafkaProducer.send(payloads, (err) => {
-        if(err) {
-            console.error("couldn't forward message to kafka, topic: ", payloads[0].topic ," - error: ", err);
-        } else {
-            // console.log("forwarded to kafka:")
-            // console.log(payloads)
-            // console.log((new Date()).getTime() + "-----" + JSON.stringify(payloads))
-        }
-    })
-}
-
-/**
- * Create a high level producer using the zookeeper given as command line argument.
- */
-async function initKafka() {
-    return new Promise((resolve) => {
-        // console.log("attempting to initiate Kafka connection...")
-        kafkaClient = new kafka.Client(ZOOKEEPER)
-
-        kafkaProducer = new kafka.HighLevelProducer(kafkaClient)
-        kafkaProducer.on('ready', () => {
-          resolve()
-        })
-    })
-}
-
-/**
- * Send one or multiple sensor messages to kafka using `ingestMsgInKafka`.
- * @param {string} message sensor data to send. Must be a stringified JSON array or JSON object
- * @param {string} deviceId (verified) device indentifier that is concatenated with the sensor id resulting in the kafka topic name
- */
-function forwardMsg(message, deviceId) {
-    try {
-        let messageString
-
-        if(typeof(message) === "string") {
-            messageString = message;
-        } else {
-            // console.log("invalid type of data - not forwarded to kafka")
-            return;
-        }
-
-        let parsedMsg = JSON.parse(messageString)
-        if(Array.isArray(parsedMsg)) {
-            for (var i = 0, len = parsedMsg.length; i < len; i++) {
-                ingestMsgInKafka([
-                    { topic: deviceId + "_" + parsedMsg[i].sensor_id, messages: JSON.stringify(parsedMsg[i]) }
-                ]);
-            }
-        } else {
-            ingestMsgInKafka([
-                { topic: deviceId + "_" + parsedMsg.sensor_id, messages: messageString }
-            ]);
-        }
-    } catch(error) {
+    .catch((error) => {
       console.error(error);
-    }
+      return res.status(401).json({ error: "Kafka producer failed" });
+    });
 }
-
-Promise.all([initKafka()]).then(() => {
-    initRest().then(() => {
-        // console.log("http-gateway available")
-    })
-})

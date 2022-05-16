@@ -9,6 +9,7 @@ import SensorsModel from '../models/SensorsModel';
 import FormModel from '../models/FormModel';
 import Snackbar from '../utils/Snackbar';
 import RestError from '../utils/RestError';
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -56,7 +57,7 @@ export default class extends React.Component {
                 }
                 data.append('jar', blob);
 
-                SensorsModel.add(this.props.match.params.id, data).then((response) => {
+                SensorsModel.add(AuthModel.userInfo.get("id"), this.props.match.params.device_id, data).then((response) => {
                     this.form.clearForm();
                     this.setState({ back: true })
                 }).catch((error) => {
@@ -66,7 +67,7 @@ export default class extends React.Component {
             fileReader.readAsArrayBuffer(file);
         } else {
             this.adding = true;
-            SensorsModel.add(this.props.match.params.id, this.form.values, {
+            SensorsModel.add(AuthModel.userInfo.get("id"), this.props.match.params.device_id, this.form.values, {
                 onUploadProgress: progressEvent => {
                     this.uploadPercent = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
                 }
@@ -83,7 +84,7 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to={'/devices/' + this.props.match.params.id} />
+            return <Redirect to={'/users/' + AuthModel.userInfo.get("id") + '/devices/' + this.props.match.params.device_id} />
         }
 
         return (
@@ -96,7 +97,7 @@ export default class extends React.Component {
                         <Col md="6">
                             <div className="mdc-text-field" style={{width: "100%"}}>
                                 <input type="text" id="sensors-add-name" name="name" onChange={this.form.handleChange} className="mdc-text-field__input" autoComplete="off" data-lpignore="true" />
-                                <label htmlFor="sensors-add-name" className="mdc-floating-label">Name (You can use "/" to specify path)</label>
+                                <label htmlFor="sensors-add-name" className="mdc-floating-label">Name of the sensor</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
                         </Col>
@@ -110,29 +111,31 @@ export default class extends React.Component {
                             </div>
                         </Col>
                     </Row>
+
                     <Row className="mb-1">
                         <Col md="6">
                             <div style={{ width: "100%" }}>
-                                <label style={{color: "rgba(0, 0, 0, 0.6)", paddingBottom: "8px", marginTop: "16px"}}>[Optional] Data Processing Script (Jar file)</label>
+                                <label style={{color: "rgba(0, 0, 0, 0.6)", paddingBottom: "8px", display: "none", marginTop: "16px"}}>[Optional] Data Processing Script (Jar file)</label>
                                 <br/>
-                                <input type="file" id="sensors-add-jar" name="jar" accept=".jar" />
+                                <input type="file" id="sensors-add-jar" name="jar" accept=".jar" style={{display: "none"}} />
                             </div>
                         </Col>
                     </Row>
                     <Row className="mb-1">
                         <Col md="6">
-                            <div className="mdc-text-field mdc-text-field--textarea" style={{ width: "100%" }}>
-                                <textarea defaultValue='{ "type": "double" }' rows="4" id="sensors-add-mapping" name="mapping" onChange={this.form.handleChange} class="mdc-text-field__input" autoComplete="off" data-lpignore="true"></textarea>
+                            <div className="mdc-text-field mdc-text-field--textarea" style={{ width: "100%",  display: "none" }}>
+                                <textarea defaultValue='{ "type": "double" }' rows="4" id="sensors-add-mapping" name="mapping" onChange={this.form.handleChange} class="mdc-text-field__input" autoComplete="off" data-lpignore="true" style={{display: "none"}}></textarea>
                                 <label htmlFor="sensors-add-mapping" className="mdc-floating-label">Elasticsearch Value Mapping</label>
                                 <div className="mdc-line-ripple"></div>
                             </div>
-                            <span>You can see mapping document <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html" target="_blank">here</a></span>
                         </Col>
                     </Row>
+
+
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to={"/devices/" + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
-                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Add</Ripple>
+                        <Link to={'/users/' + AuthModel.userInfo.get("id") + "/devices/" + this.props.match.params.device_id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Ripple onClick={this.add.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.adding ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                         {
                             this.adding && (
                                 <span> Uploading... {this.uploadPercent}%</span>

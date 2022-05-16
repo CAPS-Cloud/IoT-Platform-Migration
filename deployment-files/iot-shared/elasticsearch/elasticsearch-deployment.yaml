@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    meta.helm.sh/release-name: iot
+    meta.helm.sh/release-namespace: default
+  generation: 1
+  labels:
+    app: elasticsearch
+    app.kubernetes.io/managed-by: Helm
+    chart: iot-platform-0.1.0
+    heritage: Helm
+    release: iot
+  name: iot-elasticsearch
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: elasticsearch
+      release: iot
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: elasticsearch
+        release: iot
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_PASSWORD
+          value: CzJToWAkKYt4R71V7izW
+        - name: discovery.type
+          value: single-node
+        - name: http.host
+          value: 0.0.0.0
+        - name: network.host
+          value: 0.0.0.0
+        - name: node.name
+          value: elasticsearch
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.keystore.path
+          value: elastic-certificates.p12
+        - name: xpack.security.transport.ssl.keystore.type
+          value: PKCS12
+        - name: xpack.security.transport.ssl.truststore.path
+          value: elastic-certificates.p12
+        - name: xpack.security.transport.ssl.truststore.type
+          value: PKCS12
+        - name: xpack.security.transport.ssl.verification_mode
+          value: certificate
+        image: registry.gitlab.com/vpacyna/iot-platform-slim/elasticsearch:microservice
+        imagePullPolicy: Always
+        name: elasticsearch
+        resources:
+          requests:
+            cpu: 5m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elasticsearch-persistent-storage
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: gitlab-registry
+      initContainers:
+      - command:
+        - chmod
+        - -R
+        - "777"
+        - /usr/share/elasticsearch/data
+        image: busybox:1.27.2
+        imagePullPolicy: IfNotPresent
+        name: init-permission
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elasticsearch-persistent-storage
+      - command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        image: busybox:1.27.2
+        imagePullPolicy: IfNotPresent
+        name: init-sysctl
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: elasticsearch-persistent-storage
+        persistentVolumeClaim:
+          claimName: elasticsearch-claim

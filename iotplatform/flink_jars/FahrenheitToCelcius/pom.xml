@@ -113,7 +113,7 @@
 								<artifactItem>
 								    <groupId>org.elasticsearch</groupId>
 								    <artifactId>elasticsearch</artifactId>
-								    <version>5.6.9</version>
+								    <version>6.8.8</version>
 								    <type>jar</type>
 								    <overWrite>false</overWrite>
 								    <outputDirectory>${project.build.directory}/classes</outputDirectory>

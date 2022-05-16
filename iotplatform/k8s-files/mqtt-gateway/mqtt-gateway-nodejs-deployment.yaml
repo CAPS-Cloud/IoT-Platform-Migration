@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mqtt-gateway-nodejs
+  name: mqtt-gateway-nodejs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mqtt-gateway-nodejs
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mqtt-gateway-nodejs
+    spec:
+      containers:
+        - env:
+            - name: KAFKA
+              value: kafka:9092
+            - name: MARIADB
+              value: mariadb:3306
+            - name: REDIS
+              value: redis:6379
+            - name: ZOOKEEPER
+              value: zookeeper:2181
+          image: registry.gitlab.com/vpacyna/iot-platform-slim/mqtt-gateway-nodejs:microservice
+          name: mqtt-gateway-nodejs
+          ports:
+            - containerPort: 1883
+          resources: {}
+      restartPolicy: Always
+status: {}

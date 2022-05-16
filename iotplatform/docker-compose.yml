@@ -1,117 +1,26 @@
 version: '3.2'
 services:
-    # nodejs-producer:
-    #     build: ./nodejs-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/nodejs-producer${TAG}
-    #     environment:
-    #         MQTT_GATEWAY: ${SERVICE_PREFIX}mqtt-gateway-nodejs${EXPOSED_SUFFIX}:1883
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: mqtt
-    #
-    # java-producer-go:
-    #     build: ./java-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer${TAG}
-    #     environment:
-    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-go${EXPOSED_SUFFIX}:8084
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: http-go
-    #
-    # java-producer-nodejs:
-    #     build: ./java-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/java-producer${TAG}
-    #     environment:
-    #         HTTP_GATEWAY: ${SERVICE_PREFIX}http-gateway-nodejs${EXPOSED_SUFFIX}:8083
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: http-nodejs
-    #
-    # python-producer-nodejs:
-    #     build: ./python-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer${TAG}
-    #     environment:
-    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-nodejs${EXPOSED_SUFFIX}:8765
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: ws-nodejs
-    #
-    # python-producer-go:
-    #     build: ./python-producer
-    #     image: registry.gitlab.com/tum-iot-lab/iotplatform/python-producer${TAG}
-    #     environment:
-    #         WS_GATEWAY: ${SERVICE_PREFIX}ws-gateway-go${EXPOSED_SUFFIX}:8766
-    #         IOTCORE_BACKEND: ${SERVICE_PREFIX}iotcore-backend${EXPOSED_SUFFIX}:3000
-    #         NAME: ws-go
-
-    kafka-manager:
-        image: sheepkiller/kafka-manager:latest
-        ports:
-            - "9100:9000"
-        environment:
-            ZK_HOSTS: ${SERVICE_PREFIX}zookeeper:2181
-            APPLICATION_SECRET: letmein
-            KM_ARGS: -Djava.net.preferIPv4Stack=true
-
     redis:
         build: ./redis
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/redis${TAG}
+        image: registry.gitlab.com/vpacyna/iot-platform-slim/redis:microservice
         ports:
             - "6379"
-
     mqtt-gateway-nodejs:
         build: ./mqtt-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/mqtt-gateway-nodejs${TAG}
+        image: registry.gitlab.com/vpacyna/iot-platform-slim/mqtt-gateway-nodejs:microservice
         environment:
+            MARIADB: ${SERVICE_PREFIX}mariadb:3306
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             REDIS: ${SERVICE_PREFIX}redis:6379
-            #AUTOSCALING: "200m:1:2:30"
         ports:
             - "1883:1883"
-
-    ws-gateway-nodejs:
-        build: ./ws-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-nodejs${TAG}
-        ulimits:
-            nproc: 65535
-            nofile: 90000
-        ports:
-            - "8765:8765"
-        environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            #AUTOSCALING: "200m:1:2:30"
-
-    ws-gateway-go:
-        build: ./ws-gateway-go
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/ws-gateway-go${TAG}
-        ulimits:
-            nproc: 65535
-            nofile: 90000
-        ports:
-            - "8766:8766"
-        environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-
-    http-gateway-nodejs:
-        build: ./http-gateway-nodejs
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-nodejs${TAG}
-        ports:
-            - "8083:8083"
-        environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-            #AUTOSCALING: "200m:1:2:30"
-
-    http-gateway-go:
-        build: ./http-gateway-go
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/http-gateway-go${TAG}
-        ports:
-            - "8084:8084"
-        environment:
-            KAFKA: ${SERVICE_PREFIX}kafka:9092
-            ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
-
     mariadb:
         image: mariadb:10
+        volumes:
+            - type: bind
+              source: /u/iot_data/iotstorage/mariadb
+              target: /var/lib/mysql
         ports:
             - "3306"
         environment:
@@ -119,72 +28,110 @@ services:
             MYSQL_DATABASE: backend
             MYSQL_USER: backend
             MYSQL_PASSWORD: qmJDiqlAr9Fcu5Rav0XJ
-
     iotcore:
         build: ./iotcore
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/iotcore${TAG}
+        image: registry.gitlab.com/vpacyna/iot-platform-slim/iotcore:microservice
         ports:
             - "3000:3000"
+        depends_on:
+            - connect
         environment:
             MARIADB: ${SERVICE_PREFIX}mariadb:3306
             KAFKA: ${SERVICE_PREFIX}kafka:9092
             ZOOKEEPER: ${SERVICE_PREFIX}zookeeper:2181
             ELASTICSEARCH: ${SERVICE_PREFIX}elasticsearch:9200
-            ELASTICSEARCH_BIN_PORT: "9300"
-            FLINK: ${SERVICE_PREFIX}flink${EXPOSED_SUFFIX}:8081
-
+            ELASTICSEARCH_BIN_PORT: "9200"
+            ELASTICSEARCH_USER: elastic
+            ELASTICSEARCH_PASSWORD: CzJToWAkKYt4R71V7iz
+            CONNECT: ${SERVICE_PREFIX}connect:8083
+        volumes:
+            - type: bind
+              source: /u/iot_data/iotstorage/iotcore
+              target: /data
     zookeeper:
-        image: wurstmeister/zookeeper:latest
+        image: wurstmeister/zookeeper
+        environment:
+            ALLOW_ANONYMOUS_LOGIN: "yes"
         ports:
             - "2181"
-
     kafka:
-        image: wurstmeister/kafka:2.11-0.11.0.2
+        image: wurstmeister/kafka:2.12-2.4.1
         ports:
             - "9092"
             - "9094"
         environment:
-            HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+            KAFKA_BROKER_ID: "1"
             KAFKA_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+            KAFKA_ADVERTISED_LISTENERS: INSIDE://${SERVICE_PREFIX}${SERVICE_NAME}:9092,OUTSIDE://10.195.7.79:9094
             KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
             KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-
-    flink:
-        image: flink:1.5-alpine
-        ports:
-            - "8081:8081"
-            - "6123"
-            - "6124"
-            - "6125"
-        command: jobmanager
-        environment:
-            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
-
-    taskmanager:
-        image: flink:1.5-alpine
+            KAFKA_LOG_DIRS: /kafka/kafka-logs-1
+        volumes:
+            - type: bind
+              source: /u/iot_data/iotstorage/kafka
+              target: /kafka
         depends_on:
-            - flink
-        command: taskmanager
-        environment:
-            JOB_MANAGER_RPC_ADDRESS: ${SERVICE_PREFIX}flink
-            TASK_MANAGER_NUMBER_OF_TASK_SLOTS: "100"
-
+            - zookeeper           
     elasticsearch:
         build: ./elasticsearch
-        image: registry.gitlab.com/tum-iot-lab/iotplatform/elasticsearch${TAG}
+        image: registry.gitlab.com/vpacyna/iot-platform-slim/elasticsearch:microservice
+        volumes:
+            - type: bind
+              source: /u/iot_data/iotstorage/elasticsearch6
+              target: /usr/share/elasticsearch/data
         ports:
-            - "9000:9200"
             - "9200"
             - "9300"
-
+        environment:
+            http.host: 0.0.0.0
+            network.host: 0.0.0.0
+            node.name: elasticsearch
+            discovery.type: single-node
+            ELASTIC_PASSWORD: CzJToWAkKYt4R71V7izW
+            xpack.security.enabled: "true"
+            xpack.security.transport.ssl.enabled: "true"
+            xpack.security.transport.ssl.keystore.type: PKCS12
+            xpack.security.transport.ssl.verification_mode: certificate
+            xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+            xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
+            xpack.security.transport.ssl.truststore.type: PKCS12
     kibana:
         depends_on:
             - elasticsearch
-        image: kibana:5
+        image: kibana:6.8.8
         environment:
             ELASTICSEARCH_URL: http://${SERVICE_PREFIX}elasticsearch:9200
+            ELASTICSEARCH_HOSTS: http://${SERVICE_PREFIX}elasticsearch:9200
+            CONSOLE_ENABLED: "false"
+            ELASTICSEARCH_USERNAME: elastic
+            ELASTICSEARCH_PASSWORD: CzJToWAkKYt4R71V7izW
         ports:
-            - "5601:5601"
+            - "5602:5601"
+    connect:
+        image: confluentinc/cp-kafka-connect:5.5.1
+        depends_on:
+            - zookeeper
+            - kafka
+            - elasticsearch
+        ports:
+            - "8083"
+        environment:
+            CONNECT_BOOTSTRAP_SERVERS: ${SERVICE_PREFIX}kafka:9092
+            CONNECT_REST_ADVERTISED_HOST_NAME: ${SERVICE_PREFIX}connect
+            CONNECT_REST_PORT: "8083"
+            CONNECT_GROUP_ID: compose-connect-group
+            CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+            CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+            CONNECT_OFFSET_FLUSH_INTERVAL_MS: "10000"
+            CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+            CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+            CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+            CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+            CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+            CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+            CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+            CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+            CONNECT_ZOOKEEPER_CONNECT: ${SERVICE_PREFIX}zookeeper:2181
+            CONNECT_PLUGIN_PATH: /usr/share/java

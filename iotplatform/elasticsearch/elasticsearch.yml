@@ -1,5 +1,7 @@
 http.host: 0.0.0.0
 network.host: 0.0.0.0
+node.name: elasticsearch
+discovery.type: single-node
 
 # ElasticSearch, by default, binds itself to the 0.0.0.0 address, and listens
 # on port [9200-9300] for HTTP traffic and on port [9300-9400] for node-to-node

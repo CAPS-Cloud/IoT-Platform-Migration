@@ -13,6 +13,7 @@ import axios from "axios";
 import Download from "../utils/Download";
 import Snackbar from "../utils/Snackbar";
 import RestError from '../utils/RestError';
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -36,6 +37,7 @@ export default class extends React.Component {
             var notFound = false;
             var object;
             if (ConsumersModel.fetched) {
+                console.log(ConsumersModel.data);
                 const objects = ConsumersModel.data.filter((object) => (object.id == this.props.match.params.id));
                 if (objects.length >= 1) {
                     object = objects[0];
@@ -58,7 +60,7 @@ export default class extends React.Component {
 
     componentWillMount() {
         ConsumersModel.fetch();
-        DevicesModel.fetch();
+        DevicesModel.fetch(AuthModel.userInfo.get("id"));
     }
 
     componentDidUpdate() {
@@ -108,6 +110,7 @@ export default class extends React.Component {
     }
 
     render() {
+
         var sensorIds = [];
         if (this.object && this.object.sensors) {
             sensorIds = this.object.sensors.map(sensor => sensor.id);

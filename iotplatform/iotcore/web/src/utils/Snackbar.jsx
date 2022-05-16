@@ -16,6 +16,8 @@ export default new class {
 
         document.querySelector('.mdc-snackbar').className = "mdc-snackbar mdc-snackbar--align-start bg-" + colorStyle;
 
+        document.querySelector('.mdc-snackbar').style.marginBottom = "40px";
+
         snackbar.show(dataObj);
     }
 
@@ -24,7 +26,8 @@ export default new class {
             <div className="mdc-snackbar mdc-snackbar--align-start"
                 aria-live="assertive"
                 aria-atomic="true"
-                aria-hidden="true">
+                aria-hidden="true"
+                 style={{ marginBottom: "40px" }}>
                 <div className="mdc-snackbar__text text-white"></div>
                 <div className="mdc-snackbar__action-wrapper" style={{ display: "none" }}>
                     <button type="button" className="mdc-snackbar__action-button"></button>

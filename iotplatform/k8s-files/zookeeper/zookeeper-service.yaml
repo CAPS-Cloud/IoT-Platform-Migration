@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: iot
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2022-01-24T07:18:38Z"
+  labels:
+    app: zookeeper
+    app.kubernetes.io/managed-by: Helm
+    chart: iot-platform-0.1.0
+    heritage: Helm
+    release: iot
+  name: iot-zookeeper
+  namespace: default
+  resourceVersion: "82630"
+  uid: 07832b7c-fc39-4e18-913d-3047fa2a145d
+spec:
+  clusterIP: 10.109.215.247
+  clusterIPs:
+  - 10.109.215.247
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: port-2181
+    port: 2181
+    protocol: TCP
+    targetPort: 2181
+  selector:
+    app: zookeeper
+    release: iot
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

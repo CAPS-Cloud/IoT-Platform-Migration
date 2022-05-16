@@ -1,0 +1,7 @@
+FROM openwhisk/action-nodejs-v14:latest
+RUN apt-get update 
+
+
+COPY . .
+
+RUN npm install

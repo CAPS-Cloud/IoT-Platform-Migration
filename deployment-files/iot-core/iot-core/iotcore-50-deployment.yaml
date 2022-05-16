@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    meta.helm.sh/release-name: iot
+    meta.helm.sh/release-namespace: default
+  labels:
+    app: iotcore
+    app.kubernetes.io/managed-by: Helm
+    chart: iot-platform-0.1.0
+    heritage: Helm
+    release: iot
+  name: iot-iotcore-50
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: iotcore-50
+      release: iot
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: iotcore-50
+        release: iot
+    spec:
+      containers:
+        - env:
+            - name: CONNECT
+              value: 10.156.15.202:8083
+            - name: ELASTICSEARCH
+              value: 10.156.15.199:9200
+            - name: ELASTICSEARCH_BIN_PORT
+              value: "9200"
+            - name: ELASTICSEARCH_PASSWORD
+              value: CzJToWAkKYt4R71V7izW
+            - name: ELASTICSEARCH_USER
+              value: elastic
+            - name: KAFKA
+              value: 10.156.15.200:9094
+            - name: MARIADB
+              value: 10.156.15.198:3306
+            - name: ZOOKEEPER
+              value: 10.156.15.201:2181
+          image: registry.gitlab.com/vpacyna/iot-platform-slim/iotcore:microservice
+          imagePullPolicy: Always
+          name: iotcore
+          resources:
+            requests:
+              cpu: 0.5
+            limits:
+              cpu: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      imagePullSecrets:
+        - name: gitlab-registry
+      dnsPolicy: ClusterFirst

@@ -6,12 +6,16 @@ const Op = Sequelize.Op;
 module.exports = class {
 
     constructor(model) {
-        this.findAllOptions = {}
+        this.findAllOptions = {};
         this.model = model;
     }
 
     getAll(req, res) {
+        console.log(this.findAllOptions);
+
         this.model.findAll(this.findAllOptions).then(datas => {
+            console.log(datas);
+
             return res.status(200).json({ result: datas });
         }).catch(err => responseError(res, err));
     }

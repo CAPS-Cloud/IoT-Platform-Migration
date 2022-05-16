@@ -129,7 +129,7 @@ export default class extends React.Component {
                         <Link to={'/consumers/' + this.props.match.params.id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
                             !(this.failedFetching || !ConsumersModel.fetched || this.notFound) && (
-                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (ConsumersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (ConsumersModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                             )
                         }
                     </div>

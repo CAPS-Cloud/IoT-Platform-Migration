@@ -10,6 +10,7 @@ import axios from "axios";
 import Download from "../utils/Download";
 import Snackbar from "../utils/Snackbar";
 import SensorsModel from "../models/SensorsModel";
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -30,7 +31,7 @@ export default class extends React.Component {
             var notFound = false;
             var object;
             if (DevicesModel.fetched) {
-                const objects = DevicesModel.data.filter((object) => (object.id == this.props.match.params.id));
+                const objects = DevicesModel.data.filter((object) => (object.id == this.props.match.params.device_id));
                 if (objects.length >= 1) {
                     object = objects[0];
                 } else {
@@ -43,16 +44,16 @@ export default class extends React.Component {
     }
 
     downloadKey() {
-        axios.get(`/devices/${this.props.match.params.id}/key`).then(response => {
-            Download(JSON.stringify(response.data), `device_${this.props.match.params.id}_key.json`, 'application/json');
+        axios.get(`/users/${AuthModel.userInfo.get("id")}/devices/${this.props.match.params.device_id}/key`).then(response => {
+            Download(JSON.stringify(response.data), `device_${this.props.match.params.device_id}_key.json`, 'application/json');
         }).catch(error => {
             Snackbar.show(new RestError(error).getMessage());
         });
     }
 
     componentWillMount() {
-        DevicesModel.fetch();
-        SensorsModel.fetch(this.props.match.params.id);
+        DevicesModel.fetch(AuthModel.userInfo.get("id"));
+        SensorsModel.fetch(AuthModel.userInfo.get("id"), this.props.match.params.device_id);
     }
 
     componentDidMount() {
@@ -60,9 +61,9 @@ export default class extends React.Component {
 
         this.dialog.listen('MDCDialog:accept', () => {
             const { id, name } = this.to_delete;
-            SensorsModel.delete(this.props.match.params.id, id).then((response) => {
+            SensorsModel.delete(AuthModel.userInfo.get("id"), this.props.match.params.device_id, id).then((response) => {
                 Snackbar.show("Deleted sensor " + name, "success");
-                SensorsModel.fetch(this.props.match.params.id);
+                SensorsModel.fetch(AuthModel.userInfo.get("id"), this.props.match.params.device_id);
             }).catch((error) => {
                 Snackbar.show(new RestError(error).getMessage());
             });
@@ -102,7 +103,7 @@ export default class extends React.Component {
                                         <h6 className="mb-0">Description: <span style={{ fontWeight: "normal" }}>{sensor.description}</span></h6>
                                     </span>
                                 </div>
-                                <Link to={"/devices/" + this.props.match.params.id + "/sensors/" + sensor.id + "/edit"} className="plain-link"><Ripple className="p-0 mdc-button mdc-button--dense" style={{ textTransform: "none", width: "50px", height: "24px" }}>Edit</Ripple></Link>
+                                <Link to={'/users/' + AuthModel.userInfo.get("id")+ "/devices/" + this.props.match.params.device_id + "/sensors/" + sensor.id + "/edit"} className="plain-link"><Ripple className="p-0 mdc-button mdc-button--dense" style={{ textTransform: "none", width: "50px", height: "24px" }}>Edit</Ripple></Link>
                                 <Ripple onClick={this.deleteClick.bind(this, sensor)} style={{ textTransform: "none", width: "50px", height: "24px" }} className={"danger-button p-0 mdc-button mdc-button--dense" + (SensorsModel.deleting ? " disabled" : "")}>Delete</Ripple>
                             </div>
                         </li>
@@ -136,7 +137,7 @@ export default class extends React.Component {
         return (
             <div>
                 <div className="p-1" style={{ display: "flex", alignItems: "center", backgroundColor: "#e9ecef", borderRadius: ".25rem"}}>
-                    <Link to="/devices" className="plain-link">
+                    <Link to={'/users/' + AuthModel.userInfo.get("id") + "/devices/"} className="plain-link">
                         <div className="mdc-button mdc-button--dense" style={{ textTransform: "none", fontSize: "1rem", fontWeight: "300", letterSpacing: "unset" }}>
                             Devices
                         </div>
@@ -178,18 +179,38 @@ export default class extends React.Component {
                         <div>
                             <h3 className="mt-3 mdc-typography--headline3">
                                 {this.object.name}
-                                <Link to={"/devices/" + this.props.match.params.id + "/edit"} className="plain-link"><Ripple className="ml-3 mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Edit Device</Ripple></Link>
+                                <Link to={'/users/' + AuthModel.userInfo.get("id") + "/devices/" + this.props.match.params.device_id + "/edit"} className="plain-link"><Ripple className="ml-3 mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Edit Device</Ripple></Link>
                                 <Ripple onClick={this.downloadKey.bind(this)} className="ml-3 secondary-button mdc-button mdc-button--outlined" style={{ textTransform: "none" }}>Download Device Key</Ripple>
                             </h3>
                             <br />
 
                             <div className="mb-4">
+                                <h5 className="mdc-typography--headline5">Name</h5>
+                                <span className="mdc-typography--body1">{this.object.name}</span>
+                            </div>
+                            <div className="mb-4">
                                 <h5 className="mdc-typography--headline5">Description</h5>
                                 <span className="mdc-typography--body1">{this.object.description}</span>
                             </div>
+                            <div className="mb-4">
+                                <h5 className="mdc-typography--headline5">MQTT ClientId</h5>
+                                <span className="mdc-typography--body1">{this.object.clientId}</span>
+                            </div>
+                            <div className="mb-4">
+                                <h5 className="mdc-typography--headline5">MQTT Username</h5>
+                                <span className="mdc-typography--body1">{this.object.username}</span>
+                            </div>
+                            <div className="mb-4">
+                                <h5 className="mdc-typography--headline5">MQTT Server</h5>
+                                <span className="mdc-typography--body1">{this.object.url}</span>
+                            </div>
+                            <div className="mb-4">
+                                <h5 className="mdc-typography--headline5">MQTT topic to subscribe</h5>
+                                <span className="mdc-typography--body1">{this.object.ttn_topic_to_subscribe}</span>
+                            </div>
 
                             <div className="mb-4">
-                                <h5 className="mdc-typography--headline5">Sensors <Link to ={"/devices/" + this.props.match.params.id + "/sensors/add"} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Add Sensor</Ripple></Link></h5>
+                                <h5 className="mdc-typography--headline5">Sensors <Link to ={'/users/' + AuthModel.userInfo.get("id") + "/devices/" + this.props.match.params.device_id + "/sensors/add"} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Add Sensor</Ripple></Link></h5>
 
                                 {
                                     SensorsModel.fetching ? (
@@ -209,10 +230,10 @@ export default class extends React.Component {
                                     )
                                 }
                             </div>
+                            <br/><br/><br/><br/>
                         </div>
                     )
                 }
-
             </div>
         )
     }

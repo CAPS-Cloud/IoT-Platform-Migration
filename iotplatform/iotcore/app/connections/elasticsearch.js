@@ -8,6 +8,7 @@ const elasticClient = new elasticsearch.Client({
   hosts: [
     `http://${host}/`,
   ],
+  httpAuth: `${process.env.ELASTICSEARCH_USER}:${process.env.ELASTICSEARCH_PASSWORD}`,
 });
 
 function addElasticsearchIndex(topic, valueMapping) {
@@ -20,7 +21,10 @@ function addElasticsearchIndex(topic, valueMapping) {
         reject(err);
       }
       else {
-        var body = {
+        console.log("Done adding elasticsearch index", topic);
+        resolve(resp);
+
+        /*var body = {
           sensorReading: {
             properties: {
               timestamp: { "type": "date" },
@@ -30,7 +34,7 @@ function addElasticsearchIndex(topic, valueMapping) {
           },
         }
 
-        elasticClient.indices.putMapping({ index: topic, type: "sensorReading", body: body },
+        elasticClient.indices.putMapping({ index: topic, include_type_name: true, type: "sensorReading", body: body },
           function (err, resp, status) {
             if (err) {
               reject(err);
@@ -39,7 +43,7 @@ function addElasticsearchIndex(topic, valueMapping) {
               resolve(resp);
             }
           }
-        );
+        );*/
       }
     });
   });

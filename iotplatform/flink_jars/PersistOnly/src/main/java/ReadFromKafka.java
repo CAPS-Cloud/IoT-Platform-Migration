@@ -8,15 +8,21 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunction;
 import org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;
-import org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
-import org.apache.flink.streaming.util.serialization.JSONDeserializationSchema;
+import org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.util.serialization.JSONKeyValueDeserializationSchema;
 import org.apache.flink.util.Collector;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.elasticsearch.client.RestClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.HttpHost;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,64 +41,103 @@ public class ReadFromKafka {
         config.put("cluster.name", "elasticsearch");
         config.put("bulk.flush.max.actions", "1");
 
-        List<InetSocketAddress> transportAddresses = new ArrayList<>();
-        transportAddresses.add(new InetSocketAddress(InetAddress.getByName(parameterTool.getRequired("elasticsearch")), Integer.parseInt(parameterTool.getRequired("elasticsearch_port"))));
-        System.out.println("Elasticsearch detected at: " + InetAddress.getByName(parameterTool.getRequired("elasticsearch")).toString());
+
+
+        List<HttpHost> httpHosts = new ArrayList<>();
+	httpHosts.add(new HttpHost(parameterTool.getRequired("elasticsearch"), Integer.parseInt(parameterTool.getRequired("elasticsearch_port")), "http"));
+
+        System.out.println("Elasticsearch detected at: " + parameterTool.getRequired("elasticsearch").toString());
+
+// use a ElasticsearchSink.Builder to create an ElasticsearchSink
+        ElasticsearchSink.Builder<SensorReading> esSinkBuilder = new ElasticsearchSink.Builder<>(
+            httpHosts,
+            new ElasticsearchSinkFunction<SensorReading>() {
+                public IndexRequest createIndexRequest(SensorReading element) {
+                    Map<String, Object> json = new HashMap<>();
+		    System.out.println("Elasticsearch Sensor_id detected : " + element.getSensorId().toString());
+
+                    json.put("timestamp", element.getTimestamp());
+                    json.put("sensor_id", element.getSensorId());
+                    json.put("device_id", element.getDeviceId());
+                    json.put("value", element.getValue());
+                    return Requests.indexRequest()
+                            .index(parameterTool.getRequired("topic"))
+                            .type("sensorReading")
+                            .source(json);
+                }
+
+                @Override
+                public void process(SensorReading element, RuntimeContext ctx, RequestIndexer indexer) {
+                    indexer.add(createIndexRequest(element));
+                }
+            }
+        );
+
+
+        // configuration for the bulk requests; this instructs the sink to emit after every element, otherwise they would be buffered
+        esSinkBuilder.setBulkFlushMaxActions(1);
+
+        // provide a RestClientFactory for custom configuration on the internally created REST client
+        esSinkBuilder.setRestClientFactory(
+            restClientBuilder -> {
+                restClientBuilder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                    @Override
+                    public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+
+                        // elasticsearch username and password
+                        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(parameterTool.getRequired("elasticsearch_username"), parameterTool.getRequired("elasticsearch_password")));
+
+                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                    }
+                });
+            }
+        );
 
         env
                 .addSource(
-                        new FlinkKafkaConsumer011<>(
+                        new FlinkKafkaConsumer<>(
                                 parameterTool.getRequired("topic"),
-                                new JSONDeserializationSchema(),
+                                new JSONKeyValueDeserializationSchema(true),
                                 parameterTool.getProperties()
                         )
                 )
                 .flatMap(new FlatMapFunction<ObjectNode, SensorReading>() {
                     @Override
                     public void flatMap(ObjectNode node, Collector<SensorReading> out) throws Exception {
-                        if (!node.get("timestamp").isNumber() || !node.get("sensor_id").isTextual()) {
+			    System.out.println("reading from kafka : " + node.get("value").get("sensor_id").toString());
+
+                        if (!node.get("value").get("timestamp").isNumber() || !node.get("value").get("sensor_id").isTextual() || !node.get("value").get("device_id").isTextual()) {
                             return;
                         }
-                        if (node.get("value").isTextual()) {
+                        if (node.get("value").get("value").isTextual()) {
                             out.collect(new SensorReading(
-                                    node.get("timestamp").asLong(),
-                                    node.get("sensor_id").asText(),
-                                    node.get("value").asText()
+                                    node.get("value").get("timestamp").asLong(),
+                                    node.get("value").get("sensor_id").asText(),
+                                    node.get("value").get("device_id").asText(),
+                                    node.get("value").get("value").asText()
                             ));
-                        } else if (node.get("value").isFloatingPointNumber()) {
+                        } else if (node.get("value").get("value").isFloatingPointNumber()) {
                             out.collect(new SensorReading(
-                                    node.get("timestamp").asLong(),
-                                    node.get("sensor_id").asText(),
-                                    node.get("value").asDouble()
+                                    node.get("value").get("timestamp").asLong(),
+                                    node.get("value").get("sensor_id").asText(),
+                                    node.get("value").get("device_id").asText(),
+                                    node.get("value").get("value").asDouble()
                             ));
-                        } else if (node.get("value").isNumber()) {
+                        } else if (node.get("value").get("value").isNumber()) {
                             out.collect(new SensorReading(
-                                    node.get("timestamp").asLong(),
-                                    node.get("sensor_id").asText(),
-                                    node.get("value").asLong()
+                                    node.get("value").get("timestamp").asLong(),
+                                    node.get("value").get("sensor_id").asText(),
+                                    node.get("value").get("device_id").asText(),
+                                    node.get("value").get("value").asLong()
                             ));
                         }
                     }
                 })
-                .addSink(new ElasticsearchSink<>(config, transportAddresses, new ElasticsearchSinkFunction<SensorReading>() {
-                    IndexRequest createIndexRequest(SensorReading element) {
-                        Map<String, Object> json = new HashMap<>();
-                        json.put("timestamp", element.getTimestamp());
-                        json.put("sensor_id", element.getSensorId());
-                        json.put("value", element.getValue());
-                        return Requests.indexRequest()
-                                .index(parameterTool.getRequired("topic"))
-                                .type("sensorReading")
-                                .source(json);
-                    }
-
-                    @Override
-                    public void process(SensorReading element, RuntimeContext ctx, RequestIndexer indexer) {
-                        indexer.add(createIndexRequest(element));
-                    }
-                }));
+                .addSink(esSinkBuilder.build());
 
         env.enableCheckpointing(1000);
         env.execute(parameterTool.getRequired("topic"));
     }
 }
+

@@ -1,34 +1,59 @@
-FROM node:9
+FROM node:14.0.0
 
 RUN apt-get update -qq \
-    && apt-get install -y libzmq3 libzmq3-dev build-essential make \
+    && apt-get install -y libzmq3-dev build-essential make \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install Java.
-RUN \
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  apt-get update && \
-  apt-get install -y software-properties-common && \
-  add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" && \
-  apt-get update && \
-  apt-get install -y oracle-java8-installer && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk8-installer
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jre && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/ && \
+    rm -rf /var/cache/oracle-jdk8-installer;
 
 # Define commonly used JAVA_HOME variable
 RUN update-alternatives --config java
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
 
-COPY app /app/
+# # SPARK
+# ENV SPARK_VERSION 2.4.7
+# ENV HADOOP_VERSION 2.7
+# ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}
+# ENV SPARK_HOME /usr/${SPARK_PACKAGE}
+# ENV PATH $PATH:${SPARK_HOME}/bin
+
+# RUN wget "http://mirror.synyx.de/apache/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz" &&\ 
+# 	tar -xzf /$SPARK_PACKAGE.tgz -C /usr/
+
+
+RUN mkdir /app
+
+COPY web /app/web_tmp/
+
+RUN mkdir -p /app/public/static/ 
+
+RUN cd /app/web_tmp && npm install --no-optional && \
+	npm rebuild node-sass --force && \
+	npm run build && \
+	cp -a /app/web_tmp/dist/. /app/public/static/ && \
+	rm -rf /app/web_tmp/
+
 
 COPY web/index.html /app/public/index.html
-COPY web/dist /app/public/static
+#COPY web/dist /app/public/static
 
-RUN chmod -R a+x /app \
-    && cd /app \
+COPY app/package.json /app/package.json
+COPY app/package-lock.json /app/package-lock.json
+
+RUN cd /app \
     && npm install --no-optional --save \
     && cd ../
+    
+COPY app /app/
+
+RUN chmod -R a+x /app 
 
 COPY wait-for-it.sh /
 RUN chmod a+x /wait-for-it.sh

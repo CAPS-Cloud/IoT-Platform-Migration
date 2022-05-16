@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: iot
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2022-01-24T07:18:38Z"
+  labels:
+    app: mariadb
+    app.kubernetes.io/managed-by: Helm
+    chart: iot-platform-0.1.0
+    heritage: Helm
+    release: iot
+  name: iot-mariadb
+  namespace: default
+  resourceVersion: "82651"
+  uid: 184a9d2d-cc81-47d1-97ff-1711cf99362a
+spec:
+  clusterIP: 10.106.253.233
+  clusterIPs:
+  - 10.106.253.233
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: port-3306
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mariadb
+    release: iot
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

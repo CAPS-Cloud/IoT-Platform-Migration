@@ -4,9 +4,15 @@
 /wait-for-it.sh $KAFKA --timeout=0 --strict
 /wait-for-it.sh $ZOOKEEPER --timeout=0 --strict
 /wait-for-it.sh $ELASTICSEARCH --timeout=0 --strict
-/wait-for-it.sh $FLINK --timeout=0 --strict
+#/wait-for-it.sh $FLINK --timeout=0 --strict
+
+
 
 cd app
+
+#cd handlers
+#nohup node AuthenticationCheckHandlerNew.js &
+#cd ..
 
 npm run start -- $MARIADB
 

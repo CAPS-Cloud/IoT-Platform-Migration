@@ -12,6 +12,7 @@ import Snackbar from "../utils/Snackbar";
 import SensorsModel from '../models/SensorsModel';
 import FormModel from '../models/FormModel';
 import RestError from '../utils/RestError';
+import AuthModel from "../models/AuthModel";
 
 @observer
 export default class extends React.Component {
@@ -61,10 +62,10 @@ export default class extends React.Component {
             name: this.form.values.name,
             description: this.form.values.description,
         }
-        SensorsModel.update(this.props.match.params.device_id, this.props.match.params.id, toUpdate).then((response) => {
+        SensorsModel.update(AuthModel.userInfo.get("id"), this.props.match.params.device_id, this.props.match.params.id, toUpdate).then((response) => {
             this.form.clearForm();
             this.setState({ back: true });
-            SensorsModel.fetch(this.props.match.params.device_id);
+            SensorsModel.fetch(AuthModel.userInfo.get("id"), this.props.match.params.device_id);
             Snackbar.show("Updated sensor", "success");
         }).catch((error) => {
             Snackbar.show(new RestError(error).getMessage());
@@ -72,7 +73,7 @@ export default class extends React.Component {
     }
 
     componentWillMount() {
-        SensorsModel.fetch(this.props.match.params.device_id);
+        SensorsModel.fetch(AuthModel.userInfo.get("id"), this.props.match.params.device_id);
     }
 
     componentDidMount() {
@@ -89,7 +90,7 @@ export default class extends React.Component {
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to={'/devices/' + this.props.match.params.device_id} />
+            return <Redirect to={'/users/' + AuthModel.userInfo.get("id") + "/devices/" + this.props.match.params.device_id} />
         }
 
         return (
@@ -127,10 +128,10 @@ export default class extends React.Component {
                     </div>
                     <input type="submit" style={{ visibility: "hidden", position: "absolute", left: "-9999px", width: "1px", height: "1px" }} />
                     <div className="mt-5">
-                        <Link to={'/devices/' + this.props.match.params.device_id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
+                        <Link to={'/users/' + AuthModel.userInfo.get("id") + '/devices/' + this.props.match.params.device_id} className="plain-link"><Ripple className="mdc-button" style={{ textTransform: "none" }}>Back</Ripple></Link>
                         {
                             !(this.failedFetching || !SensorsModel.fetched || this.notFound) && (
-                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Edit</Ripple>
+                                <Ripple onClick={this.update.bind(this)} className={"ml-4 mdc-button mdc-button--unelevated" + (SensorsModel.updating ? " disabled" : "")} style={{ textTransform: "none" }}>Submit</Ripple>
                             )
                         }
                     </div>
