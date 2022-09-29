@@ -1,0 +1,20 @@
+{
+  "name": "UserControllerSignInApp",
+  "version": "1.0.0",
+  "description": "Application for Signin",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.2.1",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.10",
+    "flatted": "^3.1.0",
+    "q": "^1.5.1"
+  }
+}

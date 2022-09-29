@@ -1,0 +1,21 @@
+{
+  "name": "ConsumerControllerDelete",
+  "version": "1.0.0",
+  "description": "Application for deleting consumers",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "elasticsearch": "^16.7.1",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.10",
+    "flatted": "^3.1.0",
+    "q": "^1.5.1",
+    "axios": "^0.18.0",
+    "request": "^2.87.0"
+  }
+}

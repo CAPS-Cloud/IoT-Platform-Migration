@@ -1,0 +1,21 @@
+{
+  "name": "mqtt-gateway",
+  "version": "1.0.0",
+  "description": "IoT Platform MQTT Gateway",
+  "author": "heldic, modified by ansjin",
+  "main": "app.js",
+  "repository": "https://github.com/heldic/iotplatform",
+  "dependencies": {
+    "jsonwebtoken": "^8.3.0",
+    "kafka-node": "5.0.0",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.5",
+    "q": "^1.5.1",
+    "jsonschema":"1.2.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "license": "ISC"
+}

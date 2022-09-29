@@ -1,0 +1,23 @@
+{
+  "name": "PredictedSensorAdd",
+  "version": "1.0.0",
+  "description": "Application to add Predicted Sensor",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.3",
+    "express-http-proxy": "^1.2.0",
+    "jsonwebtoken": "^8.2.1",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.10",
+    "flatted": "^3.1.0",
+    "q": "^1.5.1"
+  }
+}

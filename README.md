@@ -421,7 +421,7 @@ The resulting structure:
 We migrate the different API endpoints of the IoT Core onto OpenWhisk and Google Cloud Run (GCR).
 
 # OpenWhisk
-All source code is present [here](./functions/OW-Functions/).
+All source code is present [here](./functions/OW-Functions/) and [here](./functions/OW-Functions-All/).
 # GCR
 All source code is present [here](./functions/GCR-Functions) and [here](./functions/GCR-Functions-All).
 
