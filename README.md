@@ -1,6 +1,8 @@
 # iotplatform
 
-_Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Hans Kirchner_
+
+## This the repo for the Internation Workshop on Serverless Computing (WoSC8) paper titled: "Migrating from Microservices to Serverless: An IoT Platform Case Study"
+### Authors:  Mohak Chadha, Victor Pacyna, Anshul Jindal, and Michael Gerndt.
 
 
 
@@ -34,18 +36,10 @@ _Peeranut Chindanonda, Helge Dickel, Christoph Gebendorfer, Bahareh Hosseini, Ha
 - [Security Concept](#security-concept)
     - [Retrieving JWT Tokens](#retrieving-jwt-tokens)
     - [Pushing Data](#pushing-data)
-- [Gateway Benchmarks](#gateway-benchmarks)
-    - [HTTP Gateways](#http-gateways)
-    - [WS Gateways](#ws-gateways)
-- [Virtual Machines](#virtual-machines)
-    - [Access](#access)
-- [Kubernetes](#kubernetes)
-    - [Accessing the Cluster](#accessing-the-cluster)
-        - [Using `kubectl`](#using-kubectl)
-        - [Using K8s Dashboard](#using-k8s-dashboard)
-    - [Setting up the Cluster](#setting-up-the-cluster)
-        - [Preparing the Host](#preparing-the-host)
-        - [Adding Nodes](#adding-nodes)
+- [Migration to FaaS](#migration-to-faas)
+    - [OpenWhisk](#openwhisk)
+    - [Google Cloud Run](#gcr)
+- [Performance Results][#perf-results]
 - [Outlook](#outlook)
 
 
@@ -75,7 +69,7 @@ docker-compose up
 ## Architecture
 The full composition of the pipeline of iotplatform:
 
-<img src="./doc/diagrams/iotplatform_pipeline.png" />
+<img src="./doc/diagrams/IoT_System_Design.png" />
 
 
 
@@ -86,28 +80,8 @@ The full composition of the pipeline of iotplatform:
 Development is done via docker-compose to enable working locally, since
 cluster-resources are limited:
 
-<img src="./doc/diagrams/deployment.png" />
-
-### Requirements
-1. Install the Google Cloud SDK and execute `gcloud components install kubectl`
-2. Install helm on your machine
-
-### Setting Up Cluster
-1. Create Kubernetes Cluster
-2. Connect to cluster
-3. Execute `kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default`
-4. Execute `helm init`
-5. Create personal access token at https://gitlab.com/profile/personal_access_tokens with scope `read_registry`
-6. Execute `kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=<your gitlab username> --docker-password=<your personal access token> --docker-email=<your gitlab email>`
-
-### Deploying IoT Platform
-1. Execute `helm upgrade --debug --wait --timeout 300 --install --force --recreate-pods --values ./iotplatform/docker-compose.yml --set-string defaults.imageTag=latest iot ./iotplatform/helm-chart/iot`
-
-### Undeploying IoT Platform
-1. Execute `helm delete --debug --purge iot`
-
-### Usage
-https://docs.google.com/document/d/1THz9gFxGTb3e7I_xPTrnHU-Q_VTgQr2pWHsDjzQCYtg/edit?usp=sharing
+- Todo: Write deployment and how to use
+- Todo: Write about integration with Kubernetes
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
@@ -420,7 +394,7 @@ Sensor:
 ### Data Model
 An ER-diagram of the data model:
 
-<img src="./doc/diagrams/datamodel.png" />
+<img src="./doc/diagrams/data_model.png" />
 
 
 [//]: <########################################################################>
@@ -439,140 +413,26 @@ The resulting structure:
 
 
 
-[//]: <############################################################################################>
-[//]: <############################################################################################>
-[//]: <############################################################################################>
-## Security Concept
-### Retrieving JWT Tokens
-<img src="./doc/diagrams/security_1.png" />
-
-### Pushing Data
-<img src="./doc/diagrams/security_2.png" />
-
-
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 [//]: <############################################################################################>
-## Gateway Benchmarks
-### HTTP Gateways
-<img src="./doc/diagrams/benchmark_1.png" />
+## Migration to FaaS
+We migrate the different API endpoints of the IoT Core onto OpenWhisk and Google Cloud Run (GCR).
 
-------
-
-<img src="./doc/diagrams/benchmark_2.png" />
-
-[//]: <########################################################################>
-### WS Gateways
-<img src="./doc/diagrams/benchmark_3.png" />
-
-------
-
-<img src="./doc/diagrams/benchmark_4.png" />
-
+# OpenWhisk
+All source code is present [here](./functions/OW-Functions/).
+# GCR
+All source code is present [here](./functions/GCR-Functions).
 
 
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 [//]: <############################################################################################>
-## Virtual Machines
-| Name                | IP             | CPU | VCPU | Ram | Storage |
-| ------------------- | -------------- | --- | ---- | --- | ------- |
-| Kubernetes_Master   | 141.40.254.145 | 1   | 2    | 4GB | 50GB    |
-| Kubernetes_Worker_1 | 141.40.254.147 | 1   | 1    | 8GB | 50GB    |
-| Kubernetes_Worker_2 | 141.40.254.146 | 1   | 1    | 8GB | 50GB    |
 
+## Migration to FaaS
+Add some performance results.
 
-[//]: <########################################################################>
-### Access
-You can use any ssh client to access the VM using username of root and certificate file infrastructure/SSH.ppk in this repository
-
-
-
-[//]: <############################################################################################>
-[//]: <############################################################################################>
-[//]: <############################################################################################>
-## Kubernetes
-### Accessing the Cluster
-#### Using `kubectl`
-1. Follows this guide to install kubectl on your machine. https://kubernetes.io/docs/tasks/tools/install-kubectl/
-2. Copy .kube folder from /infrastructure in this repository to your user's home directory.
-3. You can now use kubectl refering to this reference. https://kubernetes.io/docs/reference/kubectl/overview/
-
-
-[//]: <########################################################################>
-#### Using K8s Dashboard
-1. Go to https://kube-dashboard.iot.pcxd.me:30443
-2. Select "Token".
-3. Enter this token into the text field. `eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWt6N3M3Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMzViMjRiMS02NWYzLTExZTgtYTJlYi0wMjAxMDBmODAwMjkiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06YWRtaW4tdXNlciJ9.l9U5z4wcWXBMIYMLH6TJL0FQj4YyfIjQBmFcM7TVWMhiM56PFRrHuxLZ0F-CZ-mSP2O3tAllXsLiy9j6Hsz1Q0DspPbiLv7CZT7l_5RAQ0F3VqVvY3anxX7hx6LgoLiamF9y5Y000wBaZLnpVBZozMp9VVm8UzflhdvQT1L6FI27P9p0SnJ-SZ4D9m_96KOdGGLVc5wNVETjTpugpbC-lqtwD94NTNvyEfkMQfK-_VJaQiGbZN-qSYhh7I1CFkBBaREQgAjubX4aPaox8sMTZtsh5bOzK_HjxwTqua_O25SGfg1q3soB20glGKTuNmA9OnlYMRLmPv50D1IIUHq3Fw`
-4. Click "SIGN IN".
-5. You are now in the dashboard. Here is some brief introduction about the dashboard. https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#welcome-view
-
-### Setting up the Cluster
-#### Preparing the Host
-```bash
-#!/bin/bash
-
-# Resize FS
-df -Th /
-
-fdisk /dev/vda
-d
-n
-p
-1
-2048
-enter
-
-t
-L
-83
-
-a
-p
-w
-
-df -Th /
-partprobe /dev/vda
-df -Th /
-resize2fs /dev/vda1
-df -Th /
-
-# Docker
-apt-get update
-apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb https://download.docker.com/linux/ubuntu xenial stable"
-apt-get update && apt-get install -y docker-ce=17.03.2~ce-0~ubuntu-xenial
-
-# kubeadm
-apt-get update && apt-get install -y apt-transport-https curl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
-cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-apt-get update
-apt-get install -y kubelet kubeadm kubectl
-
-# swapoff
-swapoff -a
-```
-
-#### Adding Nodes
-1. On the master node run (token will be expired after 24 hours):
-```bash
-kubeadm token create
-```
-2. Run this on the node you want to add:
-```bash
-kubeadm join 141.40.254.145:6443 --token <TOKEN FROM STEP 1> --discovery-token-ca-cert-hash sha256:1e6253959bd1f6b1b77efee5162083981d889abadb674eb89a62c6a229608178
-```
-
-
-
-[//]: <############################################################################################>
-[//]: <############################################################################################>
-[//]: <############################################################################################>
 ## Outlook
 - Activate true persistence, surviving rolling deployments (only Flink missing)
 - Finish up on autoscaling
