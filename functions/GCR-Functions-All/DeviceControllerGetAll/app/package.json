@@ -1,0 +1,19 @@
+{
+  "name": "DeviceControllerGetAllApp",
+  "version": "1.0.0",
+  "description": "Application for getting all devices",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.10",
+    "flatted": "^3.1.0",
+    "express": "^4.16.3",
+    "express-http-proxy": "^1.2.0"
+  }
+}

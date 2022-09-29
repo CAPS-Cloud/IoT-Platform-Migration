@@ -1,0 +1,24 @@
+{
+  "name": "ConsumerConsumeUpdate",
+  "version": "1.0.0",
+  "description": "Applicaiton for updating consumer consumptions",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bcryptjs": "^2.4.3",
+    "elasticsearch": "^16.7.1",
+    "jsonwebtoken": "^8.2.1",
+    "mysql2": "^1.5.3",
+    "request": "^2.87.0",
+    "sequelize": "^4.37.10",
+    "flatted": "^3.1.0",
+    "express": "^4.16.3",
+    "express-http-proxy": "^1.2.0"
+  }
+}

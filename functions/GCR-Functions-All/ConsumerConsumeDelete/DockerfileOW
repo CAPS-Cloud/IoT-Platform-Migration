@@ -1,0 +1,7 @@
+FROM openwhisk/action-nodejs-v10:latest
+RUN apt-get update 
+RUN apt-get install -y default-jre
+
+COPY . .
+
+RUN npm install

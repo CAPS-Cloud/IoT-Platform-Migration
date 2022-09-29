@@ -423,7 +423,7 @@ We migrate the different API endpoints of the IoT Core onto OpenWhisk and Google
 # OpenWhisk
 All source code is present [here](./functions/OW-Functions/).
 # GCR
-All source code is present [here](./functions/GCR-Functions).
+All source code is present [here](./functions/GCR-Functions) and [here](./functions/GCR-Functions-All).
 
 
 [//]: <############################################################################################>
