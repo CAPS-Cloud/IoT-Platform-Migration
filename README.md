@@ -69,7 +69,7 @@ docker-compose up
 ## Architecture
 The full composition of the pipeline of iotplatform:
 
-<img src="./doc/diagrams/IoT_System_Design.png" />
+<img src="./doc/diagrams/iot_system_design_simplified.png" />
 
 
 
