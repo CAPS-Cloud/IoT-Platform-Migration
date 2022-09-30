@@ -1,7 +1,7 @@
 # iotplatform
 
 
-## This the repo for the International Workshop on Serverless Computing (WoSC8) paper titled: "Migrating from Microservices to Serverless: An IoT Platform Case Study"
+## This is the repo for the International Workshop on Serverless Computing (WoSC8) paper titled: "Migrating from Microservices to Serverless: An IoT Platform Case Study"
 ### Authors:  Mohak Chadha, Victor Pacyna, Anshul Jindal, and Michael Gerndt.
 
 
