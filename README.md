@@ -418,7 +418,7 @@ The resulting structure:
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 ## Migration to FaaS
-We migrate the different API endpoints of the IoT Core onto OpenWhisk and Google Cloud Run (GCR).
+We migrated the different API endpoints of the IoT Core onto OpenWhisk and Google Cloud Run (GCR).
 
 # OpenWhisk
 All source code is present [here](./functions/OW-Functions/) and [here](./functions/OW-Functions-All/).
@@ -431,7 +431,13 @@ All source code is present [here](./functions/GCR-Functions) and [here](./functi
 [//]: <############################################################################################>
 
 ## Migration to FaaS
-Add some performance results.
+Performance of the HTTP-Gateway for the different deployment strategies: (i) GKE-Standard with two HPA configurations, i.e, GKE-80, GKE-50, (ii) GCR, and (iii) OW across different load scenarios. For this API endpoint, OW performed best.
+
+<img src="./doc/diagrams/http-gateway-linear-new.png"  width="400" height="400"/>
+<img src="./doc/diagrams/http-gateway-random-new.png"  width="400" height="400"/>
+<img src="./doc/diagrams/http-gateway-spike-new.png"  width="400" height="400"/>
+
+For a detailed analysis across different API endpoints, please see [here](./doc/Thesis_Victor_Pacyna.pdf).
 
 ## Outlook
 - Activate true persistence, surviving rolling deployments (only Flink missing)
