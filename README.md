@@ -39,7 +39,7 @@
 - [Migration to FaaS](#migration-to-faas)
     - [OpenWhisk](#openwhisk)
     - [Google Cloud Run](#gcr)
-- [Performance Results][#perf-results]
+- [Performance Results](#performance-results)
 - [Outlook](#outlook)
 
 
@@ -430,7 +430,7 @@ All source code is present [here](./functions/GCR-Functions) and [here](./functi
 [//]: <############################################################################################>
 [//]: <############################################################################################>
 
-## Migration to FaaS
+## Performance Results
 Performance of the HTTP-Gateway for the different deployment strategies: (i) GKE-Standard with two HPA configurations, i.e, GKE-80, GKE-50, (ii) GCR, and (iii) OW across different load scenarios. For this API endpoint, OW performed best.
 
 <img src="./doc/diagrams/http-gateway-linear-new.png"  width="400" height="400"/>
