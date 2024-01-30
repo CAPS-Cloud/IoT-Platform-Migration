@@ -439,13 +439,27 @@ Performance of the HTTP-Gateway for the different deployment strategies: (i) GKE
 
 For a detailed analysis across different API endpoints, please see [here](./doc/Thesis_Victor_Pacyna.pdf).
 
-## Outlook
-- Activate true persistence, surviving rolling deployments (only Flink missing)
-- Finish up on autoscaling
-- Improve frontend UX
-- Security testing
-- Actuator expansion (e.g. connected to Flink)
-- Provide more default Flink jobs for analytics
-- MQTT performance testing
-- Set up alternative to Node.js MQTT gateway (e.g. written in Go - https://github.com/emitter-io/emitter)
-- Add support for document/object ingestion in Flink and ES, e.g. for gyro data: `{ "x": <VALUE> }`
+
+## Citation
+If our work was helpful to you, please cite our paper:
+
+```
+@inproceedings{iotplatformmigration,
+    author = {Chadha, Mohak and Pacyna, Victor and Jindal, Anshul and Gu, Jianfeng and Gerndt, Michael},
+    title = {Migrating from microservices to serverless: an IoT platform case study},
+    year = {2022},
+    isbn = {9781450399272},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3565382.3565881},
+    doi = {10.1145/3565382.3565881},
+    booktitle = {Proceedings of the Eighth International Workshop on Serverless Computing},
+    pages = {19–24},
+    numpages = {6},
+    keywords = {CaaS, FaaS, container-as-a-service, function-as-a-service, microservices, performance analysis, serverless},
+    location = {Quebec, Quebec City, Canada},
+    series = {WoSC '22}
+}
+
+```
+
